@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sch.frog.kit.MainController">
+    <ToolBar>
+            <HBox style="-fx-border-color:#ababab;-fx-border-width: 1;-fx-border-radius:3;">
+                <HBox.margin>
+                    <Insets left="10"/>
+                </HBox.margin>
+                <TextField fx:id="tabTitleText" maxHeight="27.0" maxWidth="-Infinity" minHeight="27.0" minWidth="-Infinity" prefHeight="27.0" prefWidth="80.0" />
+            </HBox>
+            <Pane HBox.hgrow="ALWAYS"><!-- nothing --></Pane>
+    </ToolBar>
+    <TabPane fx:id="mainTabPane" prefHeight="229.0" prefWidth="290.0" VBox.vgrow="ALWAYS">
+    </TabPane>
+    <Pane style="-fx-background-color: #acacac;">
+        <Label fx:id="msgText" />
+    </Pane>
+</VBox>
