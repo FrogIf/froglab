@@ -19,4 +19,4 @@ dependencies {
 
 }
 
-mainClassName = "sch.frog.kit.FrogKitLauncher"
+mainClassName = "sch.frog.kit/sch.frog.kit.FrogKitLauncher"

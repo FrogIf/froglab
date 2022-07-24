@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+<fx:root type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml" alignment="CENTER">
+
+    <VBox maxWidth="350" style="-fx-border-color:black;-fx-border-width:1;-fx-border-radius:3;">
+        <padding>
+            <Insets bottom="10" left="10" right="10" top="10" />
+        </padding>
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Current Date:" >
+                <HBox.margin>
+                    <Insets right="40"/>
+                </HBox.margin>
+            </Label>
+            <TextField text="" editable="false" fx:id="currentDate" />
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT">
+            <VBox.margin>
+                <Insets top="10" />
+            </VBox.margin>
+            <Label text="Current Timestamp:" >
+                <HBox.margin>
+                    <Insets right="40"/>
+                </HBox.margin>
+            </Label>
+            <TextField text="" editable="false" fx:id="currentTimestamp"/>
+            <Label text="ms" >
+                <HBox.margin>
+                    <Insets left="10" />
+                </HBox.margin>
+            </Label>
+        </HBox>
+
+        <HBox alignment="CENTER">
+            <VBox.margin>
+                <Insets top="5" />
+            </VBox.margin>
+            <Button text="start" onAction="#startTimer">
+                <HBox.margin>
+                    <Insets right="10" />
+                </HBox.margin>
+            </Button>
+            <Button text="pause" onAction="#stopTimer"/>
+        </HBox>
+    </VBox>
+
+    <HBox maxWidth="650" alignment="CENTER_LEFT">
+        <VBox.margin>
+            <Insets top="20" />
+        </VBox.margin>
+        <Label text="Timestamp:" >
+            <HBox.margin>
+                <Insets right="10"/>
+            </HBox.margin>
+        </Label>
+        <TextField fx:id="timestampInput"/>
+        <ComboBox fx:id="timestampUnit">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="ms"/>
+                    <String fx:value="s" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button text="convert" onAction="#convertToDate">
+            <HBox.margin>
+                <Insets right="10" left="10"/>
+            </HBox.margin>
+        </Button>
+        <TextField editable="false" fx:id="dateResult"/>
+    </HBox>
+
+    <HBox maxWidth="650" alignment="CENTER_LEFT">
+        <VBox.margin>
+            <Insets top="20" />
+        </VBox.margin>
+
+        <Label text="Date(yyyy-MM-dd HH:mm:ss):" >
+            <HBox.margin>
+                <Insets right="10"/>
+            </HBox.margin>
+        </Label>
+        <TextField fx:id="dateInput" />
+        <Button text="convert" onAction="#convertToTimestamp">
+            <HBox.margin>
+                <Insets right="10" left="10"/>
+            </HBox.margin>
+        </Button>
+        <TextField fx:id="timestampResult" editable="false"/>
+        <ComboBox fx:id="outputUnit" >
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="ms"/>
+                    <String fx:value="s" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </HBox>
+
+</fx:root>
