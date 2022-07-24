@@ -49,4 +49,12 @@ public abstract class CustomViewControl extends VBox {
         // do nothing
     }
 
+    public void onHidden(){
+        // do nothing
+    }
+
+    public void onShow(){
+        // to nothing
+    }
+
 }

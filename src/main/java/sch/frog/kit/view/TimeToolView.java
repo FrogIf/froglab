@@ -146,4 +146,14 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     public void onClose() {
         this.stopTimer();
     }
+
+    @Override
+    public void onHidden() {
+        this.stopTimer();
+    }
+
+    @Override
+    public void onShow() {
+        this.startTimer();
+    }
 }

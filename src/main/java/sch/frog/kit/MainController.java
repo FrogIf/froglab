@@ -1,8 +1,11 @@
 package sch.frog.kit;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -24,7 +27,7 @@ public class MainController implements Initializable {
 
     private MessageEmitter messageEmitter;
 
-    private LinkedList<CustomViewControl> views = new LinkedList<>();
+    private final LinkedList<CustomViewControl> views = new LinkedList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -36,6 +39,13 @@ public class MainController implements Initializable {
             CustomViewControl view = (CustomViewControl) tab.getContent();
             views.add(view);
         }
+
+        this.mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            CustomViewControl oldView = (CustomViewControl) oldValue.getContent();
+            CustomViewControl newView = (CustomViewControl) newValue.getContent();
+            oldView.onHidden();
+            newView.onShow();
+        });
     }
 
     public static void error(String message){
