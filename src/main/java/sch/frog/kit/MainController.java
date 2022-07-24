@@ -1,5 +1,6 @@
 package sch.frog.kit;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -18,6 +19,8 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
     private static MainController self;
+
+    private static Thread mainThread;
 
     @FXML
     private Label msgText;
@@ -49,7 +52,15 @@ public class MainController implements Initializable {
     }
 
     public static void error(String message){
-        self.messageEmitter.emitError(message);
+        Platform.runLater(() -> {
+            self.messageEmitter.emitError(message);
+        });
+    }
+
+    public static void info(String message){
+        Platform.runLater(() -> {
+            self.messageEmitter.emitInfo(message);
+        });
     }
 
     public void onClose(){
