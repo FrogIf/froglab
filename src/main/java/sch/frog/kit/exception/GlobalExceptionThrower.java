@@ -50,7 +50,7 @@ public class GlobalExceptionThrower {
         }
     }
 
-    private void throwExceptionLazy(Throwable t){
+    public void throwExceptionLazy(Throwable t){
         Platform.runLater(() -> {
             this.throwException(t, true);
         });

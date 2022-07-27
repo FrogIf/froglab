@@ -25,7 +25,7 @@ public class FrogKitApplication extends Application {
                 controller.onClose();
             });
         }catch (Exception e){
-            GlobalExceptionThrower.INSTANCE.throwException(e);
+            GlobalExceptionThrower.INSTANCE.throwExceptionLazy(e);
         }
     }
 

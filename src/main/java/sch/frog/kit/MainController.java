@@ -1,12 +1,9 @@
 package sch.frog.kit;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -19,8 +16,6 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
     private static MainController self;
-
-    private static Thread mainThread;
 
     @FXML
     private Label msgText;

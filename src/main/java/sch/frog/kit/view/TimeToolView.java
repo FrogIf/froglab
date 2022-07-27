@@ -1,5 +1,6 @@
 package sch.frog.kit.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -34,8 +35,10 @@ public class TimeToolView extends CustomViewControl implements Initializable {
             public void run() {
                 Date current = new Date();
                 String date = sdf.format(current);
-                currentDate.setText(date);
-                currentTimestamp.setText(String.valueOf(current.getTime()));
+                Platform.runLater(() -> {
+                    currentDate.setText(date);
+                    currentTimestamp.setText(String.valueOf(current.getTime()));
+                });
             }
         }, 1000, 1000);
     }
