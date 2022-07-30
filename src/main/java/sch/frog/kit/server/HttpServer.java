@@ -19,7 +19,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import sch.frog.kit.MainController;
+import sch.frog.kit.common.LogKit;
 import sch.frog.kit.util.StringUtils;
 
 import java.net.URI;
@@ -46,7 +46,7 @@ public class HttpServer {
 
     public void start(){
         if(this.port < 0){
-            MainController.error("port not configured");
+            LogKit.error("port not configured");
             return;
         }
         new Thread(() -> {
@@ -64,8 +64,9 @@ public class HttpServer {
                 channel.closeFuture().sync();
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
+                LogKit.info("http server start success");
             }catch (Exception e){
-                MainController.error(e.getMessage());
+                LogKit.error(e.getMessage());
             }
         }).start();
     }
@@ -74,7 +75,7 @@ public class HttpServer {
         if(channel != null){
             channel.close();
             channel = null;
-            MainController.info("http server closed");
+            LogKit.info("http server closed");
         }
     }
 
@@ -92,7 +93,7 @@ public class HttpServer {
                 }
                 ctx.writeAndFlush(response);
             } catch (URISyntaxException e) {
-                MainController.error(e.getMessage());
+                LogKit.error(e.getMessage());
             }finally {
                 ctx.close();
             }
@@ -121,7 +122,7 @@ public class HttpServer {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-            MainController.error("unexpected exception for http server : " + cause.getMessage());
+            LogKit.error("unexpected exception for http server : " + cause.getMessage());
             ctx.close();
         }
     }
@@ -132,7 +133,7 @@ public class HttpServer {
 
     public void setPort(int port) {
         if(port < 5000 || port > 65535){
-            MainController.error("port is illegal, the range is [5000, 65535]");
+            LogKit.error("port is illegal, the range is [5000, 65535]");
             return;
         }
         this.port = port;

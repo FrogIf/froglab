@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import sch.frog.kit.common.LogKit;
 import sch.frog.kit.view.CustomViewControl;
 
 import java.net.URL;
@@ -29,6 +30,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        LogKit.init(new GlobalLogPrinter());
         messageEmitter = new MessageEmitter(msgText);
         MainController.self = this;
 
@@ -52,6 +54,12 @@ public class MainController implements Initializable {
         });
     }
 
+    public static void warn(String message){
+        Platform.runLater(() -> {
+            self.messageEmitter.emitWarn(message);
+        });
+    }
+
     public static void info(String message){
         Platform.runLater(() -> {
             self.messageEmitter.emitInfo(message);
@@ -61,6 +69,24 @@ public class MainController implements Initializable {
     public void onClose(){
         for (CustomViewControl view : views) {
             view.onClose();
+        }
+    }
+
+    private static class GlobalLogPrinter implements LogKit.ILoggerPrinter {
+
+        @Override
+        public void info(String msg) {
+            MainController.info(msg);
+        }
+
+        @Override
+        public void warn(String msg) {
+            MainController.warn(msg);
+        }
+
+        @Override
+        public void error(String msg) {
+            MainController.error(msg);
         }
     }
 }

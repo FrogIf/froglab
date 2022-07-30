@@ -7,7 +7,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import sch.frog.kit.MainController;
+import sch.frog.kit.common.LogKit;
 import sch.frog.kit.server.HttpServer;
 import sch.frog.kit.server.RequestFormatIllegalException;
 import sch.frog.kit.server.RequestJson;
@@ -39,7 +39,7 @@ public class ServerManageView extends CustomViewControl {
             handleResponse = ResponseJson.SUCCESS;
         }catch (RequestFormatIllegalException e){
             handleResponse = ResponseJson.ERROR;
-            MainController.error(e.getMessage());
+            LogKit.error(e.getMessage());
         }
 
         FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(),
@@ -53,14 +53,14 @@ public class ServerManageView extends CustomViewControl {
     public void startServer(){
         String port = portText.getText();
         if(StringUtils.isBlank(port)){
-            MainController.error("port is required.");
+            LogKit.error("port is required.");
             return;
         }
         int portNum = 0;
         try{
             portNum = Integer.parseInt(port);
         }catch (NumberFormatException e){
-            MainController.error("port is not a number.");
+            LogKit.error("port is not a number.");
             return;
         }
 

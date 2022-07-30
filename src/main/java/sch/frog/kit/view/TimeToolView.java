@@ -9,7 +9,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
-import sch.frog.kit.MainController;
+import sch.frog.kit.common.LogKit;
 import sch.frog.kit.util.StringUtils;
 
 import java.net.URL;
@@ -86,7 +86,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         dateResult.setText(null);
         String unit = timestampUnit.getSelectionModel().getSelectedItem();
         if(StringUtils.isBlank(unit)){
-            MainController.error("please select timestamp unit");
+            LogKit.error("please select timestamp unit");
             return;
         }
         String text = timestampInput.getText();
@@ -100,7 +100,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
             String format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
             dateResult.setText(format);
         }catch (NumberFormatException e){
-            MainController.error("timestamp input is not a number");
+            LogKit.error("timestamp input is not a number");
         }
     }
 
@@ -118,7 +118,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         timestampResult.setText(null);
         String unit = outputUnit.getSelectionModel().getSelectedItem();
         if(StringUtils.isBlank(unit)){
-            MainController.error("please select output unit");
+            LogKit.error("please select output unit");
             return;
         }
         String dateInputText = dateInput.getText();
@@ -130,7 +130,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
             }
             timestampResult.setText(String.valueOf(timestamp));
         } catch (ParseException e) {
-            MainController.error("date format incorrect, " + e.getMessage());
+            LogKit.error("date format incorrect, " + e.getMessage());
         }
     }
 
@@ -226,7 +226,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         try{
             offset = Long.parseLong(offsetVal);
         }catch (NumberFormatException e){
-            MainController.error("offset input is not a number");
+            LogKit.error("offset input is not a number");
             return;
         }
         if(date != null){
