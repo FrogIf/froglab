@@ -62,14 +62,18 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     }
 
     private void startTimer(){
-        this.initTimer();
-        this.timeCtlBtn.setText("pause");
+        if(this.timer == null){
+            this.initTimer();
+            this.timeCtlBtn.setText("pause");
+        }
     }
 
     private void stopTimer(){
-        this.timer.cancel();
-        this.timer = null;
-        this.timeCtlBtn.setText("start");
+        if(this.timer != null){
+            this.timer.cancel();
+            this.timer = null;
+            this.timeCtlBtn.setText("start");
+        }
     }
 
     @FXML
@@ -91,13 +95,15 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         }
         String text = timestampInput.getText();
         try{
-            long timestamp = Long.parseLong(text);
+            final long timestamp = Long.parseLong(text);
+            long millis = timestamp;
             if("s".equals(unit)){
-                timestamp = timestamp * 1000;
+                millis = millis * 1000;
             }
             Date date = new Date();
-            date.setTime(timestamp);
+            date.setTime(millis);
             String format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            LogKit.info(timestamp + unit + " -> " + format);
             dateResult.setText(format);
         }catch (NumberFormatException e){
             LogKit.error("timestamp input is not a number");
@@ -128,6 +134,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
             if("s".equals(unit)){
                 timestamp = timestamp / 1000;
             }
+            LogKit.info(dateInputText + " -> " + timestamp + unit);
             timestampResult.setText(String.valueOf(timestamp));
         } catch (ParseException e) {
             LogKit.error("date format incorrect, " + e.getMessage());
@@ -192,6 +199,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
                         break;
                 }
             }
+            LogKit.info(date2 + " - " + date1 + " = " + sub + unit);
             dateSubDateResult.setText(String.valueOf(sub));
         }
     }
@@ -265,7 +273,9 @@ public class TimeToolView extends CustomViewControl implements Initializable {
                 }
             }
             if(result != null){
-                offsetResult.setText(result.format(dateTimeFormatter));
+                String r = result.format(dateTimeFormatter);
+                LogKit.info(date + " + " + offsetVal + unit + " = " + r);
+                offsetResult.setText(r);
             }
         }
     }

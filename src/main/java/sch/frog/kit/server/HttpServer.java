@@ -49,6 +49,10 @@ public class HttpServer {
             LogKit.error("port not configured");
             return;
         }
+        if(this.channel != null){
+            LogKit.info("server is running");
+            return;
+        }
         new Thread(() -> {
             try{
                 EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -61,10 +65,10 @@ public class HttpServer {
                         .childHandler(new HttpServerInitializer());
 
                 channel = serverBootstrap.bind(port).sync().channel();
+                LogKit.info("http server start success");
                 channel.closeFuture().sync();
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
-                LogKit.info("http server start success");
             }catch (Exception e){
                 LogKit.error(e.getMessage());
             }
