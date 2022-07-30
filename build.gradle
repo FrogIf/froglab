@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'sch.frog.kit'
-version '1.9'
+version '1.0'
 
 repositories {
     mavenCentral()
