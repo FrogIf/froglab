@@ -9,7 +9,10 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
+import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.server.handle.annotation.RequestAction;
+import sch.frog.kit.server.handle.annotation.RequestParam;
 import sch.frog.kit.util.StringUtils;
 
 import java.net.URL;
@@ -96,15 +99,9 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         String text = timestampInput.getText();
         try{
             final long timestamp = Long.parseLong(text);
-            long millis = timestamp;
-            if("s".equals(unit)){
-                millis = millis * 1000;
-            }
-            Date date = new Date();
-            date.setTime(millis);
-            String format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-            LogKit.info(timestamp + unit + " -> " + format);
-            dateResult.setText(format);
+            String date = timestampToDate(timestamp, unit);
+            dateResult.setText(date);
+            LogKit.info(timestamp + unit + " -> " + date);
         }catch (NumberFormatException e){
             LogKit.error("timestamp input is not a number");
         }
@@ -127,17 +124,13 @@ public class TimeToolView extends CustomViewControl implements Initializable {
             LogKit.error("please select output unit");
             return;
         }
-        String dateInputText = dateInput.getText();
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateInputText);
-            long timestamp = date.getTime();
-            if("s".equals(unit)){
-                timestamp = timestamp / 1000;
-            }
+            String dateInputText = dateInput.getText();
+            long timestamp = dateToTimestamp(dateInputText, unit);
             LogKit.info(dateInputText + " -> " + timestamp + unit);
             timestampResult.setText(String.valueOf(timestamp));
-        } catch (ParseException e) {
-            LogKit.error("date format incorrect, " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            LogKit.error(e.getMessage());
         }
     }
 
@@ -164,41 +157,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         LocalDate date2 = datePickerA2.getValue();
         if(date1 != null && date2 != null){
             String unit = subResultUnit.getSelectionModel().getSelectedItem();
-            long sub = 0;
-            if("year".equals(unit)){
-                Period period = date1.until(date2);
-                sub = period.getYears();
-            }else if("month".equals(unit)){
-                Period period = date1.until(date2);
-                sub = period.toTotalMonths();
-            }else{
-                long from = date1.toEpochDay();
-                long to = date2.toEpochDay();
-                sub = to - from;
-                switch (unit){
-                    case "day":
-                        // do nothing
-                        break;
-                    case "week":
-                        sub = sub / 7;
-                        break;
-                    case "hour":
-                        sub = sub * 24;
-                        break;
-                    case "minute":
-                        sub = sub * 24 * 60;
-                        break;
-                    case "s":
-                        sub = sub * 24 * 60 * 60;
-                        break;
-                    case "ms":
-                        sub = sub * 24 * 60 * 60 * 1000;
-                        break;
-                    default:
-                        sub = Long.MIN_VALUE;
-                        break;
-                }
-            }
+            long sub = dateInterval(date1, date2, unit);
             LogKit.info(date2 + " - " + date1 + " = " + sub + unit);
             dateSubDateResult.setText(String.valueOf(sub));
         }
@@ -239,44 +198,9 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         }
         if(date != null){
             String unit = offsetUnit.getSelectionModel().getSelectedItem();
-            LocalDate result = null;
-            if("year".equals(unit)){
-                result = date.plusYears(offset);
-            }else if("month".equals(unit)){
-                result = date.plusMonths(offset);
-            }else {
-                switch (unit){
-                    case "day":
-                        // do nothings
-                        break;
-                    case "week":
-                        offset = offset * 7;
-                        break;
-                    case "hour":
-                        offset = offset / 24;
-                        break;
-                    case "minute":
-                        offset = offset / 24 / 60;
-                        break;
-                    case "s":
-                        offset = offset / 24 / 60 / 60;
-                        break;
-                    case "ms":
-                        offset = offset / 24 / 60 / 60 / 1000;
-                        break;
-                    default:
-                        offset = Long.MIN_VALUE;
-                        break;
-                }
-                if(offset != Long.MIN_VALUE){
-                    result = date.plusDays(offset);
-                }
-            }
-            if(result != null){
-                String r = result.format(dateTimeFormatter);
-                LogKit.info(date + " + " + offsetVal + unit + " = " + r);
-                offsetResult.setText(r);
-            }
+            String result = dateOffset(date, offset, unit);
+            LogKit.info(date + " + " + offsetVal + unit + " = " + result);
+            offsetResult.setText(result);
         }
     }
 
@@ -364,6 +288,119 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     @Override
     public void onShow() {
         this.startTimer();
+    }
+
+    @RequestAction(path = "/time/timestampToDate", description = "timestamp convert to date")
+    public String timestampToDate(@RequestParam(name = "timestamp", description = "origin timestamp") long timestamp,
+                                  @RequestParam(name = "unit", description = "unit") String unit){
+        long millis = timestamp;
+        if("s".equals(unit)){
+            millis = millis * 1000;
+        }
+        Date date = new Date();
+        date.setTime(millis);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+    }
+
+    @RequestAction(path = "/time/dateToTimestamp", description = "date convert to timestamp")
+    public long dateToTimestamp(@RequestParam(name = "date", description = "origin date") String date,
+                                @RequestParam(name = "unit", description = "unit") String unit){
+        try {
+            Date dateObj = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date);
+            long timestamp = dateObj.getTime();
+            if("s".equals(unit)){
+                timestamp = timestamp / 1000;
+            }
+            return timestamp;
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("date format incorrect, " + e.getMessage());
+        }
+    }
+
+    @RequestAction(path = "/time/dateInterval", description = "get interval for two different date")
+    public long dateInterval(@RequestParam(name = "begin", description = "begin date") LocalDate begin,
+                             @RequestParam(name = "end", description = "end date") LocalDate end,
+                             @RequestParam(name = "unit", description = "unit") String unit){
+        long sub = 0;
+        if("year".equals(unit)){
+            Period period = begin.until(end);
+            sub = period.getYears();
+        }else if("month".equals(unit)){
+            Period period = begin.until(end);
+            sub = period.toTotalMonths();
+        }else{
+            long from = begin.toEpochDay();
+            long to = end.toEpochDay();
+            sub = to - from;
+            switch (unit){
+                case "day":
+                    // do nothing
+                    break;
+                case "week":
+                    sub = sub / 7;
+                    break;
+                case "hour":
+                    sub = sub * 24;
+                    break;
+                case "minute":
+                    sub = sub * 24 * 60;
+                    break;
+                case "s":
+                    sub = sub * 24 * 60 * 60;
+                    break;
+                case "ms":
+                    sub = sub * 24 * 60 * 60 * 1000;
+                    break;
+                default:
+                    sub = Long.MIN_VALUE;
+                    break;
+            }
+        }
+        return sub;
+    }
+
+    @RequestAction(path = "/time/dateOffset", description = "get a new date by date offset")
+    public String dateOffset(@RequestParam(name = "date", description = "origin date") LocalDate date,
+                             @RequestParam(name = "offset", description = "offset") long offset,
+                             @RequestParam(name = "unit", description = "unit") String unit){
+        LocalDate result = null;
+        if("year".equals(unit)){
+            result = date.plusYears(offset);
+        }else if("month".equals(unit)){
+            result = date.plusMonths(offset);
+        }else {
+            switch (unit){
+                case "day":
+                    // do nothings
+                    break;
+                case "week":
+                    offset = offset * 7;
+                    break;
+                case "hour":
+                    offset = offset / 24;
+                    break;
+                case "minute":
+                    offset = offset / 24 / 60;
+                    break;
+                case "s":
+                    offset = offset / 24 / 60 / 60;
+                    break;
+                case "ms":
+                    offset = offset / 24 / 60 / 60 / 1000;
+                    break;
+                default:
+                    offset = Long.MIN_VALUE;
+                    break;
+            }
+            if(offset != Long.MIN_VALUE){
+                result = date.plusDays(offset);
+            }
+        }
+        if(result != null){
+            return result.format(dateTimeFormatter);
+        }else{
+            return null;
+        }
     }
 }
 

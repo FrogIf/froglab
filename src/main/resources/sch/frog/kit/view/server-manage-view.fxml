@@ -10,39 +10,46 @@
     <padding>
         <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
-    <VBox maxWidth="250" style="-fx-border-color:black;-fx-border-width:1;-fx-border-radius:3;">
-        <padding>
-            <Insets bottom="10" left="10" right="10" top="10" />
-        </padding>
-        <HBox>
-            <Label text="Path:" >
-                <HBox.margin>
-                    <Insets right="20" />
-                </HBox.margin>
-            </Label>
-            <TextField text="/" fx:id="pathText" />
-        </HBox>
-        <HBox>
-            <VBox.margin>
-                <Insets top="20" />
-            </VBox.margin>
-            <Label text="Port:" >
-                <HBox.margin>
-                    <Insets right="20" />
-                </HBox.margin>
-            </Label>
-            <TextField text="10105" fx:id="portText"/>
-        </HBox>
-        <HBox alignment="CENTER">
-            <VBox.margin>
-                <Insets top="20" />
-            </VBox.margin>
-            <Button text="start" onAction="#startServer">
-                <HBox.margin>
-                    <Insets right="20" />
-                </HBox.margin>
-            </Button>
-            <Button text="shutdown" onAction="#stopServer" />
-        </HBox>
-    </VBox>
+    <HBox>
+        <VBox maxWidth="250" style="-fx-background-color:#dddddd;">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <HBox>
+                <Label text="Path:" >
+                    <HBox.margin>
+                        <Insets right="20" />
+                    </HBox.margin>
+                </Label>
+                <TextField text="/" fx:id="pathText" />
+            </HBox>
+            <HBox>
+                <VBox.margin>
+                    <Insets top="20" />
+                </VBox.margin>
+                <Label text="Port:" >
+                    <HBox.margin>
+                        <Insets right="20" />
+                    </HBox.margin>
+                </Label>
+                <TextField text="10105" fx:id="portText"/>
+            </HBox>
+            <HBox alignment="CENTER">
+                <VBox.margin>
+                    <Insets top="20" />
+                </VBox.margin>
+                <Button text="start" onAction="#startServer">
+                    <HBox.margin>
+                        <Insets right="20" />
+                    </HBox.margin>
+                </Button>
+                <Button text="shutdown" onAction="#stopServer" />
+            </HBox>
+        </VBox>
+        <VBox fx:id="requestUrl" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets left="20" right="20" bottom="20" />
+            </padding>
+        </VBox>
+    </HBox>
 </fx:root>

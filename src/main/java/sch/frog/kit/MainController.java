@@ -7,9 +7,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import sch.frog.kit.common.BeanContainer;
+import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.util.StringUtils;
-import sch.frog.kit.view.CustomViewControl;
 
 import java.awt.*;
 import java.net.URL;
@@ -20,6 +21,8 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
     private static MainController self;
+
+    public static final String VIEWS_BEAN_NAME = "views";
 
     @FXML
     private TextArea msgText;
@@ -40,12 +43,18 @@ public class MainController implements Initializable {
             views.add(view);
         }
 
+        BeanContainer.add(VIEWS_BEAN_NAME, views);
+
         this.mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             CustomViewControl oldView = (CustomViewControl) oldValue.getContent();
             CustomViewControl newView = (CustomViewControl) newValue.getContent();
             oldView.onHidden();
             newView.onShow();
         });
+
+        for (CustomViewControl view : views) {
+            view.init();
+        }
     }
 
     private static final int MAX_LOG_ROWS = 100;

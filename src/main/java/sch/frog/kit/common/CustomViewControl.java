@@ -1,7 +1,8 @@
-package sch.frog.kit.view;
+package sch.frog.kit.common;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
+import sch.frog.kit.server.handle.IWebView;
 
 import java.io.IOException;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
  * 2. fxml file's root must be:
  *         <fx:root type="javafx.scene.layout.VBox"  ... ></fx:root>
  */
-public abstract class CustomViewControl extends VBox {
+public abstract class CustomViewControl extends VBox implements IWebView {
 
     public CustomViewControl() {
         Class<? extends CustomViewControl> clazz = getClass();
@@ -43,6 +44,10 @@ public abstract class CustomViewControl extends VBox {
         }
         sb.append(".fxml");
         return sb.toString();
+    }
+
+    public void init(){
+        // do nothing
     }
 
     public void onClose(){

@@ -2,18 +2,11 @@ package sch.frog.kit.server;
 
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 
-public class RequestJson {
+public class RequestJson extends RequestBody {
 
     private String json;
-
-    private boolean isArray;
-
-    private JSONArray jsonArray;
-
-    private JSONObject jsonObject;
 
     public RequestJson(String json) throws RequestFormatIllegalException {
         this.json = json;
@@ -29,6 +22,10 @@ public class RequestJson {
         }
     }
 
+    private RequestJson(JSONObject jsonObject){
+        this.jsonObject = jsonObject;
+    }
+
     public boolean isArray(){
         return isArray;
     }
@@ -37,4 +34,5 @@ public class RequestJson {
     public String toString() {
         return this.json;
     }
+
 }

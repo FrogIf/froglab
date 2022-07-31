@@ -1,25 +1,27 @@
 package sch.frog.kit.view;
 
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import sch.frog.kit.MainController;
+import sch.frog.kit.common.BeanContainer;
+import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.server.HttpServer;
-import sch.frog.kit.server.RequestFormatIllegalException;
-import sch.frog.kit.server.RequestJson;
-import sch.frog.kit.server.ResponseJson;
+import sch.frog.kit.server.handle.RequestActionBox;
+import sch.frog.kit.util.ClipboardUtil;
 import sch.frog.kit.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
-
-import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
-import static io.netty.handler.codec.http.HttpHeaderValues.CLOSE;
+import java.util.Collection;
+import java.util.List;
 
 public class ServerManageView extends CustomViewControl {
 
@@ -29,25 +31,7 @@ public class ServerManageView extends CustomViewControl {
     @FXML
     private TextField portText;
 
-    private final HttpServer httpServer = new HttpServer(request -> {
-        String json = new String(ByteBufUtil.getBytes(request.content()));
-        ResponseJson handleResponse = null;
-        try{
-            RequestJson requestJson = new RequestJson(json);
-
-            // TODO handler mapping
-            handleResponse = ResponseJson.SUCCESS;
-        }catch (RequestFormatIllegalException e){
-            handleResponse = ResponseJson.ERROR;
-            LogKit.error(e.getMessage());
-        }
-
-        FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(),
-                handleResponse.ok ? HttpResponseStatus.OK : HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                Unpooled.wrappedBuffer(handleResponse.toJson().getBytes(StandardCharsets.UTF_8)));
-        response.headers().set(CONNECTION, CLOSE).set(CONTENT_TYPE, APPLICATION_JSON);
-        return response;
-    });
+    private final HttpServer httpServer = new HttpServer();
 
     @FXML
     public void startServer(){
@@ -75,7 +59,7 @@ public class ServerManageView extends CustomViewControl {
         portText.setEditable(false);
 
         httpServer.setPort(portNum);
-        httpServer.setPath(path);
+        httpServer.setContextPath(path);
 
         httpServer.start();
     }
@@ -91,5 +75,50 @@ public class ServerManageView extends CustomViewControl {
     @Override
     public void onClose() {
         httpServer.shutdown();
+    }
+
+
+    @FXML
+    private VBox requestUrl;
+
+    @Override
+    public void init() {
+        List<CustomViewControl> views = BeanContainer.get(MainController.VIEWS_BEAN_NAME);
+        httpServer.init(views);
+
+        Collection<RequestActionBox> actions = httpServer.getActions();
+        EventHandler<? super MouseEvent> eventHandler = event -> {
+            String contextPath = httpServer.getContextPath();
+            if(contextPath.endsWith("/")){
+                contextPath = contextPath.substring(0, contextPath.length() - 1);
+            }
+            ClipboardUtil.putToClipboard(contextPath + ((Hyperlink) event.getSource()).getText());
+        };
+
+        ObservableList<Node> requestUrlBox = requestUrl.getChildren();
+        for (RequestActionBox act : actions) {
+            TitledPane pane = new TitledPane();
+            pane.setExpanded(false);
+            pane.setText(act.getDescription());
+
+            VBox vBox = new VBox();
+            pane.setContent(vBox);
+
+            vBox.setAlignment(Pos.CENTER_LEFT);
+            ObservableList<Node> children = vBox.getChildren();
+
+            Hyperlink hyperlink = new Hyperlink();
+            hyperlink.setText(act.getPath());
+            hyperlink.setOnMouseClicked(eventHandler);
+            children.add(hyperlink);
+
+            RequestActionBox.RequestParamInfo[] params = act.getParams();
+            for (RequestActionBox.RequestParamInfo param : params) {
+                children.add(new Label(param.getDescription() + " : " + param.getName() + "(" + param.getType().getSimpleName() + ")"));
+            }
+
+            requestUrlBox.add(pane);
+        }
+
     }
 }
