@@ -114,7 +114,7 @@ public class ServerManageView extends CustomViewControl {
 
             RequestActionBox.RequestParamInfo[] params = act.getParams();
             for (RequestActionBox.RequestParamInfo param : params) {
-                children.add(new Label(param.getDescription() + " : " + param.getName() + "(" + param.getType().getSimpleName() + ")"));
+                children.add(new Label(param.getName() + "(" + param.getType().getSimpleName() + ") -- " + param.getDescription()));
             }
 
             requestUrlBox.add(pane);
