@@ -7,8 +7,9 @@ import sch.frog.kit.server.ResponseJson;
 import sch.frog.kit.server.exception.RequestParseException;
 import sch.frog.kit.server.handle.annotation.RequestAction;
 import sch.frog.kit.server.handle.annotation.RequestParam;
-import sch.frog.kit.util.StringUtils;
+import sch.frog.kit.util.StringUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WebContainer {
 
@@ -96,7 +96,7 @@ public class WebContainer {
                     }else{
                         RequestActionBox.RequestParamInfo paramInfo = new RequestActionBox.RequestParamInfo();
                         String name = param.name();
-                        if(StringUtils.isBlank(name)){
+                        if(StringUtil.isBlank(name)){
                             name = p.getName();
                         }
                         paramInfo.setName(name);
@@ -176,7 +176,15 @@ public class WebContainer {
         Object result = null;
         try {
             result = method.invoke(instanceObj, paramValueArray);
-        } catch (Exception e) {
+        } catch (InvocationTargetException e){
+            Throwable targetException = e.getTargetException();
+            if(targetException != null){
+                LogKit.error(targetException.getMessage());
+            }else{
+                LogKit.error("internal error");
+            }
+            return ResponseJson.ERROR;
+        }catch (Exception e) {
             LogKit.error(e.getMessage());
             return ResponseJson.ERROR;
         }

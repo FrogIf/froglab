@@ -29,7 +29,7 @@ import sch.frog.kit.common.LogKit;
 import sch.frog.kit.server.handle.IWebView;
 import sch.frog.kit.server.handle.RequestActionBox;
 import sch.frog.kit.server.handle.WebContainer;
-import sch.frog.kit.util.StringUtils;
+import sch.frog.kit.util.StringUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -99,7 +99,7 @@ public class HttpServer {
                 path = "/" + path;
             }
             path = path.split("\\?", 2)[0];
-            String json = new String(ByteBufUtil.getBytes(request.content()));
+            String json = new String(ByteBufUtil.getBytes(request.content()), StandardCharsets.UTF_8);
             ResponseJson handleResponse = null;
             try{
                 RequestJson requestJson = new RequestJson(json);
@@ -221,7 +221,7 @@ public class HttpServer {
     public void setContextPath(String path) {
         if(path == null){ path = "/"; }
         path = path.trim();
-        if(StringUtils.isBlank(path)){
+        if(StringUtil.isBlank(path)){
             path = "/";
         }
         this.contextPath = path;

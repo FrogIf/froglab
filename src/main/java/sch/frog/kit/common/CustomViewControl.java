@@ -3,6 +3,7 @@ package sch.frog.kit.common;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 import sch.frog.kit.server.handle.IWebView;
+import sch.frog.kit.util.FXMLUtil;
 
 import java.io.IOException;
 
@@ -16,7 +17,7 @@ public abstract class CustomViewControl extends VBox implements IWebView {
 
     public CustomViewControl() {
         Class<? extends CustomViewControl> clazz = getClass();
-        FXMLLoader loader = new FXMLLoader(clazz.getResource(parseCamelToFxml(clazz.getSimpleName())));
+        FXMLLoader loader = new FXMLLoader(clazz.getResource(FXMLUtil.parseCamelToFxml(clazz.getSimpleName())));
         loader.setRoot(this);
         loader.setController(this);
         try {
@@ -24,26 +25,6 @@ public abstract class CustomViewControl extends VBox implements IWebView {
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage());
         }
-    }
-
-    /**
-     * 将驼峰命名转为约定的view
-     * @param camel 驼峰名称
-     * @return 转换后的文件
-     */
-    private String parseCamelToFxml(String camel){
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0, len = camel.length(); i < len; i++){
-            char c = camel.charAt(i);
-            if(Character.isUpperCase(c)){
-                if(i != 0){ sb.append('-'); }
-                sb.append(Character.toLowerCase(c));
-            }else{
-                sb.append(c);
-            }
-        }
-        sb.append(".fxml");
-        return sb.toString();
     }
 
     public void init(){

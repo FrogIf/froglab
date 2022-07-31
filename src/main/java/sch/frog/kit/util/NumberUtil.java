@@ -1,6 +1,6 @@
 package sch.frog.kit.util;
 
-public class NumberUtils {
+public class NumberUtil {
 
     /**
      * judge string is integer

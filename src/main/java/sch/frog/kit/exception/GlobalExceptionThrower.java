@@ -48,6 +48,11 @@ public class GlobalExceptionThrower {
         }else{
             exceptionStage.requestFocus();
         }
+
+        exceptionStage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     public void throwExceptionLazy(Throwable t){

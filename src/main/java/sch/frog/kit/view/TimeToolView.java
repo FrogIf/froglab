@@ -2,7 +2,6 @@ package sch.frog.kit.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -13,20 +12,18 @@ import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.server.handle.annotation.RequestAction;
 import sch.frog.kit.server.handle.annotation.RequestParam;
-import sch.frog.kit.util.StringUtils;
+import sch.frog.kit.util.StringUtil;
 
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TimeToolView extends CustomViewControl implements Initializable {
+public class TimeToolView extends CustomViewControl {
 
     @FXML
     private TextField currentDate;
@@ -92,7 +89,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     public void convertToDate(){
         dateResult.setText(null);
         String unit = timestampUnit.getSelectionModel().getSelectedItem();
-        if(StringUtils.isBlank(unit)){
+        if(StringUtil.isBlank(unit)){
             LogKit.error("please select timestamp unit");
             return;
         }
@@ -120,7 +117,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     public void convertToTimestamp(){
         timestampResult.setText(null);
         String unit = outputUnit.getSelectionModel().getSelectedItem();
-        if(StringUtils.isBlank(unit)){
+        if(StringUtil.isBlank(unit)){
             LogKit.error("please select output unit");
             return;
         }
@@ -186,7 +183,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         offsetResult.setText(null);
         LocalDate date = datePickerStart.getValue();
         String offsetVal = dateOffsetValue.getText();
-        if(StringUtils.isBlank(offsetVal)){
+        if(StringUtil.isBlank(offsetVal)){
             return;
         }
         long offset = 0;
@@ -205,7 +202,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void init() {
         initTimer();
 
         SingleSelectionModel<String> outputUnitSelectionModel = outputUnit.getSelectionModel();
@@ -213,7 +210,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         outputUnitSelectionModel.selectedItemProperty().addListener((options, oldVal, newVal) -> {
             if(newVal == null){
                 timestampResult.setText(null);
-            }else if(!newVal.equals(oldVal) && StringUtils.isNotBlank(dateInput.getText())){
+            }else if(!newVal.equals(oldVal) && StringUtil.isNotBlank(dateInput.getText())){
                 convertToTimestamp();
             }
         });
@@ -223,7 +220,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
         timestampUnitSelectionModel.selectedItemProperty().addListener((options, oldVal, newVal) -> {
             if(newVal == null){
                 dateResult.setText(null);
-            }else if(!newVal.equals(oldVal) && StringUtils.isNotBlank(timestampInput.getText())){
+            }else if(!newVal.equals(oldVal) && StringUtil.isNotBlank(timestampInput.getText())){
                 convertToDate();
             }
         });
@@ -262,7 +259,7 @@ public class TimeToolView extends CustomViewControl implements Initializable {
 
             @Override
             public LocalDate fromString(String string) {
-                if(StringUtils.isNotBlank(string)){
+                if(StringUtil.isNotBlank(string)){
                     return LocalDate.parse(string, dateFormatter);
                 }else{
                     return null;

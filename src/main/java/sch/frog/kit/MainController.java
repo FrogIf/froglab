@@ -10,7 +10,7 @@ import javafx.scene.control.TextArea;
 import sch.frog.kit.common.BeanContainer;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
-import sch.frog.kit.util.StringUtils;
+import sch.frog.kit.util.StringUtil;
 
 import java.awt.*;
 import java.net.URL;
@@ -60,7 +60,8 @@ public class MainController implements Initializable {
     private static final int MAX_LOG_ROWS = 100;
 
     private void outputLog(String message){
-        if(StringUtils.isNotBlank(msgText.getText())){
+        if(StringUtil.isBlank(message)){ return; }
+        if(StringUtil.isNotBlank(msgText.getText())){
             msgText.appendText("\n");
         }
         msgText.appendText(message);

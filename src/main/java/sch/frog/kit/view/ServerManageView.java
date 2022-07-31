@@ -18,7 +18,7 @@ import sch.frog.kit.common.LogKit;
 import sch.frog.kit.server.HttpServer;
 import sch.frog.kit.server.handle.RequestActionBox;
 import sch.frog.kit.util.ClipboardUtil;
-import sch.frog.kit.util.StringUtils;
+import sch.frog.kit.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ServerManageView extends CustomViewControl {
     @FXML
     public void startServer(){
         String port = portText.getText();
-        if(StringUtils.isBlank(port)){
+        if(StringUtil.isBlank(port)){
             LogKit.error("port is required.");
             return;
         }
@@ -51,7 +51,7 @@ public class ServerManageView extends CustomViewControl {
         String path = pathText.getText();
         if(path == null){ path = "/"; }
         path = path.trim();
-        if(StringUtils.isBlank(path)){
+        if(StringUtil.isBlank(path)){
             path = "/";
         }
         pathText.setText(path);
