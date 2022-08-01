@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import java.lang.String?>
-<fx:root type="javafx.scene.layout.VBox"
+<fx:root type="sch.frog.kit.view.TimeToolView"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
     <HBox alignment="CENTER_LEFT" style="-fx-background-color:#dddddd;">

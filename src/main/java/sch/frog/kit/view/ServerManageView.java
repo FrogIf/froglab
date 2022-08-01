@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import sch.frog.kit.MainController;
 import sch.frog.kit.common.BeanContainer;
@@ -79,7 +80,7 @@ public class ServerManageView extends CustomViewControl {
 
 
     @FXML
-    private VBox requestUrl;
+    private FlowPane requestUrl;
 
     @Override
     public void init() {
@@ -98,7 +99,7 @@ public class ServerManageView extends CustomViewControl {
         ObservableList<Node> requestUrlBox = requestUrl.getChildren();
         for (RequestActionBox act : actions) {
             TitledPane pane = new TitledPane();
-            pane.setExpanded(false);
+//            pane.setExpanded(false);
             pane.setText(act.getDescription());
 
             VBox vBox = new VBox();

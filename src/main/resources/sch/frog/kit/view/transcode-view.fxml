@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.VBox?>
-<fx:root type="javafx.scene.layout.VBox"
+<fx:root type="sch.frog.kit.view.TranscodeView"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
 
