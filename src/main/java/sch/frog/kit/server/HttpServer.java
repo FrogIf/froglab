@@ -231,7 +231,7 @@ public class HttpServer {
         return this.contextPath;
     }
 
-    public Collection<RequestActionBox> getActions(){
+    public List<RequestActionBox> getActions(){
         return this.container.getActions();
     }
 }

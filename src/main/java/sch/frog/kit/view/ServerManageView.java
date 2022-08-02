@@ -87,7 +87,7 @@ public class ServerManageView extends CustomViewControl {
         List<CustomViewControl> views = BeanContainer.get(MainController.VIEWS_BEAN_NAME);
         httpServer.init(views);
 
-        Collection<RequestActionBox> actions = httpServer.getActions();
+        List<RequestActionBox> actions = httpServer.getActions();
         EventHandler<? super MouseEvent> eventHandler = event -> {
             String contextPath = httpServer.getContextPath();
             if(contextPath.endsWith("/")){

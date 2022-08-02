@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,8 @@ import java.util.Map;
 public class WebContainer {
 
     private final HashMap<String, RequestActionBox> requestMap = new HashMap<>();
+
+    private final ArrayList<RequestActionBox> requestActions = new ArrayList<>();
 
     private final HashMap<Class<?>, IRequestConverter> converterMap = new HashMap<>();
 
@@ -84,6 +86,7 @@ public class WebContainer {
                     path = "/" + path;
                 }
                 requestMap.put(path, action);
+                requestActions.add(action);
 
                 Parameter[] parameters = method.getParameters();
                 RequestActionBox.RequestParamInfo[] params = new RequestActionBox.RequestParamInfo[parameters.length];
@@ -221,8 +224,8 @@ public class WebContainer {
         }
     }
 
-    public Collection<RequestActionBox> getActions(){
-        return requestMap.values();
+    public List<RequestActionBox> getActions(){
+        return Collections.unmodifiableList(requestActions);
     }
 
     public interface IRequestConverter{
