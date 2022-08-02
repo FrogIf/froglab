@@ -368,7 +368,7 @@ public class TimeToolView extends CustomViewControl {
         }else {
             switch (unit){
                 case "day":
-                    // do nothings
+                    // do nothing
                     break;
                 case "week":
                     offset = offset * 7;
