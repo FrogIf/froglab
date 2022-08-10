@@ -16,10 +16,10 @@ import java.util.HashMap;
 
 public class TranscodeView extends CustomViewControl {
 
+    private HashMap<String, TranscodeSubView.ITransfer> transferMap;
+
     @FXML
     private TabPane containerPane;
-
-    private HashMap<String, TranscodeSubView.ITransfer> transferMap = new HashMap<>();
 
     @Override
     public void init() {
@@ -27,6 +27,7 @@ public class TranscodeView extends CustomViewControl {
     }
 
     public void initTab(){
+        this.transferMap = new HashMap<>();
         TranscodeSubView.ITransfer unicodeTransfer = new TranscodeSubView.ITransfer() {
             @Override
             public String encode(String content) throws Exception {
@@ -123,7 +124,7 @@ public class TranscodeView extends CustomViewControl {
         transferMap.put("hex", hexTransfer);
     }
 
-    public void addTab(String name, TranscodeSubView view){
+    private void addTab(String name, TranscodeSubView view){
         Tab tab = new Tab(name);
         tab.setClosable(false);
         tab.setContent(view);

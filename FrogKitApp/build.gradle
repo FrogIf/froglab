@@ -20,7 +20,7 @@ dependencies {
     implementation 'io.netty:netty-transport'
     implementation 'io.netty:netty-codec-http'
 
-    implementation 'com.alibaba.fastjson2:fastjson2:2.0.10'
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.11'
 }
 
 mainClassName = "sch.frog.kit/sch.frog.kit.FrogKitLauncher"

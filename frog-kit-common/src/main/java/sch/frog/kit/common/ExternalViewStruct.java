@@ -19,20 +19,4 @@ public abstract class ExternalViewStruct {
     public String getViewName() {
         return viewName;
     }
-
-    public void onInit(){
-        // do nothing
-    }
-
-    public void onClose(){
-        // do nothing
-    }
-
-    public void onHidden(){
-        // do nothing
-    }
-
-    public void onShow(){
-        // do nothing
-    }
 }

@@ -12,14 +12,13 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import sch.frog.kit.MainController;
-import sch.frog.kit.common.BeanContainer;
+import sch.frog.kit.ApplicationContext;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.common.util.StringUtil;
 import sch.frog.kit.server.HttpServer;
 import sch.frog.kit.server.handle.RequestActionBox;
 import sch.frog.kit.util.ClipboardUtil;
-import sch.frog.kit.common.util.StringUtil;
 
 import java.util.List;
 
@@ -32,6 +31,14 @@ public class ServerManageView extends CustomViewControl {
     private TextField portText;
 
     private final HttpServer httpServer = new HttpServer();
+
+    private final EventHandler<? super MouseEvent> eventHandler = event -> {
+        String contextPath = httpServer.getContextPath();
+        if(contextPath.endsWith("/")){
+            contextPath = contextPath.substring(0, contextPath.length() - 1);
+        }
+        ClipboardUtil.putToClipboard(contextPath + ((Hyperlink) event.getSource()).getText());
+    };
 
     @FXML
     public void startServer(){
@@ -77,28 +84,22 @@ public class ServerManageView extends CustomViewControl {
         httpServer.shutdown();
     }
 
-
     @FXML
     private FlowPane requestUrl;
 
     @Override
-    public void postInit() {
-        List<CustomViewControl> views = BeanContainer.get(MainController.VIEWS_BEAN_NAME);
+    public void afterLoad(ApplicationContext context) {
+        this.initHttpServer(context.getViews());
+    }
+
+    private void initHttpServer(List<CustomViewControl> views){
         httpServer.init(views);
 
         List<RequestActionBox> actions = httpServer.getActions();
-        EventHandler<? super MouseEvent> eventHandler = event -> {
-            String contextPath = httpServer.getContextPath();
-            if(contextPath.endsWith("/")){
-                contextPath = contextPath.substring(0, contextPath.length() - 1);
-            }
-            ClipboardUtil.putToClipboard(contextPath + ((Hyperlink) event.getSource()).getText());
-        };
 
         ObservableList<Node> requestUrlBox = requestUrl.getChildren();
         for (RequestActionBox act : actions) {
             TitledPane pane = new TitledPane();
-//            pane.setExpanded(false);
             pane.setText(act.getDescription());
 
             VBox vBox = new VBox();
@@ -119,6 +120,5 @@ public class ServerManageView extends CustomViewControl {
 
             requestUrlBox.add(pane);
         }
-
     }
 }

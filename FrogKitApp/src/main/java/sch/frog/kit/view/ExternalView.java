@@ -8,14 +8,21 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.ExternalViewStruct;
 import sch.frog.kit.common.FieldInfo;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.common.ValueObj;
 import sch.frog.kit.exception.GlobalExceptionThrower;
+import sch.frog.kit.view.util.DragResizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,21 +46,6 @@ public class ExternalView extends CustomViewControl {
 
     private final HashMap<String, TextArea> outputMap = new HashMap<>();
 
-    @Override
-    public void postInit() {
-        viewStruct.onInit();
-    }
-
-    @Override
-    public void onClose() {
-        viewStruct.onClose();
-    }
-
-    @Override
-    public void onHidden() {
-        viewStruct.onHidden();
-    }
-
     private void viewInit(){
         ObservableList<Node> container = formContainer.getChildren();
 
@@ -63,7 +55,7 @@ public class ExternalView extends CustomViewControl {
                 GlobalExceptionThrower.throwException(new IllegalArgumentException("duplicate field name : " + name));
             }
             container.add(new Label(name + " - " + fieldInfo.getDescription()));
-            TextArea textArea = new TextArea();
+            TextArea textArea = this.draggableTextarea();
             inputMap.put(name, textArea);
             container.add(textArea);
         }
@@ -109,15 +101,20 @@ public class ExternalView extends CustomViewControl {
                 GlobalExceptionThrower.throwException(new IllegalArgumentException("duplicate field name : " + name));
             }
             container.add(new Label(name + " - " + fieldInfo.getDescription()));
-            TextArea textArea = new TextArea();
+            TextArea textArea = this.draggableTextarea();
             textArea.setEditable(false);
             outputMap.put(name, textArea);
             container.add(textArea);
         }
     }
 
-    @Override
-    public void onShow() {
-        viewStruct.onShow();
+    private final static BorderWidths BORDER_DRAG = new BorderWidths(0, 0, 3, 0, false, false, false, false);
+
+    private TextArea draggableTextarea(){
+        TextArea textArea = new TextArea();
+        textArea.setPrefHeight(100);
+        textArea.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BORDER_DRAG)));
+        DragResizer.makeResizable(textArea);
+        return textArea;
     }
 }

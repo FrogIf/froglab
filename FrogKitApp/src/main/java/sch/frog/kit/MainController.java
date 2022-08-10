@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import sch.frog.kit.common.BeanContainer;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.ExternalViewStruct;
 import sch.frog.kit.common.LogKit;
@@ -24,8 +23,6 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
 
     private static MainController self;
-
-    public static final String VIEWS_BEAN_NAME = "views";
 
     @FXML
     private TextArea msgText;
@@ -48,12 +45,6 @@ public class MainController implements Initializable {
 
         addExternalView(new DemoExternalViewStruct());
 
-        for (CustomViewControl view : views) {
-            view.init();
-        }
-
-        BeanContainer.add(VIEWS_BEAN_NAME, views);
-
         this.mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             CustomViewControl oldView = (CustomViewControl) oldValue.getContent();
             CustomViewControl newView = (CustomViewControl) newValue.getContent();
@@ -61,8 +52,10 @@ public class MainController implements Initializable {
             newView.onShow();
         });
 
-        for (CustomViewControl view : views) {
-            view.postInit();
+        ApplicationContext context = new ApplicationContext();
+        context.addViews(this.views);
+        for (CustomViewControl view : this.views) {
+            view.afterLoad(context);
         }
     }
 

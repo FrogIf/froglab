@@ -1,13 +1,13 @@
 package sch.frog.kit.server.handle;
 
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.common.util.StringUtil;
 import sch.frog.kit.server.RequestBody;
 import sch.frog.kit.server.RequestJson;
 import sch.frog.kit.server.ResponseJson;
 import sch.frog.kit.server.exception.RequestParseException;
 import sch.frog.kit.server.handle.annotation.RequestAction;
 import sch.frog.kit.server.handle.annotation.RequestParam;
-import sch.frog.kit.common.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -176,7 +176,7 @@ public class WebContainer {
 
         Object instanceObj = requestActionBox.getInstanceObj();
         Method method = requestActionBox.getMethod();
-        Object result = null;
+        Object result;
         try {
             result = method.invoke(instanceObj, paramValueArray);
         } catch (InvocationTargetException e){

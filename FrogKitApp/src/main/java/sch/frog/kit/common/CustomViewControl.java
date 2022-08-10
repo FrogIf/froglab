@@ -1,11 +1,16 @@
 package sch.frog.kit.common;
 
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.layout.VBox;
+import sch.frog.kit.ApplicationContext;
+import sch.frog.kit.exception.GlobalExceptionThrower;
 import sch.frog.kit.server.handle.IWebView;
 import sch.frog.kit.util.FXMLUtil;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * custom control parent class, must observe rule:
@@ -13,7 +18,7 @@ import java.io.IOException;
  * 2. fxml file's root must be:
  *         <fx:root type="javafx.scene.layout.VBox"  ... ></fx:root>
  */
-public abstract class CustomViewControl extends VBox implements IWebView {
+public abstract class CustomViewControl extends VBox implements IWebView, Initializable {
 
     public CustomViewControl() {
         Class<? extends CustomViewControl> clazz = getClass();
@@ -23,16 +28,18 @@ public abstract class CustomViewControl extends VBox implements IWebView {
         try {
             loader.load();
         } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage());
+            GlobalExceptionThrower.throwExceptionLazy(e);
         }
     }
 
-    public void init(){
+    protected void init(){
         // do nothing
     }
 
-    // 初始化结束执行
-    public void postInit(){
+    /**
+     * 视图加载完毕后执行
+     */
+    public void afterLoad(ApplicationContext context){
         // do nothing
     }
 
@@ -48,4 +55,8 @@ public abstract class CustomViewControl extends VBox implements IWebView {
         // to nothing
     }
 
+    @Override
+    public final void initialize(URL location, ResourceBundle resources) {
+        this.init();
+    }
 }
