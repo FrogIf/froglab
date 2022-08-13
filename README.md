@@ -20,4 +20,4 @@ kit for work.
 
 ## Plan
 
-* ColorPicker
+* Base64图片展示
