@@ -5,8 +5,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -27,13 +29,27 @@ public class ColorView extends CustomViewControl {
     @FXML
     private VBox colorTable;
 
+    private ContextMenu contextMenu;
+
     @Override
     protected void init() {
+        contextMenu = buildContextMenu();
         addColorRow();
     }
 
     private void addColorRow(){
+        colorTable.getChildren().add(buildColorRow());
+    }
+
+    private HBox triggerBox;
+
+    private HBox buildColorRow(){
         HBox hbox = new HBox();
+        hbox.setOnContextMenuRequested(e -> {
+            triggerBox = hbox;
+            contextMenu.show(triggerBox, e.getScreenX(), e.getScreenY());
+        });
+
         hbox.setPadding(new Insets(2, 2, 2, 2));
         hbox.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BorderWidths.DEFAULT)));
         hbox.setAlignment(Pos.CENTER_RIGHT);
@@ -45,6 +61,7 @@ public class ColorView extends CustomViewControl {
         children.add(colorPicker);
 
         TextField textField = new TextField();
+        textField.setPromptText("#");
         textField.setPrefWidth(80);
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null){
@@ -59,24 +76,51 @@ public class ColorView extends CustomViewControl {
             }
         });
         children.add(textField);
+        return hbox;
+    }
 
-        Button removeBtn = new Button();
-        removeBtn.setText("-");
-        removeBtn.setOnAction(event -> {
-            ObservableList<Node> nodes = colorTable.getChildren();
-            nodes.removeAll(hbox);
+    private ContextMenu buildContextMenu(){
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem append = new MenuItem("Append");
+        append.setOnAction(event -> {
+            colorTable.getChildren().add(locateInsertPos() + 1, buildColorRow());
         });
-        children.add(removeBtn);
-        colorTable.getChildren().add(hbox);
+        MenuItem insert = new MenuItem("Insert");
+        insert.setOnAction(event -> {
+            colorTable.getChildren().add(locateInsertPos(), buildColorRow());
+        });
+        MenuItem remove = new MenuItem("Remove");
+        remove.setOnAction(event -> {
+            colorTable.getChildren().remove(locateInsertPos());
+        });
+        MenuItem clear = new MenuItem("Clear");
+        clear.setOnAction(event -> {
+            colorTable.getChildren().clear();
+        });
+        contextMenu.getItems().addAll(append, insert, remove, clear);
+        return contextMenu;
+    }
+
+    private int locateInsertPos(){
+        ObservableList<Node> children = colorTable.getChildren();
+        int i = 0;
+        for (Node child : children) {
+            if(child == this.triggerBox){
+                break;
+            }
+            i++;
+        }
+        return i;
     }
 
     @FXML
-    public void appendColorRow(){
-        addColorRow();
+    public void addRow(){
+        this.colorTable.getChildren().add(buildColorRow());
     }
 
     @FXML
-    public void removeAllRows(){
-        colorTable.getChildren().clear();
+    public void clear(){
+        this.colorTable.getChildren().clear();
     }
 }
