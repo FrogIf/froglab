@@ -11,13 +11,15 @@ import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.ExternalViewStruct;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.common.util.StringUtil;
-import sch.frog.kit.demo.DemoExternalViewStruct;
+import sch.frog.kit.exception.GlobalExceptionThrower;
+import sch.frog.kit.util.PluginUtil;
 import sch.frog.kit.view.ExternalView;
 
 import java.awt.*;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -43,7 +45,16 @@ public class MainController implements Initializable {
             views.add(view);
         }
 
-        addExternalView(new DemoExternalViewStruct());
+        List<ExternalViewStruct> externalViewStructs;
+        try {
+            externalViewStructs = PluginUtil.loadExternalViewStruct();
+        } catch (Exception e) {
+            GlobalExceptionThrower.throwException(e);
+            return;
+        }
+        for (ExternalViewStruct externalViewStruct : externalViewStructs) {
+            addExternalView(externalViewStruct);
+        }
 
         this.mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             CustomViewControl oldView = (CustomViewControl) oldValue.getContent();

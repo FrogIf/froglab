@@ -2,21 +2,17 @@ package sch.frog.kit.common;
 
 import java.util.List;
 
-public abstract class ExternalViewStruct {
+public interface ExternalViewStruct {
 
-    private final String viewName;
+    String EXECUTE_FUNCTION_NAME = "execute";
 
-    public ExternalViewStruct(String viewName) {
-        this.viewName = viewName;
-    }
+    String getDescription();
 
-    public abstract List<FieldInfo> getInputField();
+    List<FieldInfo> getInputField();
 
-    public abstract List<FieldInfo> getOutputFiled();
+    List<FieldInfo> getOutputFiled();
 
-    public abstract List<ValueObj> execute(List<ValueObj> params);
+    StringMap execute(StringMap params);
 
-    public String getViewName() {
-        return viewName;
-    }
+    String getViewName();
 }

@@ -14,12 +14,19 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import sch.frog.kit.ApplicationContext;
 import sch.frog.kit.common.CustomViewControl;
+import sch.frog.kit.common.ExternalViewStruct;
+import sch.frog.kit.common.FieldInfo;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.common.StringMap;
 import sch.frog.kit.common.util.StringUtil;
+import sch.frog.kit.exception.GlobalExceptionThrower;
 import sch.frog.kit.server.HttpServer;
 import sch.frog.kit.server.handle.RequestActionBox;
+import sch.frog.kit.server.handle.RequestParamInfo;
+import sch.frog.kit.server.handle.WebContainer;
 import sch.frog.kit.util.ClipboardUtil;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class ServerManageView extends CustomViewControl {
@@ -85,19 +92,78 @@ public class ServerManageView extends CustomViewControl {
     }
 
     @FXML
-    private FlowPane requestUrl;
+    private FlowPane requestUrlPane;
 
     @Override
     public void afterLoad(ApplicationContext context) {
-        this.initHttpServer(context.getViews());
+        try {
+            this.initHttpServer(context.getViews());
+        }catch (Exception e){
+            GlobalExceptionThrower.throwException(e);
+        }
     }
 
-    private void initHttpServer(List<CustomViewControl> views){
+    private void initHttpServer(List<CustomViewControl> views) throws Exception {
         httpServer.init(views);
+        this.showActions();
+        this.appendExternalActions(views);
+    }
 
+    private void appendExternalActions(List<CustomViewControl> views) throws NoSuchMethodException {
+        ObservableList<Node> requestUrlBox = requestUrlPane.getChildren();
+        Method method = ExternalViewStruct.class.getMethod(ExternalViewStruct.EXECUTE_FUNCTION_NAME, StringMap.class);
+        for (CustomViewControl view : views) {
+            if(view instanceof ExternalView){
+                ExternalViewStruct viewStruct = ((ExternalView) view).getViewStruct();
+                RequestParamInfo[] params = new RequestParamInfo[]{
+                        RequestParamInfo.Builder.newBuilder()
+                                .setName(WebContainer.BODY_MARK)
+                                .setDescription("external request body")
+                                .setRequired(true)
+                                .setType(StringMap.class)
+                                .build()
+                };
+                String path = "/external/" + viewStruct.getViewName();
+                RequestActionBox actionBox = RequestActionBox.Builder.newBuilder()
+                        .setInstanceObj(viewStruct)
+                        .setDescription(viewStruct.getDescription())
+                        .setMethod(method)
+                        .setPath(path)
+                        .setParams(params)
+                        .build();
+                httpServer.addRequestAction(actionBox);
+
+                // 将请求参数追加到窗体中
+                TitledPane pane = new TitledPane();
+                pane.setText(viewStruct.getDescription());
+
+                VBox vBox = new VBox();
+                pane.setContent(vBox);
+
+                vBox.setAlignment(Pos.CENTER_LEFT);
+                ObservableList<Node> children = vBox.getChildren();
+
+                Hyperlink hyperlink = new Hyperlink();
+                hyperlink.setText(path);
+                hyperlink.setOnMouseClicked(eventHandler);
+                children.add(hyperlink);
+
+                List<FieldInfo> inputField = viewStruct.getInputField();
+                if(inputField != null){
+                    for (FieldInfo fieldInfo : inputField) {
+                        children.add(new Label(fieldInfo.getName() + "(String) -- " + fieldInfo.getDescription()));
+                    }
+                }
+
+                requestUrlBox.add(pane);
+            }
+        }
+    }
+
+    private void showActions(){
         List<RequestActionBox> actions = httpServer.getActions();
 
-        ObservableList<Node> requestUrlBox = requestUrl.getChildren();
+        ObservableList<Node> requestUrlBox = requestUrlPane.getChildren();
         for (RequestActionBox act : actions) {
             TitledPane pane = new TitledPane();
             pane.setText(act.getDescription());
@@ -113,8 +179,8 @@ public class ServerManageView extends CustomViewControl {
             hyperlink.setOnMouseClicked(eventHandler);
             children.add(hyperlink);
 
-            RequestActionBox.RequestParamInfo[] params = act.getParams();
-            for (RequestActionBox.RequestParamInfo param : params) {
+            RequestParamInfo[] params = act.getParams();
+            for (RequestParamInfo param : params) {
                 children.add(new Label(param.getName() + "(" + param.getType().getSimpleName() + ") -- " + param.getDescription()));
             }
 

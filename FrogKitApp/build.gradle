@@ -11,7 +11,6 @@ javafx {
 
 dependencies {
     implementation project(":frog-kit-common")
-    implementation project(":demo-external-view")
 
     implementation platform('io.netty:netty-bom:4.1.79.Final')
     implementation 'io.netty:netty-buffer'

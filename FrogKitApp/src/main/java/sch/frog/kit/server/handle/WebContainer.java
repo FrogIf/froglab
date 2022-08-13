@@ -13,12 +13,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class WebContainer {
+
+    public static final String BODY_MARK = "..";
 
     private final HashMap<String, RequestActionBox> requestMap = new HashMap<>();
 
@@ -67,6 +68,13 @@ public class WebContainer {
         }
     }
 
+    private String pathFix(String path){
+        if(!path.startsWith("/")){
+            path = "/" + path;
+        }
+        return path;
+    }
+
     private void readViewInfo(IWebView view){
         Class<? extends IWebView> clazz = view.getClass();
         Method[] methods = clazz.getMethods();
@@ -82,14 +90,11 @@ public class WebContainer {
                 if(requestMap.get(path) != null){
                     throw new IllegalStateException("path duplicate definition for path : " + path);
                 }
-                if(!path.startsWith("/")){
-                    path = "/" + path;
-                }
-                requestMap.put(path, action);
+                requestMap.put(pathFix(path), action);
                 requestActions.add(action);
 
                 Parameter[] parameters = method.getParameters();
-                RequestActionBox.RequestParamInfo[] params = new RequestActionBox.RequestParamInfo[parameters.length];
+                RequestParamInfo[] params = new RequestParamInfo[parameters.length];
                 action.setParams(params);
                 int i = 0;
                 for (Parameter p : parameters) {
@@ -97,7 +102,7 @@ public class WebContainer {
                     if(param == null){
                         throw new IllegalStateException("request param undefined, path : " + path + ", param : " + p.getName());
                     }else{
-                        RequestActionBox.RequestParamInfo paramInfo = new RequestActionBox.RequestParamInfo();
+                        RequestParamInfo paramInfo = new RequestParamInfo();
                         String name = param.name();
                         if(StringUtil.isBlank(name)){
                             name = p.getName();
@@ -120,54 +125,48 @@ public class WebContainer {
             return ResponseJson.NOT_FOUND;
         }
 
-        RequestActionBox.RequestParamInfo[] params = requestActionBox.getParams();
+        RequestParamInfo[] params = requestActionBox.getParams();
         Object[] paramValueArray = new Object[params.length];
         int i = 0;
-        for (RequestActionBox.RequestParamInfo info : params) {
+        for (RequestParamInfo info : params) {
             String name = info.getName();
-            List<String> namePath = parseParamNamePath(name);
-            RequestBody body = json;
             Object val = null;
-            int m = namePath.size() - 1;
-            for (String n : namePath) {
-                if(m == 0){
-                    String valStr = body.getStringValue(n);
-                    Class<?> type = info.getType();
-                    if(valStr == null){
-                        if(info.isRequired()){
-                            return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, name + " is required");
-                        }else{
-                            if(type.isPrimitive()){
-                                val = getBasicTypeDefaultValue(type);
+            if(BODY_MARK.equals(name)){
+                val = convert(info.getType(), json.toString());
+            }else{
+                List<String> namePath = parseParamNamePath(name);
+                RequestBody body = json;
+                int m = namePath.size() - 1;
+                for (String key : namePath) {
+                    if(m == 0){ // 到达最末一级
+                        String valStr = body.getStringValue(key);
+                        Class<?> type = info.getType();
+                        if(valStr == null){
+                            if(info.isRequired()){
+                                return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, name + " is required");
+                            }else{
+                                if(type.isPrimitive()){
+                                    val = getBasicTypeDefaultValue(type);
+                                }
+                            }
+                        }else {
+                            val = convert(type, valStr);
+                        }
+                    }else{
+                        body = body.get(key);
+                        if(body == null){
+                            if(info.isRequired()){
+                                return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, name + " is required");
+                            }else{
+                                Class<?> type = info.getType();
+                                if(type.isPrimitive()){
+                                    val = getBasicTypeDefaultValue(type);
+                                }
+                                break;
                             }
                         }
-                    }else {
-                        try{
-                            IRequestConverter converter = converterMap.get(type);
-                            if(converter == null){
-                                LogKit.error("can't convert value to " + type.getName());
-                                return ResponseJson.ERROR;
-                            }
-                            val = converter.parse(valStr);
-                        }catch (Exception e){
-                            LogKit.error(e.getMessage());
-                            return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, e.getMessage());
-                        }
+                        m--;
                     }
-                }else{
-                    body = body.get(n);
-                    if(body == null){
-                        if(info.isRequired()){
-                            return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, name + " is required");
-                        }else{
-                            Class<?> type = info.getType();
-                            if(type.isPrimitive()){
-                                val = getBasicTypeDefaultValue(type);
-                            }
-                            break;
-                        }
-                    }
-                    m--;
                 }
             }
             paramValueArray[i] = val;
@@ -198,6 +197,20 @@ public class WebContainer {
         return responseJson;
     }
 
+    private Object convert(Class<?> type, String valStr){
+        try{
+            IRequestConverter converter = converterMap.get(type);
+            if(converter == null){
+                LogKit.error("can't convert value to " + type.getName());
+                return ResponseJson.ERROR;
+            }
+            return converter.parse(valStr);
+        }catch (Exception e){
+            LogKit.error(e.getMessage());
+            return new ResponseJson(ResponseJson.CODE_BAD_REQUEST, e.getMessage());
+        }
+    }
+
     private List<String> parseParamNamePath(String name){
         StringBuilder sb = new StringBuilder();
         ArrayList<String> path = new ArrayList<>();
@@ -225,7 +238,12 @@ public class WebContainer {
     }
 
     public List<RequestActionBox> getActions(){
-        return Collections.unmodifiableList(requestActions);
+        return requestActions;
+    }
+
+    public void addAction(RequestActionBox actionBox){
+        requestMap.put(pathFix(actionBox.getPath()), actionBox);
+        this.requestActions.add(actionBox);
     }
 
     public interface IRequestConverter{

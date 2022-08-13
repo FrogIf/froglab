@@ -1,5 +1,7 @@
 package sch.frog.kit.server;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -26,10 +28,11 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.common.StringMap;
+import sch.frog.kit.common.util.StringUtil;
 import sch.frog.kit.server.handle.IWebView;
 import sch.frog.kit.server.handle.RequestActionBox;
 import sch.frog.kit.server.handle.WebContainer;
-import sch.frog.kit.common.util.StringUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +44,8 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class HttpServer {
 
@@ -62,6 +67,16 @@ public class HttpServer {
                 }catch (DateTimeParseException e){
                     return LocalDate.parse(request, timeFormatter);
                 }
+            });
+            converterMap.put(StringMap.class, request -> {
+                JSONObject jsonObject = JSON.parseObject(request);
+                Set<Map.Entry<String, Object>> entries = jsonObject.entrySet();
+                StringMap map = new StringMap();
+                for (Map.Entry<String, Object> entry : entries) {
+                    Object val = entry.getValue();
+                    map.put(entry.getKey(), val == null ? null : val.toString());
+                }
+                return map;
             });
             this.container = new WebContainer(converterMap, views);
         }
@@ -179,6 +194,10 @@ public class HttpServer {
     }
 
     public static final int MAX_CONTENT_LENGTH = 5 * 1024 * 1024;
+
+    public void addRequestAction(RequestActionBox actionBox) {
+        this.container.addAction(actionBox);
+    }
 
     private class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 

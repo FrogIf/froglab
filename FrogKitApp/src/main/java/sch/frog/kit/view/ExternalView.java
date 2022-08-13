@@ -20,13 +20,11 @@ import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.ExternalViewStruct;
 import sch.frog.kit.common.FieldInfo;
 import sch.frog.kit.common.LogKit;
-import sch.frog.kit.common.ValueObj;
+import sch.frog.kit.common.StringMap;
 import sch.frog.kit.exception.GlobalExceptionThrower;
 import sch.frog.kit.view.util.DragResizer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,21 +68,21 @@ public class ExternalView extends CustomViewControl {
         executeBox.getChildren().add(execBtn);
         execBtn.setOnAction(event -> {
             Set<Map.Entry<String, TextArea>> entries = inputMap.entrySet();
-            ArrayList<ValueObj> values = new ArrayList<>();
+            StringMap params = new StringMap();
             for (Map.Entry<String, TextArea> entry : entries) {
-                values.add(new ValueObj(entry.getKey(), entry.getValue().getText()));
+                params.put(entry.getKey(), entry.getValue().getText());
             }
             for (TextArea textArea : outputMap.values()) {
                 textArea.setText(null);
             }
             try{
-                List<ValueObj> resultList = viewStruct.execute(values);
-                if(resultList != null){
-                    for (ValueObj valueObj : resultList) {
-                        String name = valueObj.getName();
+                StringMap result = viewStruct.execute(params);
+                if(result != null){
+                    for (Map.Entry<String, String> entry : result.entrySet()) {
+                        String name = entry.getKey();
                         TextArea textArea = outputMap.get(name);
                         if(textArea != null){
-                            textArea.setText(valueObj.getValue());
+                            textArea.setText(entry.getValue());
                         }else{
                             LogKit.error("failed to output : " + name);
                         }
@@ -116,5 +114,9 @@ public class ExternalView extends CustomViewControl {
         textArea.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BORDER_DRAG)));
         DragResizer.makeResizable(textArea);
         return textArea;
+    }
+
+    public ExternalViewStruct getViewStruct(){
+        return this.viewStruct;
     }
 }

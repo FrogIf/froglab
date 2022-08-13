@@ -53,7 +53,7 @@
             <padding>
                 <Insets left="20" right="20" bottom="20" top="10" />
             </padding>
-            <FlowPane fx:id="requestUrl" hgap="10" vgap="10">
+            <FlowPane fx:id="requestUrlPane" hgap="10" vgap="10">
             </FlowPane>
         </ScrollPane>
     </HBox>

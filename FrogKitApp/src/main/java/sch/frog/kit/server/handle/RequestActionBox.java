@@ -54,43 +54,76 @@ public class RequestActionBox {
         this.description = description;
     }
 
-    public static class RequestParamInfo{
-        private boolean isRequired;
-        private Class<?> type;
-        private String name;
+    public static class Builder{
+        private Object instanceObj;
+
+        private String path;
+
+        private Method method;
+
         private String description;
 
-        public boolean isRequired() {
-            return isRequired;
+        private RequestParamInfo[] params;
+
+        public static Builder newBuilder(){
+            return new Builder();
         }
 
-        void setRequired(boolean required) {
-            isRequired = required;
+        public Object getInstanceObj() {
+            return instanceObj;
         }
 
-        public Class<?> getType() {
-            return type;
+        public Builder setInstanceObj(Object instanceObj) {
+            this.instanceObj = instanceObj;
+            return this;
         }
 
-        void setType(Class<?> type) {
-            this.type = type;
+        public String getPath() {
+            return path;
         }
 
-        public String getName() {
-            return name;
+        public Builder setPath(String path) {
+            this.path = path;
+            return this;
         }
 
-        void setName(String name) {
-            this.name = name;
+        public Method getMethod() {
+            return method;
+        }
+
+        public Builder setMethod(Method method) {
+            this.method = method;
+            return this;
         }
 
         public String getDescription() {
             return description;
         }
 
-        void setDescription(String description) {
+        public Builder setDescription(String description) {
             this.description = description;
+            return this;
         }
+
+        public RequestParamInfo[] getParams() {
+            return params;
+        }
+
+        public Builder setParams(RequestParamInfo[] params) {
+            this.params = params;
+            return this;
+        }
+
+        public RequestActionBox build(){
+            RequestActionBox box = new RequestActionBox();
+            box.setDescription(description);
+            box.setInstanceObj(instanceObj);
+            box.setMethod(method);
+            box.setPath(path);
+            box.setParams(params);
+            return box;
+        }
+
     }
 
 }
