@@ -7,14 +7,15 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import sch.frog.kit.view.Base64ImageView?>
+<?import sch.frog.kit.view.ColorView?>
 <?import sch.frog.kit.view.ServerManageView?>
 <?import sch.frog.kit.view.TimeToolView?>
 <?import sch.frog.kit.view.TranscodeView?>
-<?import sch.frog.kit.view.ColorView?>
 <VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sch.frog.kit.MainController">
     <SplitPane orientation="VERTICAL" dividerPositions="500" VBox.vgrow="ALWAYS">
         <items>
-            <TabPane fx:id="mainTabPane" VBox.vgrow="ALWAYS">
+            <TabPane fx:id="mainTabPane" VBox.vgrow="ALWAYS" tabMinWidth="60">
                 <Tab text="time" closable="false">
                     <TimeToolView />
                 </Tab>
@@ -23,6 +24,9 @@
                 </Tab>
                 <Tab text="color" closable="false">
                     <ColorView />
+                </Tab>
+                <Tab text="base64 image" closable="false">
+                    <Base64ImageView />
                 </Tab>
                 <Tab text="server" closable="false">
                     <ServerManageView />

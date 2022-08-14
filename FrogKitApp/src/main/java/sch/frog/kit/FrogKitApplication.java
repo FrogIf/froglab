@@ -9,8 +9,14 @@ import sch.frog.kit.exception.GlobalExceptionThrower;
 
 public class FrogKitApplication extends Application {
 
+    public static FrogKitApplication self;
+
+    private Stage stage;
+
     @Override
     public void start(Stage stage) {
+        self = this;
+        this.stage = stage;
         exceptionHandle();
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("main-view.fxml"));
@@ -33,4 +39,7 @@ public class FrogKitApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> GlobalExceptionThrower.throwException(e));
     }
 
+    public Stage getPrimaryStage(){
+        return this.stage;
+    }
 }
