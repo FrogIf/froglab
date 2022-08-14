@@ -32,9 +32,9 @@
                     <ServerManageView />
                 </Tab>
             </TabPane>
-            <HBox prefHeight="25" minHeight="25">
-                <TextArea fx:id="msgText" HBox.hgrow="ALWAYS" style="-fx-control-inner-background:#727272;" editable="false"/>
-                <Button text="C" onAction="#clearLog" />
+            <HBox minHeight="40">
+                <TextArea fx:id="msgText" prefRowCount="2" HBox.hgrow="ALWAYS" style="-fx-control-inner-background:#727272;" editable="false"/>
+                <Button text="C" onAction="#clearLog" prefHeight="20" />
             </HBox>
         </items>
     </SplitPane>
