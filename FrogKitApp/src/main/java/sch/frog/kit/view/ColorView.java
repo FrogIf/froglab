@@ -7,7 +7,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
@@ -58,6 +57,7 @@ public class ColorView extends CustomViewControl {
         colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             hbox.setBackground(new Background(new BackgroundFill(newValue, new CornerRadii(2), new Insets(2, 2, 2, 2))));
         });
+        hbox.setBackground(new Background(new BackgroundFill(colorPicker.getValue(), new CornerRadii(2), new Insets(2, 2, 2, 2))));
         children.add(colorPicker);
 
         TextField textField = new TextField();
