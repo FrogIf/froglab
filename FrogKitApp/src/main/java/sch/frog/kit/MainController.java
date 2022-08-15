@@ -37,6 +37,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         LogKit.init(new GlobalLogPrinter());
+        MainControllerOperator.init(this);
         MainController.self = this;
 
         ObservableList<Tab> tabs = this.mainTabPane.getTabs();
@@ -71,12 +72,7 @@ public class MainController implements Initializable {
     }
 
     private void addExternalView(ExternalViewStruct struct){
-        Tab tab = new Tab();
-        tab.setClosable(false);
         ExternalView externalView = new ExternalView(struct);
-        tab.setContent(new ExternalView(struct));
-        tab.setText(struct.getViewName());
-        this.mainTabPane.getTabs().add(tab);
         this.views.add(externalView);
     }
 
@@ -151,5 +147,26 @@ public class MainController implements Initializable {
         public void error(String msg) {
             MainController.error(msg);
         }
+    }
+
+    void addView(CustomViewControl view, String title, boolean closable){
+        if(StringUtil.isBlank(title)){
+            LogKit.error("view title must be not null");
+            return;
+        }
+        title = title.trim();
+        ObservableList<Tab> tabs = this.mainTabPane.getTabs();
+        for (Tab tab : tabs) {
+            if(title.equals(tab.getText())){
+                this.mainTabPane.getSelectionModel().select(tab);
+                return;
+            }
+        }
+        Tab tab = new Tab();
+        tab.setClosable(closable);
+        tab.setContent(view);
+        tab.setText(title);
+        tabs.add(tab);
+        this.mainTabPane.getSelectionModel().select(tab);
     }
 }

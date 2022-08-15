@@ -114,12 +114,7 @@ public class ExternalView extends CustomViewControl {
         HBox.setMargin(clear, new Insets(0, 0, 0, 10));
         executeBox.getChildren().add(clear);
         clear.setOnAction(e -> {
-            for (TextArea value : inputMap.values()) {
-                value.setText(null);
-            }
-            for (TextArea value : outputMap.values()) {
-                value.setText(null);
-            }
+            clearContent();
         });
 
         for (FieldInfo fieldInfo : viewStruct.getOutputFiled()) {
@@ -144,6 +139,15 @@ public class ExternalView extends CustomViewControl {
             textArea.setEditable(false);
             outputMap.put(name, textArea);
             container.add(textArea);
+        }
+    }
+
+    private void clearContent(){
+        for (TextArea value : inputMap.values()) {
+            value.setText(null);
+        }
+        for (TextArea value : outputMap.values()) {
+            value.setText(null);
         }
     }
 
