@@ -2,3 +2,5 @@ rootProject.name = 'FrogKit'
 include 'FrogKitApp'
 include 'frog-kit-common'
 include 'demo-external-view'
+include 'general-plugins'
+
