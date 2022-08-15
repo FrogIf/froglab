@@ -72,6 +72,7 @@ public class MainController implements Initializable {
 
     private void addExternalView(ExternalViewStruct struct){
         Tab tab = new Tab();
+        tab.setClosable(false);
         ExternalView externalView = new ExternalView(struct);
         tab.setContent(new ExternalView(struct));
         tab.setText(struct.getViewName());
