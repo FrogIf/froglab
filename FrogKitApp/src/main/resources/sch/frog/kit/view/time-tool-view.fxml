@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import sch.frog.kit.view.TimeToolView?>
 <?import java.lang.String?>
 <fx:root type="sch.frog.kit.view.TimeToolView"
          xmlns="http://javafx.com/javafx"
@@ -35,7 +36,7 @@
             </HBox.margin>
         </Label>
 
-        <Button fx:id="timeCtlBtn" text="pause" minWidth="50" onAction="#startOrStopTimer"/>
+        <Button fx:id="timeCtlBtn" text="start" minWidth="50" onAction="#startOrStopTimer"/>
     </HBox>
 
     <VBox style="-fx-border-radius:3;-fx-background-color:#dddddd;">
