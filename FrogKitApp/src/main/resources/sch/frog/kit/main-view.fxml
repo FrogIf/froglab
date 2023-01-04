@@ -13,6 +13,7 @@
 <?import sch.frog.kit.view.TimeToolView?>
 <?import sch.frog.kit.view.TranscodeView?>
 <?import sch.frog.kit.view.PluginsView?>
+<?import sch.frog.kit.view.Md5View?>
 <VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sch.frog.kit.MainController">
     <SplitPane orientation="VERTICAL" dividerPositions="500" VBox.vgrow="ALWAYS">
         <items>
@@ -28,6 +29,9 @@
                 </Tab>
                 <Tab text="base64 image" closable="false">
                     <Base64ImageView />
+                </Tab>
+                <Tab text="md5" closable="false">
+                    <Md5View />
                 </Tab>
                 <Tab text="server" closable="false">
                     <ServerManageView />
