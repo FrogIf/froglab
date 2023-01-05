@@ -10,9 +10,9 @@ import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.common.util.StringUtil;
 import sch.frog.kit.server.handle.annotation.RequestAction;
 import sch.frog.kit.server.handle.annotation.RequestParam;
-import sch.frog.kit.common.util.StringUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,7 +98,7 @@ public class TimeToolView extends CustomViewControl {
             final long timestamp = Long.parseLong(text);
             String date = timestampToDate(timestamp, unit);
             dateResult.setText(date);
-            LogKit.info(timestamp + unit + " -> " + date);
+            LogKit.info(timestamp + " " + unit + " -> " + date);
         }catch (NumberFormatException e){
             LogKit.error("timestamp input is not a number");
         }
@@ -124,7 +124,7 @@ public class TimeToolView extends CustomViewControl {
         try {
             String dateInputText = dateInput.getText();
             long timestamp = dateToTimestamp(dateInputText, unit);
-            LogKit.info(dateInputText + " -> " + timestamp + unit);
+            LogKit.info(dateInputText + " -> " + timestamp + " " + unit);
             timestampResult.setText(String.valueOf(timestamp));
         } catch (IllegalArgumentException e) {
             LogKit.error(e.getMessage());
@@ -155,7 +155,7 @@ public class TimeToolView extends CustomViewControl {
         if(date1 != null && date2 != null){
             String unit = subResultUnit.getSelectionModel().getSelectedItem();
             long sub = dateInterval(date1, date2, unit);
-            LogKit.info(date2 + " - " + date1 + " = " + sub + unit);
+            LogKit.info(date2 + " - " + date1 + " = " + sub + " " + unit);
             dateSubDateResult.setText(String.valueOf(sub));
         }
     }
@@ -196,15 +196,13 @@ public class TimeToolView extends CustomViewControl {
         if(date != null){
             String unit = offsetUnit.getSelectionModel().getSelectedItem();
             String result = dateOffset(date, offset, unit);
-            LogKit.info(date + " + " + offsetVal + unit + " = " + result);
+            LogKit.info(date + " + " + offsetVal + " " + unit + " = " + result);
             offsetResult.setText(result);
         }
     }
 
     @Override
     public void init() {
-        initTimer();
-
         SingleSelectionModel<String> outputUnitSelectionModel = outputUnit.getSelectionModel();
         outputUnitSelectionModel.select(0);
         outputUnitSelectionModel.selectedItemProperty().addListener((options, oldVal, newVal) -> {
@@ -280,11 +278,6 @@ public class TimeToolView extends CustomViewControl {
     @Override
     public void onHidden() {
         this.stopTimer();
-    }
-
-    @Override
-    public void onShow() {
-        this.startTimer();
     }
 
     @RequestAction(path = "/time/timestampToDate", description = "timestamp convert to date")

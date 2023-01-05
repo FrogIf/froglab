@@ -8,24 +8,19 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.ExternalViewStruct;
 import sch.frog.kit.common.FieldInfo;
 import sch.frog.kit.common.LogKit;
 import sch.frog.kit.common.StringMap;
 import sch.frog.kit.exception.GlobalExceptionThrower;
-import sch.frog.kit.view.util.DragResizer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +31,9 @@ public class ExternalView extends CustomViewControl {
     @FXML
     private VBox formContainer;
 
+    @FXML
+    private ScrollPane scrollPane;
+
     private final ExternalViewStruct viewStruct;
 
     public ExternalView(ExternalViewStruct viewStruct) {
@@ -43,9 +41,9 @@ public class ExternalView extends CustomViewControl {
         viewInit();
     }
 
-    private final HashMap<String, TextArea> inputMap = new HashMap<>();
+    private final HashMap<String, CustomTextArea> inputMap = new HashMap<>();
 
-    private final HashMap<String, TextArea> outputMap = new HashMap<>();
+    private final HashMap<String, CustomTextArea> outputMap = new HashMap<>();
 
     private void viewInit(){
         ObservableList<Node> container = formContainer.getChildren();
@@ -64,7 +62,7 @@ public class ExternalView extends CustomViewControl {
             row.getChildren().add(pane);
             CheckBox cb = new CheckBox("word wrap");
             cb.setSelected(true);
-            TextArea textArea = this.draggableTextarea();
+            CustomTextArea textArea = this.buildTextarea();
             textArea.setWrapText(true);
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 textArea.setWrapText(newValue);
@@ -84,9 +82,9 @@ public class ExternalView extends CustomViewControl {
         execBtn.setText("execute");
         executeBox.getChildren().add(execBtn);
         execBtn.setOnAction(event -> {
-            Set<Map.Entry<String, TextArea>> entries = inputMap.entrySet();
+            Set<Map.Entry<String, CustomTextArea>> entries = inputMap.entrySet();
             StringMap params = new StringMap();
-            for (Map.Entry<String, TextArea> entry : entries) {
+            for (Map.Entry<String, CustomTextArea> entry : entries) {
                 params.put(entry.getKey(), entry.getValue().getText());
             }
             for (TextArea textArea : outputMap.values()) {
@@ -130,7 +128,7 @@ public class ExternalView extends CustomViewControl {
             row.getChildren().add(pane);
             CheckBox cb = new CheckBox("word wrap");
             cb.setSelected(true);
-            TextArea textArea = this.draggableTextarea();
+            CustomTextArea textArea = this.buildTextarea();
             textArea.setWrapText(true);
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 textArea.setWrapText(newValue);
@@ -151,17 +149,49 @@ public class ExternalView extends CustomViewControl {
         }
     }
 
-    private final static BorderWidths BORDER_DRAG = new BorderWidths(0, 0, 3, 0, false, false, false, false);
+//    private final static BorderWidths BORDER_DRAG = new BorderWidths(0, 0, 3, 0, false, false, false, false);
 
-    private TextArea draggableTextarea(){
-        TextArea textArea = new TextArea();
+    private CustomTextArea buildTextarea(){
+        CustomTextArea textArea = new CustomTextArea();
         textArea.setPrefHeight(100);
-        textArea.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BORDER_DRAG)));
-        DragResizer.makeResizable(textArea);
+//        textArea.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BORDER_DRAG)));
+//        DragResizer.makeResizable(textArea);
+        textArea.init();
         return textArea;
     }
 
     public ExternalViewStruct getViewStruct(){
         return this.viewStruct;
+    }
+
+    private static class CustomTextArea extends TextArea {
+
+        private final Text textHolder = new Text();
+
+        private double oldHeight = 0;
+
+        private void init(){
+            textHolder.textProperty().bind(this.textProperty());
+            textHolder.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldHeight != newValue.getHeight()) {
+                    oldHeight = newValue.getHeight();
+                    double height = textHolder.getLayoutBounds().getHeight() + 20;
+                    if(height < 100){ height = 100; }
+                    if(height > 2000){ return; }
+                    this.setPrefHeight(height); // +20 is for paddings
+                }
+            });
+            this.textProperty().addListener((observable, oldValue, newValue) -> {
+                textHolder.setWrappingWidth(this.getWidth() - 10);
+            });
+            this.wrapTextProperty().addListener((observable, oldValue, newValue) -> {
+                if(newValue){
+                    textHolder.setWrappingWidth(this.getWidth() - 10);
+                }else{
+                    textHolder.setWrappingWidth(Integer.MAX_VALUE);
+                }
+            });
+        }
+
     }
 }

@@ -22,13 +22,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import sch.frog.kit.common.CustomViewControl;
 import sch.frog.kit.common.LogKit;
+import sch.frog.kit.util.ClipboardUtil;
 
 public class ColorView extends CustomViewControl {
+
+    public static final BorderWidths BOLD = new BorderWidths(2, 2, 2, 2, false, false, false, false);
 
     @FXML
     private VBox colorTable;
 
     private ContextMenu contextMenu;
+
+    private ColorRow selectRow;
 
     @Override
     protected void init() {
@@ -40,43 +45,22 @@ public class ColorView extends CustomViewControl {
         colorTable.getChildren().add(buildColorRow());
     }
 
-    private HBox triggerBox;
+    private ColorRow buildColorRow(){
+        ColorRow row = new ColorRow();
 
-    private HBox buildColorRow(){
-        HBox hbox = new HBox();
-        hbox.setOnContextMenuRequested(e -> {
-            triggerBox = hbox;
-            contextMenu.show(triggerBox, e.getScreenX(), e.getScreenY());
+        row.setOnContextMenuRequested(e -> {
+            contextMenu.show(selectRow, e.getScreenX(), e.getScreenY());
         });
 
-        hbox.setPadding(new Insets(2, 2, 2, 2));
-        hbox.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BorderWidths.DEFAULT)));
-        hbox.setAlignment(Pos.CENTER_RIGHT);
-        ObservableList<Node> children = hbox.getChildren();
-        ColorPicker colorPicker = new ColorPicker();
-        colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            hbox.setBackground(new Background(new BackgroundFill(newValue, new CornerRadii(2), new Insets(2, 2, 2, 2))));
-        });
-        hbox.setBackground(new Background(new BackgroundFill(colorPicker.getValue(), new CornerRadii(2), new Insets(2, 2, 2, 2))));
-        children.add(colorPicker);
-
-        TextField textField = new TextField();
-        textField.setPromptText("#");
-        textField.setPrefWidth(80);
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue != null){
-                newValue = newValue.trim();
-                if(newValue.length() == 6){
-                    try{
-                        colorPicker.setValue(Color.valueOf(newValue));
-                    }catch (Exception e){
-                        LogKit.error(e.getMessage());
-                    }
-                }
+        row.setOnMouseClicked(event -> {
+            if(selectRow != null){
+                selectRow.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BorderWidths.DEFAULT)));
             }
+            selectRow = row;
+            selectRow.setBorder(new Border(new BorderStroke(Paint.valueOf("#20bdec"), BorderStrokeStyle.SOLID, new CornerRadii(2), BOLD)));
         });
-        children.add(textField);
-        return hbox;
+
+        return row;
     }
 
     private ContextMenu buildContextMenu(){
@@ -92,13 +76,29 @@ public class ColorView extends CustomViewControl {
         });
         MenuItem remove = new MenuItem("Remove");
         remove.setOnAction(event -> {
-            colorTable.getChildren().remove(locateInsertPos());
+            Node node = colorTable.getChildren().remove(locateInsertPos());
+            if(node == selectRow){
+                selectRow = null;
+            }
         });
         MenuItem clear = new MenuItem("Clear");
         clear.setOnAction(event -> {
             colorTable.getChildren().clear();
+            selectRow = null;
         });
-        contextMenu.getItems().addAll(append, insert, remove, clear);
+        MenuItem copyColor = new MenuItem("Copy Color");
+        copyColor.setOnAction(event -> {
+            if(selectRow == null){
+                LogKit.error("no select row.");
+            }else{
+                Color color = selectRow.colorPicker.getValue();
+                long r = Math.round(color.getRed() * 255.0);
+                long g = Math.round(color.getGreen() * 255.0);
+                long b = Math.round(color.getBlue() * 255.0);
+                ClipboardUtil.putToClipboard(String.format("#%02x%02x%02x", r, g, b));
+            }
+        });
+        contextMenu.getItems().addAll(copyColor, append, insert, remove, clear);
         return contextMenu;
     }
 
@@ -106,7 +106,7 @@ public class ColorView extends CustomViewControl {
         ObservableList<Node> children = colorTable.getChildren();
         int i = 0;
         for (Node child : children) {
-            if(child == this.triggerBox){
+            if(child == this.selectRow){
                 break;
             }
             i++;
@@ -122,5 +122,43 @@ public class ColorView extends CustomViewControl {
     @FXML
     public void clear(){
         this.colorTable.getChildren().clear();
+    }
+
+
+    private static class ColorRow extends HBox {
+
+        private final ColorPicker colorPicker;
+        public ColorRow(){
+            this.setPadding(new Insets(2, 2, 2, 2));
+            this.setBorder(new Border(new BorderStroke(Paint.valueOf("#b6b6b6"), BorderStrokeStyle.SOLID, new CornerRadii(2), BorderWidths.DEFAULT)));
+            this.setAlignment(Pos.CENTER_RIGHT);
+            ObservableList<Node> children = this.getChildren();
+            this.colorPicker = new ColorPicker();
+            colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+                this.setBackground(new Background(new BackgroundFill(newValue, new CornerRadii(2), new Insets(2, 2, 2, 2))));
+            });
+            this.setBackground(new Background(new BackgroundFill(colorPicker.getValue(), new CornerRadii(2), new Insets(2, 2, 2, 2))));
+            children.add(colorPicker);
+
+            TextField textField = new TextField();
+            textField.setPromptText("#");
+            textField.setPrefWidth(80);
+            textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if(newValue != null){
+                    newValue = newValue.trim();
+                    if(newValue.length() == 7 && newValue.startsWith("#")){
+                        newValue = newValue.substring(1);
+                    }
+                    if(newValue.length() == 6){
+                        try{
+                            colorPicker.setValue(Color.valueOf(newValue));
+                        }catch (Exception e){
+                            LogKit.error(e.getMessage());
+                        }
+                    }
+                }
+            });
+            children.add(textField);
+        }
     }
 }
