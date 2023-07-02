@@ -1,33 +1,23 @@
 package sch.frog.kit.core.parse;
 
-import sch.frog.kit.core.ISession;
+import sch.frog.kit.core.common.SearchMap;
 import sch.frog.kit.core.exception.IncorrectExpressionException;
-import sch.frog.kit.core.exception.WordDuplicateError;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TokenParser {
 
-    private final WordNode<String> functionWord = new WordNode<>();
-
-    private final WordNode<TokenType> specialWord = new WordNode<>();
+    private final SearchMap<TokenType> specialWord = new SearchMap<>();
 
     public TokenParser() {
         init();
     }
 
     private void init(){
-        specialWord.add("true", TokenType.BOOL);
-        specialWord.add("false", TokenType.BOOL);
-        specialWord.add("null", TokenType.NULL);
-    }
-
-    /**
-     * 注册函数
-     */
-    public void registerFunction(String funName){
-        functionWord.add(funName, null);
+        specialWord.put("true", TokenType.BOOL);
+        specialWord.put("false", TokenType.BOOL);
+        specialWord.put("null", TokenType.NULL);
     }
 
     /*
@@ -38,7 +28,7 @@ public class TokenParser {
      * concat('a', 'b', 'c', 'd')
      * open('color'), open('json')
      */
-    public List<Token> getToken(String expression, ISession session) throws IncorrectExpressionException {
+    public List<Token> getToken(String expression) throws IncorrectExpressionException {
         int len = expression.length();
         ArrayList<Token> tokens = new ArrayList<>();
         for(int i = 0; i < len; ){
@@ -60,16 +50,16 @@ public class TokenParser {
                 if(str != null){
                     token = new Token(str, TokenType.STRING, i);
                 }
+            }else if(ch == ':'){
+                token = new Token(":", TokenType.STRUCT, i);
             }else if(ch == '['){  // 匹配array
-                String arr = matchArray(expression, i);
-                if(arr != null){
-                    token = new Token(arr, TokenType.ARRAY, i);
-                }
+                token = new Token("[", TokenType.STRUCT, i);
+            }else if(ch == ']'){
+                token = new Token("]", TokenType.STRUCT, i);
             }else if(ch == '{'){  // 匹配obj
-                String obj = matchObject(expression, i);
-                if(obj != null){
-                    token = new Token(obj, TokenType.OBJECT, i);
-                }
+                token = new Token("{", TokenType.STRUCT, i);
+            }else if(ch == '}'){
+                token = new Token("}", TokenType.STRUCT, i);
             }else {
                 // 匹配数字
                 String num = matchNumber(i, expression);
@@ -77,22 +67,22 @@ public class TokenParser {
                     token = new Token(num, TokenType.NUMBER, i);
                 }
 
-                if(token == null){
-                    Word<TokenType> specialWord = this.specialWord.match(i, expression);
-                    // 匹配函数
-                    Word<String> funWord = functionWord.match(i, expression);
+                if(token == null){  // 匹配标识符
+                    SearchMap.Entry<TokenType> specialWord = this.specialWord.match(expression, i);
+
+                    String identifier = matchIdentifier(expression, i);
 
                     // 从bool匹配和函数匹配中找到最长匹配
-                    if(specialWord != null && funWord != null){
-                        if(specialWord.length() > funWord.length()){
-                            token = new Token(specialWord.literal, specialWord.data, i);
+                    if(specialWord != null && identifier != null){
+                        if(specialWord.getKey().length() > identifier.length()){
+                            token = new Token(specialWord.getKey(), specialWord.getValue(), i);
                         }else{
-                            token = new Token(funWord.literal, TokenType.FUNCTION, i);
+                            token = new Token(identifier, TokenType.IDENTIFIER, i);
                         }
                     }else if(specialWord != null){
-                        token = new Token(specialWord.literal, specialWord.data, i);
-                    }else if(funWord != null){
-                        token = new Token(funWord.literal, TokenType.FUNCTION, i);
+                        token = new Token(specialWord.getKey(), specialWord.getValue(), i);
+                    }else if(identifier != null){
+                        token = new Token(identifier, TokenType.IDENTIFIER, i);
                     }
                 }
             }
@@ -109,22 +99,17 @@ public class TokenParser {
         return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
     }
 
-    private String matchArray(String str, int i){
-        // TODO 解析数组
-        char ch = str.charAt(i);
-        if(ch != '['){
-            return null;
+    private String matchIdentifier(String expression, int start){
+        if(!isLetter(expression.charAt(start))){ return null; }
+        StringBuilder identifier = new StringBuilder();
+        for(int i = start, len = expression.length(); i < len; i++){
+            char ch = expression.charAt(i);
+            if(!isLetter(ch) && !isDigit(ch)){
+                break;
+            }
+            identifier.append(ch);
         }
-        StringBuilder result = new StringBuilder();
-        result.append('[');
-        i++;
-
-        return result.toString();
-    }
-
-    private String matchObject(String str, int i){
-        // TODO 解析对象
-        return null;
+        return identifier.toString();
     }
 
     private String matchString(String str, int i, char edge){
@@ -233,89 +218,12 @@ public class TokenParser {
         return ch < '0' || ch > '9';
     }
 
-    private static class WordNode<D>{
-        private char ch;
-
-        private Word<D> word;
-
-        private final ArrayList<WordNode<D>> children = new ArrayList<>();
-
-        private void add(String word, D data){
-            int index = 0;
-            ArrayList<WordNode<D>> cursorChildren = children;
-            WordNode<D> targetNode = null;
-            int len = word.length();
-            while(true){
-                char ch = word.charAt(index);
-                for (WordNode<D> child : cursorChildren) {
-                    if(child.ch == ch){
-                        targetNode = child;
-                        break;
-                    }
-                }
-                if(targetNode == null){
-                    targetNode = new WordNode<D>();
-                    targetNode.ch = ch;
-                    cursorChildren.add(targetNode);
-                }
-                cursorChildren = targetNode.children;
-                index++;
-                if(index == len){
-                    if(targetNode.word != null){
-                        throw new WordDuplicateError(word);
-                    }
-                    targetNode.word = new Word<>(word, data);
-                    break;
-                }
-                targetNode = null;
-            }
-        }
-
-        public Word<D> get(String literal){
-            Word<D> word = match(0, literal);
-            if(word != null && word.literal.equals(literal)){
-                return word;
-            }
-            return null;
-        }
-
-        public Word<D> match(int start, String expression){
-            if(start >= expression.length()){ return null; }
-            char c = expression.charAt(start);
-            WordNode<D> cursor = null;
-            for (WordNode<D> n : children) {
-                if(n.ch == c){
-                    cursor = n;
-                    break;
-                }
-            }
-            if(cursor == null){
-                return null;
-            }else{
-                Word<D> word = cursor.match(start + 1, expression);
-                if(word == null){
-                    return cursor.word;
-                }else{
-                    return word;
-                }
-            }
-        }
+    private boolean isDigit(char ch){
+        return ch >= '0' && ch <= '9';
     }
 
-    private static class Word<D>{
-
-        private final String literal;
-
-        private final D data;
-
-        public Word(String literal, D data) {
-            this.literal = literal;
-            this.data = data;
-        }
-
-        public int length(){
-            return this.literal.length();
-        }
+    private boolean isLetter(char ch){
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
     }
 
 }

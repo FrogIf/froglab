@@ -7,8 +7,6 @@ public enum TokenType {
     NULL,
     NUMBER,
     STRING,
-    OBJECT,
-    ARRAY,
-    FUNCTION;
+    IDENTIFIER;
 
 }

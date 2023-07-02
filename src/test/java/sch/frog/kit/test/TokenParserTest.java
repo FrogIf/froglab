@@ -11,11 +11,8 @@ public class TokenParserTest {
 
     public static void main(String[] args) throws IncorrectExpressionException {
         TokenParser tokenParser = new TokenParser();
-        tokenParser.registerFunction("uuid");
-        tokenParser.registerFunction("uuidi");
-        tokenParser.registerFunction("dateFormat");
-        tokenParser.registerFunction("now");
-        List<Token> tokens = tokenParser.getToken("dateFormat(now(), 'yyyy-MM-dd HH:mm:ss')", null);
+        List<Token> tokens = tokenParser.getToken("dateFormat(now(), 'yyyy-MM-dd HH:mm:ss', ['aaaa', \"bbbb\", 123.356, {aaa:123}])");
+//        List<Token> tokens = tokenParser.getToken("['aaaa', \"bbbb\", 123.356, {'aaa':123}]");
 
         for (Token token : tokens) {
             System.out.println(token.literal());
