@@ -29,7 +29,7 @@ class CompactJsonWriter implements IJsonValueWriter {
                 sb.append(JsonWord.COMMA);
             }
             Map.Entry<String, JsonValue<?>> entry = iterator.next();
-            sb.append(JsonWord.QUOTATION).append(JsonEscapeUtils.escapeForSerialize(entry.getKey())).append(JsonWord.QUOTATION).append(JsonWord.COLON);
+            sb.append(JsonEscapeUtils.escapeForSerialize(entry.getKey())).append(JsonWord.COLON);
             entry.getValue().write(this);
         }
         sb.append(JsonWord.OBJECT_END);

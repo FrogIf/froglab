@@ -1,6 +1,7 @@
 package sch.frog.kit.core.json;
 
 import sch.frog.kit.core.fun.IFunction;
+import sch.frog.kit.core.value.Locator;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
 
@@ -41,8 +42,8 @@ public class JsonValueConvertor {
                 return new ObjectJsonValue(val.to(JsonObject.class));
             }else if(type == ValueType.BOOL){
                 return new ConstJsonValue(Boolean.TRUE.equals(val.to(Boolean.class)) ? "true" : "false");
-            }else if(type == ValueType.FUNCTION){
-                return new FunctionJsonValue(val.to(IFunction.class));
+            }else if(type == ValueType.SYMBOL){
+                return new SymbolJsonValue(val.to(Locator.class));
             }else{
                 return new StringJsonValue(val.toString());
             }

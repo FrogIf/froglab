@@ -1,6 +1,7 @@
 package sch.frog.kit.core.execute;
 
 import sch.frog.kit.core.exception.ExecuteException;
+import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.value.Value;
 
 import java.util.HashMap;
@@ -17,6 +18,11 @@ public class GeneralSession implements ISession{
     }
 
     @Override
+    public IOutput getOutput(){
+        return new GeneralOutput();
+    }
+
+    @Override
     public AppContext getAppContext() {
         return this.context;
     }
@@ -29,6 +35,11 @@ public class GeneralSession implements ISession{
     @Override
     public boolean exist(String key) {
         return variableMap.containsKey(key);
+    }
+
+    @Override
+    public IFunction getFunction(String funName){
+        return context.getFunction(funName);
     }
 
     @Override

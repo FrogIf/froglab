@@ -6,14 +6,7 @@ import sch.frog.kit.core.execute.AppContext;
 import sch.frog.kit.core.execute.GeneralSession;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.fun.IFunction;
-import sch.frog.kit.core.fun.lang.DATE;
-import sch.frog.kit.core.fun.lang.Define;
-import sch.frog.kit.core.fun.lang.Exec;
-import sch.frog.kit.core.fun.lang.GET;
-import sch.frog.kit.core.fun.lang.NOW;
-import sch.frog.kit.core.fun.lang.SET;
-import sch.frog.kit.core.fun.lang.UUID;
-import sch.frog.kit.core.fun.lang.UUIDI;
+import sch.frog.kit.core.fun.lang.*;
 import sch.frog.kit.core.parse.grammar.GrammarAnalyzer;
 import sch.frog.kit.core.parse.grammar.IGrammarNode;
 import sch.frog.kit.core.parse.lexical.LexicalAnalyzer;
@@ -49,6 +42,8 @@ public class FrogLangApp {
         context.addFunction(new GET());
         context.addFunction(new Define());
         context.addFunction(new Exec());
+        context.addFunction(new CALL());
+        context.addFunction(new PRINT());
     }
 
     public void addFunction(IFunction function){

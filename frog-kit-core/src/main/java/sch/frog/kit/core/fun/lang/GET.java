@@ -27,7 +27,7 @@ public class GET extends AbstractFunction {
             throw new ExecuteException("set function must has 1 arguments");
         }
         Value arg = args[0];
-        if(arg.getType() != ValueType.VARIABLE){
+        if(arg.getType() != ValueType.SYMBOL){
             throw new ExecuteException("set function first argument must string type");
         }
         Locator locator = arg.to(Locator.class);

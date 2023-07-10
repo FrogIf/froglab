@@ -25,7 +25,7 @@ public class Define extends AbstractFunction {
             throw new ExecuteException("define function must have 1 or 2 arguments");
         }
         Value arg = args[0];
-        if(arg.getType() != ValueType.VARIABLE){
+        if(arg.getType() != ValueType.SYMBOL){
             throw new ExecuteException("define function's arguments type must identifier");
         }
         Locator locator = arg.to(Locator.class);

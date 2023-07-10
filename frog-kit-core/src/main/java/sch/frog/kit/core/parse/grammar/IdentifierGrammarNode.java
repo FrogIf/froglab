@@ -2,7 +2,6 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.AppContext;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.parse.lexical.Token;
@@ -90,8 +89,7 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
             for (int i = 0; i < args.length; i++){
                 args[i] = succeed.get(i).node.evaluate(session);
             }
-            AppContext appContext = session.getAppContext();
-            IFunction function = appContext.getFunction(this.token.literal());
+            IFunction function = session.getFunction(this.token.literal());
             if(function == null){
                 throw new ExecuteException("no function named " + this.token.literal() + " define");
             }

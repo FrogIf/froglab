@@ -1,6 +1,7 @@
 package sch.frog.kit.core.json;
 
 import sch.frog.kit.core.fun.IFunction;
+import sch.frog.kit.core.value.Locator;
 
 interface JsonValue<V> {
     void write(IJsonValueWriter writer);
@@ -126,6 +127,25 @@ class FunctionJsonValue implements JsonValue<IFunction>{
     @Override
     public IFunction getValue() {
         return function;
+    }
+}
+
+class SymbolJsonValue implements JsonValue<Locator>{
+
+    private final Locator locator;
+
+    public SymbolJsonValue(Locator locator) {
+        this.locator = locator;
+    }
+
+    @Override
+    public void write(IJsonValueWriter writer) {
+        writer.writeOrigin(locator.getKey());
+    }
+
+    @Override
+    public Locator getValue() {
+        return this.locator;
     }
 }
 

@@ -6,6 +6,7 @@ import sch.frog.kit.core.exception.GrammarException;
 import sch.frog.kit.core.exception.IncorrectExpressionException;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.value.Value;
+import sch.frog.kit.core.value.ValueType;
 
 import java.util.Scanner;
 
@@ -23,7 +24,9 @@ public class TokenParserTest {
 
             try{
                 Value val = instance.execute(expression, session);
-                System.out.println(val.toString());
+                if(val.getType() != ValueType.VOID){
+                    System.out.println(val);
+                }
             }catch (Exception e){
                 e.printStackTrace();
 //                System.out.println(e.getMessage());

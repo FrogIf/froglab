@@ -1,7 +1,6 @@
 package sch.frog.kit.core.value;
 
 import sch.frog.kit.core.exception.ValueCastException;
-import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.json.JsonArray;
 import sch.frog.kit.core.json.JsonObject;
 
@@ -66,10 +65,6 @@ public class Value {
             return val.val;
         });
         map.put(String.class, val -> val.val.toString());
-        map.put(IFunction.class, val -> {
-            if(val.type != ValueType.FUNCTION){ throw new ValueCastException(val.type, IFunction.class); }
-            return val.val;
-        });
         map.put(JsonObject.class, val -> {
             if(val.type != ValueType.OBJECT){ throw new ValueCastException(val.type, JsonObject.class); }
             return val.val;
@@ -79,7 +74,7 @@ public class Value {
             return val.val;
         });
         map.put(Locator.class, val -> {
-            if(val.type != ValueType.VARIABLE){ throw new ValueCastException(val.type, Locator.class); }
+            if(val.type != ValueType.SYMBOL){ throw new ValueCastException(val.type, Locator.class); }
             return val.val;
         });
 
@@ -115,13 +110,8 @@ public class Value {
         this.val = jsonArray;
     }
 
-    public Value(IFunction function){
-        this.type = ValueType.FUNCTION;
-        this.val = function;
-    }
-
     public Value(Locator locator){
-        this.type = ValueType.VARIABLE;
+        this.type = ValueType.SYMBOL;
         this.val = locator;
     }
 
@@ -149,8 +139,6 @@ public class Value {
             return new Value(obj.toString());
         }else if(obj instanceof Boolean){
             return new Value((Boolean) obj);
-        }else if(obj instanceof IFunction){
-            return new Value((IFunction) obj);
         }else if(obj instanceof Integer || obj instanceof Double || obj instanceof Float || obj instanceof Long || obj instanceof Short){
             return new Value(new Number(String.valueOf(obj)));
         }else if(obj instanceof JsonArray){

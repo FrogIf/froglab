@@ -34,8 +34,7 @@ class PrettyJsonWriter implements IJsonValueWriter{
             String retract = TAB_SPACE.repeat(tab);
             while (true) {
                 Map.Entry<String, JsonValue<?>> entry = iterator.next();
-                sb.append(retract).append(JsonWord.QUOTATION).append(JsonEscapeUtils.escapeForSerialize(entry.getKey())).append(JsonWord.QUOTATION)
-                        .append(JsonWord.COLON).append(SPACE);
+                sb.append(retract).append(JsonEscapeUtils.escapeForSerialize(entry.getKey())).append(JsonWord.COLON).append(SPACE);
                 entry.getValue().write(this);
                 if(iterator.hasNext()){
                     sb.append(JsonWord.COMMA).append(NEXT_LINE);

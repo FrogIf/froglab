@@ -23,13 +23,9 @@ public enum ValueType {
      */
     LIST,
     /**
-     * 函数
+     * 符号引用
      */
-    FUNCTION,
-    /**
-     * 标识符
-     */
-    VARIABLE,
+    SYMBOL,
     /**
      * 空值
      */

@@ -4,6 +4,7 @@ import sch.frog.kit.core.exception.GrammarException;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.json.JsonArray;
 import sch.frog.kit.core.json.JsonObject;
+import sch.frog.kit.core.parse.common.TokenRuleUtil;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 import sch.frog.kit.core.parse.lexical.TokenUtil;
@@ -158,6 +159,9 @@ public class JsonGrammarNode extends AbstractGrammarNode{
                 }else if(token.type() == TokenType.IDENTIFIER){
                     this.activeKey = token.literal();
                 }else{
+                    throw new GrammarException(token);
+                }
+                if(!TokenRuleUtil.isIdentifier(this.activeKey)){
                     throw new GrammarException(token);
                 }
                 objStatus = 1;
