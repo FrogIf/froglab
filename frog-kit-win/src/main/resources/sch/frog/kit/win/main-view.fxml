@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sch.frog.kit.win.MainController">
+    <ToolBar>
+        <Button onAction="#onNewTabBtnClick" text="+" styleClass="frog-btn" prefWidth="26" maxWidth="26" minWidth="26" prefHeight="26.0" maxHeight="26.0" minHeight="26.0" style="-fx-background-radius:13; -fx-border-radius:13;" />
+        <Pane HBox.hgrow="ALWAYS"><!-- nothing --></Pane>
+        <Button alignment="CENTER_RIGHT" onAction="#onAboutBtnClick" styleClass="frog-btn" style="-fx-background-color: #0090ff;" text="i" textFill="WHITE" />
+    </ToolBar>
+    <TabPane fx:id="mainTabPane" prefHeight="229.0" prefWidth="290.0" VBox.vgrow="ALWAYS" tabMinWidth="60">
+    </TabPane>
+    <Pane style="-fx-background-color: #acacac;">
+        <Label fx:id="msgText" />
+    </Pane>
+</VBox>
