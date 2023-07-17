@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JsonGrammarNode extends AbstractGrammarNode{
+public class ObjectGrammarNode extends AbstractGrammarNode{
 
     private LinkedHashMap<String, IGrammarNode> map = null;
 
@@ -23,7 +23,7 @@ public class JsonGrammarNode extends AbstractGrammarNode{
 
     private final GrammarBuilder builder;
 
-    public JsonGrammarNode(Token token) {
+    public ObjectGrammarNode(Token token) {
         super(token);
         if("[".equals(token.literal())){
             list = new ArrayList<>();
@@ -31,8 +31,8 @@ public class JsonGrammarNode extends AbstractGrammarNode{
         }else if("{".equals(token.literal())){
             map = new LinkedHashMap<>();
             builder = new ObjectBuilder();
-        }else{
-            throw new IllegalArgumentException("unrecognized token : " + token.literal());
+        }else {
+            builder = null;
         }
     }
 
@@ -102,14 +102,14 @@ public class JsonGrammarNode extends AbstractGrammarNode{
                 return true;
             }else{
                 if("]".equals(token.literal())){
-                    if(!JsonGrammarNode.this.list.isEmpty()){
+                    if(!ObjectGrammarNode.this.list.isEmpty()){
                         // 异常: [aaa,]
                         throw new GrammarException(token);
                     }
                     this.closed = true;
                     return true;
                 }else if(token.type() == TokenType.STRUCT){
-                    this.activeNode = GeneralGrammarNodeBuilder.buildForJson(token);
+                    this.activeNode = GeneralGrammarNodeBuilder.buildForObject(token);
                     if(this.activeNode == null){
                         throw new GrammarException(token);
                     }
@@ -123,7 +123,7 @@ public class JsonGrammarNode extends AbstractGrammarNode{
                 if(this.activeNode == null){
                     throw new GrammarException(token);
                 }else{
-                    JsonGrammarNode.this.list.add(this.activeNode);
+                    ObjectGrammarNode.this.list.add(this.activeNode);
                     return true;
                 }
             }
@@ -180,7 +180,7 @@ public class JsonGrammarNode extends AbstractGrammarNode{
                     }else if(TokenUtil.isConstant(token.type())){
                         valueNode = GeneralGrammarNodeBuilder.buildForConstant(token);
                     }else if(token.type() == TokenType.STRUCT){
-                        valueNode = GeneralGrammarNodeBuilder.buildForJson(token);
+                        valueNode = GeneralGrammarNodeBuilder.buildForObject(token);
                     }
                     if(valueNode == null){
                         throw new GrammarException(token);
@@ -189,10 +189,10 @@ public class JsonGrammarNode extends AbstractGrammarNode{
                     if(!valueNode.add(token)){
                         if(",".equals(token.literal())){
                             objStatus = 0;
-                            JsonGrammarNode.this.map.put(activeKey, valueNode);
+                            ObjectGrammarNode.this.map.put(activeKey, valueNode);
                             return true;
                         }else if("}".equals(token.literal())){
-                            JsonGrammarNode.this.map.put(activeKey, valueNode);
+                            ObjectGrammarNode.this.map.put(activeKey, valueNode);
                             this.closed = true;
                             return true;
                         }

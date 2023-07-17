@@ -22,6 +22,7 @@ public class LexicalAnalyzer {
         specialWord.put("true", TokenType.BOOL);
         specialWord.put("false", TokenType.BOOL);
         specialWord.put("null", TokenType.NULL);
+        specialWord.put("=>", TokenType.STRUCT);
     }
 
     /*
@@ -66,6 +67,8 @@ public class LexicalAnalyzer {
                 token = new Token("{", TokenType.STRUCT, i);
             }else if(ch == '}'){
                 token = new Token("}", TokenType.STRUCT, i);
+            }else if(ch == '@'){
+                token = new Token("@", TokenType.IDENTIFIER, i);
             }else {
                 // 匹配数字
                 String num = TokenRuleUtil.matchNumber(i, expression);

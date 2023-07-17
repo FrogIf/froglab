@@ -18,7 +18,7 @@ public class GrammarAnalyzer {
         Token root = tokenItr.next();
         TokenType type = root.type();
         if(type == TokenType.STRUCT){
-            rootNode = GeneralGrammarNodeBuilder.buildForJson(root);
+            rootNode = GeneralGrammarNodeBuilder.buildForObject(root);
         }else if(type == TokenType.IDENTIFIER){
             rootNode = new IdentifierGrammarNode(root);
         }else{

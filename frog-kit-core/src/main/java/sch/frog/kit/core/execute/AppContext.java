@@ -21,4 +21,8 @@ public class AppContext {
     public Collection<IFunction> getFunctions(){
         return functionMap.values();
     }
+
+    public boolean existFun(String key) {
+        return functionMap.containsKey(key);
+    }
 }

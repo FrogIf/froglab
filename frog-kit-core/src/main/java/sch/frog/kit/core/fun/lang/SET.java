@@ -33,7 +33,7 @@ public class SET extends AbstractFunction {
         if(locator.isIndex()){
             throw new ExecuteException("index can't as variable name");
         }
-        if(!session.exist(locator.getKey())){
+        if(session.getVariable(locator.getKey()) == null){
             throw new ExecuteException("variable " + locator.getKey() + " is not exist");
         }
         Locator cursor = locator.next();
@@ -44,42 +44,7 @@ public class SET extends AbstractFunction {
             if(cursorVal == null){
                 throw new NullPointerException("variable : " + locator.getKey() + "is null");
             }
-            StringBuilder path = new StringBuilder();
-            while(cursor != null){
-                Locator next = cursor.next();
-                if(cursor.isIndex()){
-                    int index = cursor.getIndex();
-                    path.append(".#").append(index);
-                    JsonArray array = cursorVal.to(JsonArray.class);
-                    if(array == null){
-                        throw new ExecuteException(path + " is undefine");
-                    }
-                    if(array.size() <= index){
-                        throw new IndexOutOfBoundsException(path + " size is " + array.size() + ", but index is " + index);
-                    }
-                    if(next == null){
-                        array.set(index, args[1]);
-                    }else{
-                        cursorVal = Value.of(array.get(index));
-                    }
-                }else{
-                    String key = cursor.getKey();
-                    path.append(".@").append(key);
-                    JsonObject jsonObject = cursorVal.to(JsonObject.class);
-                    if(jsonObject == null){
-                        throw new ExecuteException(path + " is null");
-                    }
-                    if(!jsonObject.containsKey(key)){
-                        throw new ExecuteException(key + " not exist");
-                    }
-                    if(next == null){
-                        jsonObject.put(key, args[1]);
-                    }else{
-                        cursorVal = Value.of(jsonObject.get(next.getKey()));
-                    }
-                }
-                cursor = next;
-            }
+            cursor.set(cursorVal, args[1]);
         }
         return Value.VOID;
     }

@@ -1,6 +1,7 @@
 package sch.frog.kit.core.value;
 
 import sch.frog.kit.core.exception.ValueCastException;
+import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.json.JsonArray;
 import sch.frog.kit.core.json.JsonObject;
 
@@ -11,7 +12,9 @@ import java.util.Map;
 
 public class Value {
 
-    public static final Value VOID = new Value();
+    public static final Value VOID = new Value(ValueType.VOID);
+
+    public static final Value NULL = new Value(ValueType.NULL);
 
     private static final Map<Class<?>, TypeConvertor> map = new HashMap<>();
 
@@ -77,6 +80,10 @@ public class Value {
             if(val.type != ValueType.SYMBOL){ throw new ValueCastException(val.type, Locator.class); }
             return val.val;
         });
+        map.put(IFunction.class, val -> {
+            if(val.type != ValueType.FUNCTION){ throw new ValueCastException(val.type, IFunction.class); }
+            return val.val;
+        });
 
     }
 
@@ -91,32 +98,37 @@ public class Value {
     }
 
     public Value(String str){
-        this.type = ValueType.STRING;
+        this.type = str == null ? ValueType.NULL : ValueType.STRING;
         this.val = str;
     }
 
     public Value(Number num){
-        this.type = ValueType.NUMBER;
-        this.val = num.getNumber();
+        this.type = num == null ? ValueType.NULL : ValueType.NUMBER;
+        this.val = num == null ? null : num.getNumber();
     }
 
     public Value(JsonObject jsonObject){
-        this.type = ValueType.OBJECT;
+        this.type = jsonObject == null ? ValueType.NULL : ValueType.OBJECT;
         this.val = jsonObject;
     }
 
     public Value(JsonArray jsonArray){
-        this.type = ValueType.LIST;
+        this.type = jsonArray == null ? ValueType.NULL : ValueType.LIST;
         this.val = jsonArray;
     }
 
+    public Value(IFunction function){
+        this.type = function == null ? ValueType.NULL : ValueType.FUNCTION;
+        this.val = function;
+    }
+
     public Value(Locator locator){
-        this.type = ValueType.SYMBOL;
+        this.type = locator == null ? ValueType.NULL : ValueType.SYMBOL;
         this.val = locator;
     }
 
-    private Value(){
-        this.type = ValueType.VOID;
+    private Value(ValueType valueType){
+        this.type = valueType;
         this.val = null;
     }
 
@@ -125,6 +137,11 @@ public class Value {
     }
 
     public <T> T to(Class<T> clazz){
+        if(this.type == ValueType.VOID){
+            throw new ValueCastException(this.type, clazz);
+        }else if(this.type == ValueType.NULL){
+            return null;
+        }
         TypeConvertor convertor = map.get(clazz);
         if(convertor == null){
             throw new ValueCastException(this.type, clazz);
@@ -133,7 +150,9 @@ public class Value {
     }
 
     public static Value of(Object obj){
-        if(obj instanceof Value){
+        if(obj == null){
+            return NULL;
+        }else if(obj instanceof Value){
             return (Value) obj;
         }else if(obj instanceof String){
             return new Value(obj.toString());
@@ -149,6 +168,8 @@ public class Value {
             return new Value(JsonArray.load((Iterable<?>) obj));
         }else if(obj instanceof Locator){
             return new Value((Locator)obj);
+        }else if(obj instanceof IFunction){
+            return new Value((IFunction) obj);
         }else{
             return new Value(JsonObject.load(obj));
         }

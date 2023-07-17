@@ -89,7 +89,11 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
             for (int i = 0; i < args.length; i++){
                 args[i] = succeed.get(i).node.evaluate(session);
             }
-            IFunction function = session.getFunction(this.token.literal());
+            Value val = session.getVariable(this.token.literal());
+            IFunction function = null;
+            if(val != null && val.getType() == ValueType.FUNCTION){
+                function = val.to(IFunction.class);
+            }
             if(function == null){
                 throw new ExecuteException("no function named " + this.token.literal() + " define");
             }
@@ -97,7 +101,7 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
         }else{
             String varName = this.token.literal();
             if(!succeed.isEmpty()){
-                if(!session.exist(varName)){
+                if(session.getVariable(varName) == null){
                     throw new ExecuteException("variable " + varName + " is not define");
                 }
 
