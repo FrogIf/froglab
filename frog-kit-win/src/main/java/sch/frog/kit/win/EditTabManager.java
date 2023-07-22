@@ -12,11 +12,11 @@ class EditTabManager {
         return "Tab " + (tabIndex++);
     }
 
-    public static void addTab(TabPane tabPane, MessageEmitter emitter){
-        addTab(tabPane, null, emitter);
+    public static void addTab(TabPane tabPane, MessageEmitter emitter, String type){
+        addTab(tabPane, null, emitter, type);
     }
 
-    public static TabElement addTab(TabPane tabPane, String title, MessageEmitter emitter){
+    public static TabElement addTab(TabPane tabPane, String title, MessageEmitter emitter, String type){
         if(tabPane.getTabs().isEmpty()){
             tabIndex = 0;
         }
@@ -24,7 +24,7 @@ class EditTabManager {
             title = EditTabManager.generateTitle();
         }
         Tab newTab = new Tab(title);
-        LangEditor jsonEditor = new LangEditor(emitter);
+        LangEditor jsonEditor = new LangEditor(emitter, Constants.EDITOR_TYPE_CONSOLE.equals(type));
         newTab.setContent(jsonEditor);
         tabPane.getTabs().add(newTab);
         tabPane.getSelectionModel().select(newTab);

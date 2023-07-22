@@ -3,11 +3,8 @@ package sch.frog.kit.win.editor;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.fxmisc.richtext.model.StyledDocument;
 import sch.frog.kit.core.exception.IncorrectExpressionException;
 import sch.frog.kit.core.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.core.parse.lexical.Token;
@@ -16,28 +13,21 @@ import sch.frog.kit.win.GlobalApplicationLifecycleUtil;
 import sch.frog.kit.win.util.StringUtils;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class EditorAssist {
+public class CodeAreaAssist {
 
     private final CodeHighLight codeHighLight = new CodeHighLight();
 
     private final BracketHighLight bracketHighLight = new BracketHighLight();
 
-    private static EditorAssist instance = null;
+    private static CodeAreaAssist instance = null;
 
-    public static EditorAssist getInstance(){
+    public static CodeAreaAssist getInstance(){
         if(instance == null){
-            instance = new EditorAssist();
+            instance = new CodeAreaAssist();
             GlobalApplicationLifecycleUtil.addOnCloseListener(() -> {
                 instance.codeHighLight.stop();
             });
@@ -207,7 +197,7 @@ public class EditorAssist {
 
         private final String MATCH_STYLE = "match-pair";
 
-        private static final String BRACKET_PAIRS = "{}[]";
+        private static final String BRACKET_PAIRS = "{}[]()";
 
         private void match(CodeArea codeArea, Pair pair){
             styleBracket(codeArea, pair.start, MATCH_STYLE);

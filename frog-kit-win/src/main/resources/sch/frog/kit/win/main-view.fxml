@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 <VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sch.frog.kit.win.MainController">
     <ToolBar>
+        <ComboBox fx:id="editorType" />
         <Button onAction="#onNewTabBtnClick" text="+" styleClass="frog-btn" prefWidth="26" maxWidth="26" minWidth="26" prefHeight="26.0" maxHeight="26.0" minHeight="26.0" style="-fx-background-radius:13; -fx-border-radius:13;" />
         <Pane HBox.hgrow="ALWAYS"><!-- nothing --></Pane>
         <Button alignment="CENTER_RIGHT" onAction="#onAboutBtnClick" styleClass="frog-btn" style="-fx-background-color: #0090ff;" text="i" textFill="WHITE" />

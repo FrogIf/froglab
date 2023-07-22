@@ -1,15 +1,12 @@
 package sch.frog.kit.win;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -26,11 +23,14 @@ public class MainController implements Initializable {
     @FXML
     private Label msgText;
 
+    @FXML
+    private ComboBox<String> editorType;
+
     private MessageEmitter messageEmitter;
 
     @FXML
     protected void onNewTabBtnClick() {
-        EditTabManager.addTab(mainTabPane, this.messageEmitter);
+        EditTabManager.addTab(mainTabPane, this.messageEmitter, editorType.getSelectionModel().getSelectedItem());
     }
 
     private Stage aboutStage = null;
@@ -58,9 +58,11 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         messageEmitter = new MessageEmitter(msgText);
-        EditTabManager.addTab(mainTabPane, messageEmitter);
+        EditTabManager.addTab(mainTabPane, messageEmitter, Constants.EDITOR_TYPE_CONSOLE);
         mainTabPane.setContextMenu(initTabPaneContextMenu(mainTabPane));
         mainTabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+        editorType.setItems(FXCollections.observableArrayList(Constants.EDITOR_TYPE_CONSOLE, Constants.EDITOR_TYPE_SCRIPT));
+        editorType.getSelectionModel().select(0);
     }
 
     private ContextMenu initTabPaneContextMenu(TabPane tabPane) {
