@@ -5,9 +5,22 @@ import sch.frog.kit.core.parse.lexical.TokenType;
 
 public class GeneralGrammarNodeBuilder {
 
+    // 构建引用: a.b.c  aaa()   aa[0]
+    public static AbstractLeftAssociativeGrammarNode buildForRef(Token token){
+        AbstractLeftAssociativeGrammarNode node = null;
+        if("(".equals(token.literal())){
+            node = new ArgumentListGrammarNode(token);
+        }else if(".".equals(token.literal())){
+            node = new PropertyGrammarNode(token);
+        }else if("[".equals(token.literal())){
+            node = new ArrayIndexGrammarNode(token);
+        }
+        return node;
+    }
+
     public static IGrammarNode buildForValuable(Token token){
         TokenType type = token.type();
-        IGrammarNode node = null;
+        IGrammarNode node;
         if(type == TokenType.STRUCT){
             node = GeneralGrammarNodeBuilder.buildForObject(token);
         }else if(type == TokenType.IDENTIFIER){
@@ -27,7 +40,7 @@ public class GeneralGrammarNodeBuilder {
             }else if("[".equals(literal)){
                 node = new ObjectGrammarNode(token);
             }else if("(".equals(literal)){
-                node = new FunctionDefGrammarNode(token);
+                node = new FunctionObjectGrammarNode(token);
             }
             return node;
         }

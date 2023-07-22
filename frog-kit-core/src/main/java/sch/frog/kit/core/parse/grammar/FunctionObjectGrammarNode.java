@@ -17,7 +17,7 @@ import java.util.List;
 (a, b) -> if(lt(a,b), A, B)
  */
 
-public class FunctionDefGrammarNode extends ObjectGrammarNode {
+public class FunctionObjectGrammarNode extends ObjectGrammarNode {
     // 0 - 参数构建中; 1 - 等待=>分隔; 2 - 函数体构建中, 3 - 构建结束
     private int status = 0;
 
@@ -27,7 +27,7 @@ public class FunctionDefGrammarNode extends ObjectGrammarNode {
 
     private final ArgumentBuilder argBuilder = new ArgumentBuilder();
 
-    public FunctionDefGrammarNode(Token token) {
+    public FunctionObjectGrammarNode(Token token) {
         super(token);
         if(token.type() != TokenType.STRUCT || !"(".equals(token.literal())){
             throw new IllegalArgumentException("function must start with (");
@@ -179,7 +179,7 @@ public class FunctionDefGrammarNode extends ObjectGrammarNode {
                 if(token.type() != TokenType.IDENTIFIER){
                     throw new GrammarException(token);
                 }
-                FunctionDefGrammarNode.this.arguments.add(token.literal());
+                FunctionObjectGrammarNode.this.arguments.add(token.literal());
                 waitEle = false;
                 return true;
             }

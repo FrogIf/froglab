@@ -11,7 +11,7 @@ public class Define extends AbstractFunction {
 
     @Override
     public String name() {
-        return "@";
+        return "define";
     }
 
     @Override
@@ -32,7 +32,8 @@ public class Define extends AbstractFunction {
         if(locator.isIndex()){
             throw new ExecuteException("index can't as variable name");
         }
-        session.addValue(locator.getKey(), args.length == 1 ? null : args[1]);
-        return Value.VOID;
+        Value v = args.length == 1 ? Value.NULL : args[1];
+        session.addValue(locator.getKey(), v);
+        return v;
     }
 }

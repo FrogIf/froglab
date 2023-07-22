@@ -2,13 +2,13 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.GrammarException;
 import sch.frog.kit.core.execute.ISession;
-import sch.frog.kit.core.json.JsonArray;
-import sch.frog.kit.core.json.JsonObject;
 import sch.frog.kit.core.parse.common.TokenRuleUtil;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 import sch.frog.kit.core.parse.lexical.TokenUtil;
 import sch.frog.kit.core.util.StringEscapeUtil;
+import sch.frog.kit.core.value.VList;
+import sch.frog.kit.core.value.VMap;
 import sch.frog.kit.core.value.Value;
 
 import java.util.ArrayList;
@@ -60,17 +60,17 @@ public class ObjectGrammarNode extends AbstractGrammarNode{
     @Override
     public Value evaluate(ISession session) {
         if(map != null){
-            JsonObject jsonObject = new JsonObject();
+            VMap obj = new VMap();
             for (Map.Entry<String, IGrammarNode> entry : map.entrySet()) {
-                jsonObject.put(entry.getKey(), entry.getValue().evaluate(session));
+                obj.put(entry.getKey(), entry.getValue().evaluate(session));
             }
-            return new Value(jsonObject);
+            return new Value(obj);
         }else{
-            JsonArray array = new JsonArray();
+            VList l = new VList();
             for (IGrammarNode node : list) {
-                array.add(node.evaluate(session));
+                l.add(node.evaluate(session));
             }
-            return new Value(array);
+            return new Value(l);
         }
     }
 

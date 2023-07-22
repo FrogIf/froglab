@@ -2,8 +2,6 @@ package sch.frog.kit.core.value;
 
 import sch.frog.kit.core.exception.ValueCastException;
 import sch.frog.kit.core.fun.IFunction;
-import sch.frog.kit.core.json.JsonArray;
-import sch.frog.kit.core.json.JsonObject;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -68,12 +66,12 @@ public class Value {
             return val.val;
         });
         map.put(String.class, val -> val.val.toString());
-        map.put(JsonObject.class, val -> {
-            if(val.type != ValueType.OBJECT){ throw new ValueCastException(val.type, JsonObject.class); }
+        map.put(VMap.class, val -> {
+            if(val.type != ValueType.OBJECT){ throw new ValueCastException(val.type, VMap.class); }
             return val.val;
         });
-        map.put(JsonArray.class, val -> {
-            if(val.type != ValueType.LIST){ throw new ValueCastException(val.type, JsonArray.class); }
+        map.put(VList.class, val -> {
+            if(val.type != ValueType.LIST){ throw new ValueCastException(val.type, VList.class); }
             return val.val;
         });
         map.put(Locator.class, val -> {
@@ -107,14 +105,14 @@ public class Value {
         this.val = num == null ? null : num.getNumber();
     }
 
-    public Value(JsonObject jsonObject){
-        this.type = jsonObject == null ? ValueType.NULL : ValueType.OBJECT;
-        this.val = jsonObject;
+    public Value(VMap map){
+        this.type = map == null ? ValueType.NULL : ValueType.OBJECT;
+        this.val = map;
     }
 
-    public Value(JsonArray jsonArray){
-        this.type = jsonArray == null ? ValueType.NULL : ValueType.LIST;
-        this.val = jsonArray;
+    public Value(VList list){
+        this.type = list == null ? ValueType.NULL : ValueType.LIST;
+        this.val = list;
     }
 
     public Value(IFunction function){
@@ -160,18 +158,22 @@ public class Value {
             return new Value((Boolean) obj);
         }else if(obj instanceof Integer || obj instanceof Double || obj instanceof Float || obj instanceof Long || obj instanceof Short){
             return new Value(new Number(String.valueOf(obj)));
-        }else if(obj instanceof JsonArray){
-            return new Value((JsonArray) obj);
-        }else if(obj instanceof JsonObject){
-            return new Value((JsonObject) obj);
+        }else if(obj instanceof BigDecimal){
+            return new Value(new Number(((BigDecimal) obj).toPlainString()));
+        }else if(obj instanceof BigInteger){
+            return new Value(new Number(obj.toString()));
+        }else if(obj instanceof VList){
+            return new Value((VList) obj);
+        }else if(obj instanceof VMap){
+            return new Value((VMap) obj);
         }else if(obj instanceof Iterable){
-            return new Value(JsonArray.load((Iterable<?>) obj));
+            return new Value(VList.load((Iterable<?>) obj));
         }else if(obj instanceof Locator){
             return new Value((Locator)obj);
         }else if(obj instanceof IFunction){
             return new Value((IFunction) obj);
         }else{
-            return new Value(JsonObject.load(obj));
+            return new Value(VMap.load(obj));
         }
     }
 
