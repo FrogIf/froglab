@@ -7,10 +7,12 @@ import javafx.scene.layout.BorderPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import sch.frog.kit.core.FrogLangApp;
+import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.win.ClipboardUtil;
 import sch.frog.kit.win.MessageEmitter;
 
-public class LangEditor extends BorderPane {
+public class ConsoleWorkspace extends BorderPane {
 
     private final CustomCodeArea codeArea;
 
@@ -18,15 +20,21 @@ public class LangEditor extends BorderPane {
 
     private final SearchBox textSearchBox;
 
-    public LangEditor(MessageEmitter messageEmitter, boolean isConsole) {
+    private final FrogLangApp frogLangApp = FrogLangApp.getInstance();
+
+    private final ISession session;
+
+    public ConsoleWorkspace(MessageEmitter messageEmitter) {
         this.messageEmitter = messageEmitter;
-        if(isConsole){
-            codeArea = new ConsoleCodeArea(">>>", line -> {
-                return line + "\n" + line;
-            }, 5);
-        }else{
-            codeArea = new CustomCodeArea();
-        }
+        session = frogLangApp.generateSession();
+        codeArea = new ConsoleCodeArea(">>>", line -> {
+            try {
+                return frogLangApp.execute(line, session).toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return e.getMessage();
+            }
+        }, 5);
         initCodeArea();
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         super.setCenter(scrollPane);

@@ -82,8 +82,14 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
         }
         try {
             return (Value) method.invoke(instance, arguments);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        } catch (InvocationTargetException e){
+            Throwable t = e.getTargetException();
+            if(t instanceof ExecuteException){
+                throw (ExecuteException)t;
+            }
+            throw new RuntimeException(t);
         }
     }
 

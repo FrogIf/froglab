@@ -2,8 +2,6 @@ package sch.frog.kit.core.value;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.execute.ISession;
-import sch.frog.kit.core.json.JsonArray;
-import sch.frog.kit.core.json.JsonObject;
 
 public class Locator {
 
@@ -75,7 +73,7 @@ public class Locator {
             if(next.isIndex()){
                 int index = next.getIndex();
                 path.append(".#").append(index);
-                JsonArray array = cursorVal.to(JsonArray.class);
+                VList array = cursorVal.to(VList.class);
                 if(array == null){
                     throw new ExecuteException(path + " is null");
                 }
@@ -86,7 +84,7 @@ public class Locator {
             }else{
                 String key = next.getKey();
                 path.append(".@").append(key);
-                JsonObject jsonObject = cursorVal.to(JsonObject.class);
+                VMap jsonObject = cursorVal.to(VMap.class);
                 if(jsonObject == null){
                     throw new ExecuteException(path + " is null");
                 }
@@ -106,7 +104,7 @@ public class Locator {
             if(cursor.isIndex()){
                 int index = cursor.getIndex();
                 path.append(".#").append(index);
-                JsonArray array = cursorVal.to(JsonArray.class);
+                VList array = cursorVal.to(VList.class);
                 if(array == null){
                     throw new ExecuteException(path + " is undefine");
                 }
@@ -121,7 +119,7 @@ public class Locator {
             }else{
                 String key = cursor.getKey();
                 path.append(".@").append(key);
-                JsonObject jsonObject = cursorVal.to(JsonObject.class);
+                VMap jsonObject = cursorVal.to(VMap.class);
                 if(jsonObject == null){
                     throw new ExecuteException(path + " is null");
                 }

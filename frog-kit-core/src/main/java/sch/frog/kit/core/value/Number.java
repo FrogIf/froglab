@@ -8,6 +8,10 @@ public class Number {
         this.number = number;
     }
 
+    public Number(long num){
+        this.number = Long.toString(num);
+    }
+
     public String getNumber(){
         return this.number;
     }

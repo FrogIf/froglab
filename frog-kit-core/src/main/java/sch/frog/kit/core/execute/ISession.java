@@ -14,4 +14,6 @@ public interface ISession {
 
     void addValue(String key, Value value);
 
+    void setOutput(IOutput output);
+
 }

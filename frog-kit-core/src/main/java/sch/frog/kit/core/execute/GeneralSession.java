@@ -11,7 +11,7 @@ public class GeneralSession implements ISession{
 
     private final AppContext context;
 
-    private final IOutput output;
+    private IOutput output;
 
     private final Map<String, Value> variableMap = new HashMap<>();
 
@@ -66,5 +66,10 @@ public class GeneralSession implements ISession{
             throw new ExecuteException(key + " has defined as function");
         }
         variableMap.put(key, value);
+    }
+
+    @Override
+    public void setOutput(IOutput output) {
+        this.output = output;
     }
 }

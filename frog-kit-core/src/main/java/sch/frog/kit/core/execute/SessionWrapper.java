@@ -35,4 +35,9 @@ public class SessionWrapper implements ISession{
         session.addValue(key, value);
     }
 
+    @Override
+    public void setOutput(IOutput output) {
+        session.setOutput(output);
+    }
+
 }

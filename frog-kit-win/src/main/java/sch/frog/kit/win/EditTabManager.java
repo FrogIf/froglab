@@ -2,7 +2,8 @@ package sch.frog.kit.win;
 
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import sch.frog.kit.win.editor.LangEditor;
+import javafx.scene.layout.Pane;
+import sch.frog.kit.win.editor.ConsoleWorkspace;
 
 class EditTabManager {
 
@@ -24,18 +25,24 @@ class EditTabManager {
             title = EditTabManager.generateTitle();
         }
         Tab newTab = new Tab(title);
-        LangEditor jsonEditor = new LangEditor(emitter, Constants.EDITOR_TYPE_CONSOLE.equals(type));
-        newTab.setContent(jsonEditor);
+        Pane pane;
+        if(Constants.EDITOR_TYPE_CONSOLE.equals(type)){
+            pane = new ConsoleWorkspace(emitter);
+        }else{
+            // TODO
+            pane = new ConsoleWorkspace(emitter);
+        }
+        newTab.setContent(pane);
         tabPane.getTabs().add(newTab);
         tabPane.getSelectionModel().select(newTab);
-        return new TabElement(newTab, jsonEditor);
+        return new TabElement(newTab, pane);
     }
 
     public static class TabElement{
         private final Tab tab;
-        private final LangEditor editor;
+        private final Pane editor;
 
-        public TabElement(Tab tab, LangEditor editor) {
+        public TabElement(Tab tab, Pane editor) {
             this.tab = tab;
             this.editor = editor;
         }
@@ -44,7 +51,7 @@ class EditTabManager {
             return tab;
         }
 
-        public LangEditor getEditor() {
+        public Pane getEditor() {
             return editor;
         }
     }

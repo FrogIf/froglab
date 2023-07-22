@@ -7,7 +7,7 @@ public class TokenRuleUtil {
         StringBuilder identifier = new StringBuilder();
         for(int i = start, len = expression.length(); i < len; i++){
             char ch = expression.charAt(i);
-            if(!isLetter(ch) && !isDigit(ch)){
+            if(!isLetter(ch) && !isDigit(ch) && ch != '_'){
                 break;
             }
             identifier.append(ch);
