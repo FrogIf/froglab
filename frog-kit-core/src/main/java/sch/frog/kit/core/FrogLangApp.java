@@ -2,11 +2,11 @@ package sch.frog.kit.core;
 
 import sch.frog.kit.core.exception.GrammarException;
 import sch.frog.kit.core.exception.IncorrectExpressionException;
-import sch.frog.kit.core.execute.AppContext;
 import sch.frog.kit.core.execute.GeneralSession;
 import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.ext.ExternalFunctionLoadUtil;
 import sch.frog.kit.core.fun.AbstractGeneralFunction;
-import sch.frog.kit.core.fun.FunctionLoader;
+import sch.frog.kit.core.fun.FunctionLoadUtil;
 import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.fun.lang.Define;
 import sch.frog.kit.core.fun.lang.GET;
@@ -16,10 +16,12 @@ import sch.frog.kit.core.parse.grammar.GrammarAnalyzer;
 import sch.frog.kit.core.parse.grammar.IGrammarNode;
 import sch.frog.kit.core.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.core.parse.lexical.Token;
+import sch.frog.kit.core.value.VMap;
 import sch.frog.kit.core.value.Value;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class FrogLangApp {
 
@@ -27,6 +29,26 @@ public class FrogLangApp {
 
     public static FrogLangApp getInstance(){
         return instance;
+    }
+
+    public static FrogLangApp getInstance(List<String> externalPaths){
+        FrogLangApp app = new FrogLangApp();
+        for (String externalPath : externalPaths) {
+            try {
+                Map<String, List<IFunction>> funPak = ExternalFunctionLoadUtil.load(externalPath);
+                for (Map.Entry<String, List<IFunction>> entry : funPak.entrySet()) {
+                    VMap funMap = new VMap();
+                    List<IFunction> funList = entry.getValue();
+                    for (IFunction fun : funList) {
+                        funMap.put(fun.name(), new Value(fun));
+                    }
+                    app.context.addVariable(entry.getKey(), new Value(funMap));
+                }
+            } catch (Exception e) {
+                throw new Error(e);
+            }
+        }
+        return app;
     }
 
     private final LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
@@ -42,7 +64,7 @@ public class FrogLangApp {
         context.addFunction(new SET());
         context.addFunction(new GET());
         context.addFunction(new Define());
-        List<AbstractGeneralFunction> funList = FunctionLoader.load(new LangFunctionController());
+        List<AbstractGeneralFunction> funList = FunctionLoadUtil.load(new LangFunctionController());
         for (AbstractGeneralFunction fun : funList) {
             context.addFunction(fun);
         }

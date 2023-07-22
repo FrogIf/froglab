@@ -1,5 +1,6 @@
 package sch.frog.kit.core.execute;
 
+import sch.frog.kit.core.AppContext;
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.value.Value;
@@ -44,7 +45,7 @@ public class GeneralSession implements ISession{
                 return new Value(fun);
             }
         }
-        return null;
+        return context.getVariable(key);
     }
 
     @Override

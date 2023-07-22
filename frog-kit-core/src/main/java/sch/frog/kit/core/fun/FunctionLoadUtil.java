@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunctionLoader {
+public class FunctionLoadUtil {
 
     public static List<AbstractGeneralFunction> load(Object instance){
         ArrayList<AbstractGeneralFunction> list = new ArrayList<>();
