@@ -21,12 +21,13 @@ public class ConsoleWorkspace extends BorderPane {
 
     private final SearchBox textSearchBox;
 
-    private final FrogLangApp frogLangApp = FrogLangApp.getInstance();
+    private final FrogLangApp frogLangApp;
 
     private final ISession session;
 
-    public ConsoleWorkspace(MessageEmitter messageEmitter) {
+    public ConsoleWorkspace(MessageEmitter messageEmitter, FrogLangApp frogLangApp) {
         this.messageEmitter = messageEmitter;
+        this.frogLangApp = frogLangApp;
         session = frogLangApp.generateSession();
         codeArea = new ConsoleCodeArea(">>>", line -> {
             try {

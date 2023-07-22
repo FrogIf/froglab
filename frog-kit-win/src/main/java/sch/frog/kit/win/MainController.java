@@ -6,12 +6,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sch.frog.kit.core.FrogLangApp;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -26,11 +34,13 @@ public class MainController implements Initializable {
     @FXML
     private ComboBox<String> editorType;
 
+    private FrogLangApp frogLangApp;
+
     private MessageEmitter messageEmitter;
 
     @FXML
     protected void onNewTabBtnClick() {
-        EditTabManager.addTab(mainTabPane, this.messageEmitter, editorType.getSelectionModel().getSelectedItem());
+        EditTabManager.addTab(mainTabPane, this.messageEmitter, editorType.getSelectionModel().getSelectedItem(), frogLangApp);
     }
 
     private Stage aboutStage = null;
@@ -57,8 +67,22 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        File externalDir = new File("external");
+        File[] fileList = externalDir.listFiles();
+        if(fileList != null){
+            ArrayList<String> jarFiles = new ArrayList<>(fileList.length);
+            for (File f : fileList) {
+                if(f.getName().endsWith(".jar")){
+                    jarFiles.add(f.getPath());
+                }
+            }
+            frogLangApp = FrogLangApp.getInstance(jarFiles);
+        }else{
+            frogLangApp = FrogLangApp.getInstance();
+        }
+
         messageEmitter = new MessageEmitter(msgText);
-        EditTabManager.addTab(mainTabPane, messageEmitter, Constants.EDITOR_TYPE_CONSOLE);
+        EditTabManager.addTab(mainTabPane, messageEmitter, Constants.EDITOR_TYPE_CONSOLE, frogLangApp);
         mainTabPane.setContextMenu(initTabPaneContextMenu(mainTabPane));
         mainTabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         editorType.setItems(FXCollections.observableArrayList(Constants.EDITOR_TYPE_CONSOLE, Constants.EDITOR_TYPE_SCRIPT));

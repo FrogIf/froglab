@@ -3,6 +3,7 @@ package sch.frog.kit.win;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
+import sch.frog.kit.core.FrogLangApp;
 import sch.frog.kit.win.editor.ConsoleWorkspace;
 
 class EditTabManager {
@@ -13,11 +14,11 @@ class EditTabManager {
         return "Tab " + (tabIndex++);
     }
 
-    public static void addTab(TabPane tabPane, MessageEmitter emitter, String type){
-        addTab(tabPane, null, emitter, type);
+    public static void addTab(TabPane tabPane, MessageEmitter emitter, String type, FrogLangApp frogLangApp){
+        addTab(tabPane, null, emitter, type, frogLangApp);
     }
 
-    public static TabElement addTab(TabPane tabPane, String title, MessageEmitter emitter, String type){
+    private static TabElement addTab(TabPane tabPane, String title, MessageEmitter emitter, String type, FrogLangApp frogLangApp){
         if(tabPane.getTabs().isEmpty()){
             tabIndex = 0;
         }
@@ -27,10 +28,10 @@ class EditTabManager {
         Tab newTab = new Tab(title);
         Pane pane;
         if(Constants.EDITOR_TYPE_CONSOLE.equals(type)){
-            pane = new ConsoleWorkspace(emitter);
+            pane = new ConsoleWorkspace(emitter, frogLangApp);
         }else{
             // TODO
-            pane = new ConsoleWorkspace(emitter);
+            pane = new ConsoleWorkspace(emitter, frogLangApp);
         }
         newTab.setContent(pane);
         tabPane.getTabs().add(newTab);
