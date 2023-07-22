@@ -53,8 +53,7 @@ public class ConsoleCodeArea extends CustomCodeArea {
                 historyChain.add(preLine);
                 String resp = inputListener.txAndRx(preLine);
                 if(resp != null){
-                    this.appendText(resp);
-                    this.appendText("\n");
+                    this.appendText(resp + "\n");
                 }
                 this.append(prefix, List.of("console-prefix"));
             }else if(e.getCode() == KeyCode.UP){
@@ -145,6 +144,10 @@ public class ConsoleCodeArea extends CustomCodeArea {
             }
             super.replace(start, end, replacement);
         }
+    }
+
+    public void output(String str) {
+        this.appendText(str + "\n");
     }
 
     public interface InputListener{

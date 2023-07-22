@@ -179,6 +179,7 @@ public class Value {
 
     @Override
     public String toString() {
+        if(val == null){ return null; }
         return String.valueOf(val);
     }
 

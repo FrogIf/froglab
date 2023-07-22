@@ -8,13 +8,14 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import sch.frog.kit.core.FrogLangApp;
+import sch.frog.kit.core.execute.IOutput;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.win.ClipboardUtil;
 import sch.frog.kit.win.MessageEmitter;
 
 public class ConsoleWorkspace extends BorderPane {
 
-    private final CustomCodeArea codeArea;
+    private final ConsoleCodeArea codeArea;
 
     private final MessageEmitter messageEmitter;
 
@@ -35,6 +36,7 @@ public class ConsoleWorkspace extends BorderPane {
                 return e.getMessage();
             }
         }, 5);
+        session.setOutput(codeArea::output);
         initCodeArea();
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         super.setCenter(scrollPane);
