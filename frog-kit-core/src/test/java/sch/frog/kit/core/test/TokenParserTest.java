@@ -26,6 +26,8 @@ public class TokenParserTest {
                 Value val = instance.execute(expression, session);
                 if(val.getType() != ValueType.VOID){
                     System.out.println(val);
+                }else{
+                    System.out.println();
                 }
             }catch (Exception e){
                 e.printStackTrace();

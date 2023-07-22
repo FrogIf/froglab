@@ -3,6 +3,10 @@ package sch.frog.kit.core.value;
 public enum ValueType {
 
     /**
+     * null
+     */
+    NULL,
+    /**
      * 布尔值
      */
     BOOL,
@@ -26,6 +30,10 @@ public enum ValueType {
      * 符号引用
      */
     SYMBOL,
+    /**
+     * 函数
+     */
+    FUNCTION,
     /**
      * 空值
      */

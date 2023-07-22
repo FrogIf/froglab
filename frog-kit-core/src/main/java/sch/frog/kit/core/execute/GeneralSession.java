@@ -11,15 +11,22 @@ public class GeneralSession implements ISession{
 
     private final AppContext context;
 
+    private final IOutput output;
+
     private final Map<String, Value> variableMap = new HashMap<>();
 
     public GeneralSession(AppContext context) {
+        this(context, new GeneralOutput());
+    }
+
+    public GeneralSession(AppContext context, IOutput output){
         this.context = context;
+        this.output = output;
     }
 
     @Override
     public IOutput getOutput(){
-        return new GeneralOutput();
+        return output;
     }
 
     @Override
@@ -29,21 +36,20 @@ public class GeneralSession implements ISession{
 
     @Override
     public Value getVariable(String key) {
-        return variableMap.get(key);
-    }
-
-    @Override
-    public boolean exist(String key) {
-        return variableMap.containsKey(key);
-    }
-
-    @Override
-    public IFunction getFunction(String funName){
-        return context.getFunction(funName);
+        if(variableMap.containsKey(key)){
+            return variableMap.get(key);
+        }else{
+            IFunction fun = context.getFunction(key);
+            if(fun != null){
+                return new Value(fun);
+            }
+        }
+        return null;
     }
 
     @Override
     public void setValue(String key, Value value){
+        if(value == null){ throw new ExecuteException("value can't be null"); }
         if(!variableMap.containsKey(key)){
             throw new ExecuteException("variable " + key + " not exist");
         }
@@ -52,8 +58,12 @@ public class GeneralSession implements ISession{
 
     @Override
     public void addValue(String key, Value value) {
-        if(variableMap.containsKey(key)){
+        if(value == null){ throw new ExecuteException("value can't be null"); }
+        if(this.variableMap.containsKey(key)){
             throw new ExecuteException(key + " has defined");
+        }
+        if(this.context.existFun(key)){
+            throw new ExecuteException(key + " has defined as function");
         }
         variableMap.put(key, value);
     }

@@ -33,7 +33,11 @@ public class CALL extends AbstractFunction {
         if(locator.isIndex()){
             throw new ExecuteException("call method's symbol type must key");
         }
-        IFunction function = session.getFunction(locator.getKey());
+        Value val = session.getVariable(locator.getKey());
+        IFunction function = null;
+        if(val != null && val.getType() == ValueType.FUNCTION){
+            function = val.to(IFunction.class);
+        }
         if(function == null){
             throw new ExecuteException("function is null");
         }

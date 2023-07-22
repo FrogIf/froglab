@@ -9,7 +9,7 @@ public class GeneralGrammarNodeBuilder {
         TokenType type = token.type();
         IGrammarNode node = null;
         if(type == TokenType.STRUCT){
-            node = GeneralGrammarNodeBuilder.buildForJson(token);
+            node = GeneralGrammarNodeBuilder.buildForObject(token);
         }else if(type == TokenType.IDENTIFIER){
             node = new IdentifierGrammarNode(token);
         }else{
@@ -18,14 +18,16 @@ public class GeneralGrammarNodeBuilder {
         return node;
     }
 
-    public static IGrammarNode buildForJson(Token token){
+    public static IGrammarNode buildForObject(Token token){
         if(token.type() == TokenType.STRUCT){
             IGrammarNode node = null;
             String literal = token.literal();
             if("{".equals(literal)){
-                node = new JsonGrammarNode(token);
+                node = new ObjectGrammarNode(token);
             }else if("[".equals(literal)){
-                node = new JsonGrammarNode(token);
+                node = new ObjectGrammarNode(token);
+            }else if("(".equals(literal)){
+                node = new FunctionDefGrammarNode(token);
             }
             return node;
         }

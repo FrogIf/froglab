@@ -2,15 +2,14 @@ package sch.frog.kit.core.fun.lang;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.execute.ISession;
-import sch.frog.kit.core.fun.AbstractFunction;
+import sch.frog.kit.core.fun.AbstractGeneralFunction;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DATE extends AbstractFunction {
-
+public class DATE extends AbstractGeneralFunction {
 
     @Override
     public String name() {
@@ -23,7 +22,7 @@ public class DATE extends AbstractFunction {
     }
 
     @Override
-    public Value execute(Value[] args, ISession session) {
+    protected Value doExec(Value[] args, ISession session) {
         if(args.length == 0){
             return new Value(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         }
