@@ -1,5 +1,8 @@
 package sch.frog.kit.core.value;
 
+import sch.frog.calculator.number.IntegerNumber;
+import sch.frog.calculator.number.NumberRoundingMode;
+import sch.frog.calculator.number.RationalNumber;
 import sch.frog.kit.core.exception.ValueCastException;
 import sch.frog.kit.core.fun.IFunction;
 
@@ -19,43 +22,65 @@ public class Value {
     static {
         map.put(int.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, int.class); }
-            return Integer.parseInt(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            IntegerNumber intNum = num.toInteger();
+            if(intNum == null){ throw new ValueCastException(num + " can't cast to int"); }
+            return Integer.parseInt(intNum.toString());
         });
         map.put(Integer.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, Integer.class); }
-            return Integer.parseInt(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            IntegerNumber intNum = num.toInteger();
+            if(intNum == null){ throw new ValueCastException(num + " can't cast to integer"); }
+            return Integer.parseInt(intNum.toString());
         });
         map.put(long.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, long.class); }
-            return Long.parseLong(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            IntegerNumber intNum = num.toInteger();
+            if(intNum == null){ throw new ValueCastException(num + " can't cast to long"); }
+            return Long.parseLong(intNum.toString());
         });
         map.put(Long.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, Long.class); }
-            return Long.parseLong(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            IntegerNumber intNum = num.toInteger();
+            if(intNum == null){ throw new ValueCastException(num + " can't cast to Long"); }
+            return Long.parseLong(intNum.toString());
         });
         map.put(double.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, double.class); }
-            return Double.parseDouble(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            String plainString = num.toPlainString(10, NumberRoundingMode.HALF_UP);
+            return Double.parseDouble(plainString);
         });
         map.put(Double.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, Double.class); }
-            return Double.parseDouble(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            String plainString = num.toPlainString(10, NumberRoundingMode.HALF_UP);
+            return Double.parseDouble(plainString);
         });
         map.put(float.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, float.class); }
-            return Float.parseFloat(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            String plainString = num.toPlainString(10, NumberRoundingMode.HALF_UP);
+            return Float.parseFloat(plainString);
         });
         map.put(Float.class, val -> {
             if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, Float.class); }
-            return Float.parseFloat(val.val.toString());
+            RationalNumber num = (RationalNumber) val.val;
+            String plainString = num.toPlainString(10, NumberRoundingMode.HALF_UP);
+            return Float.parseFloat(plainString);
         });
-        map.put(BigDecimal.class, val -> {
-            if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, BigDecimal.class); }
-            return new BigDecimal(val.val.toString());
+        map.put(IntegerNumber.class, val -> {
+            if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, RationalNumber.class); }
+            IntegerNumber intNum = ((RationalNumber) val.val).toInteger();
+            if(intNum == null){ throw new ValueCastException(val.val + " can't cast to integerNumber"); }
+            return intNum;
         });
-        map.put(BigInteger.class, val -> {
-            if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, BigInteger.class); }
-            return new BigInteger(val.val.toString());
+        map.put(RationalNumber.class, val -> {
+            if(val.type != ValueType.NUMBER){ throw new ValueCastException(val.type, RationalNumber.class); }
+            return val.val;
         });
         map.put(boolean.class, val -> {
             if(val.type != ValueType.BOOL){ throw new ValueCastException(val.type, boolean.class); }
@@ -89,6 +114,11 @@ public class Value {
 
     private final Object val;
 
+    public Value(RationalNumber rationalNumber){
+        this.val = rationalNumber;
+        this.type = ValueType.NUMBER;
+    }
+
     public Value(boolean val)
     {
         this.type = ValueType.BOOL;
@@ -98,11 +128,6 @@ public class Value {
     public Value(String str){
         this.type = str == null ? ValueType.NULL : ValueType.STRING;
         this.val = str;
-    }
-
-    public Value(Number num){
-        this.type = num == null ? ValueType.NULL : ValueType.NUMBER;
-        this.val = num == null ? null : num.getNumber();
     }
 
     public Value(VMap map){
@@ -157,11 +182,15 @@ public class Value {
         }else if(obj instanceof Boolean){
             return new Value((Boolean) obj);
         }else if(obj instanceof Integer || obj instanceof Double || obj instanceof Float || obj instanceof Long || obj instanceof Short){
-            return new Value(new Number(String.valueOf(obj)));
+            return new Value(new RationalNumber(String.valueOf(obj)));
         }else if(obj instanceof BigDecimal){
-            return new Value(new Number(((BigDecimal) obj).toPlainString()));
+            return new Value(new RationalNumber(((BigDecimal) obj).toPlainString()));
         }else if(obj instanceof BigInteger){
-            return new Value(new Number(obj.toString()));
+            return new Value(new RationalNumber(obj.toString()));
+        }else if(obj instanceof RationalNumber){
+            return new Value((RationalNumber)obj);
+        }else if(obj instanceof IntegerNumber){
+            return new Value(new RationalNumber((IntegerNumber)obj));
         }else if(obj instanceof VList){
             return new Value((VList) obj);
         }else if(obj instanceof VMap){

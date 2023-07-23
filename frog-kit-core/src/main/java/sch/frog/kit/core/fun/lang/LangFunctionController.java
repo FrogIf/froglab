@@ -1,14 +1,16 @@
 package sch.frog.kit.core.fun.lang;
 
+import sch.frog.calculator.cell.CellCalculator;
+import sch.frog.calculator.number.ComplexNumber;
+import sch.frog.calculator.number.NumberRoundingMode;
+import sch.frog.calculator.number.RationalNumber;
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.fun.FunctionDefine;
-import sch.frog.kit.core.value.Number;
 import sch.frog.kit.core.value.VList;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
 
-import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -103,7 +105,7 @@ public class LangFunctionController {
 
     @FunctionDefine(name = "now")
     public Value now(){
-        return new Value(new Number(String.valueOf(System.currentTimeMillis())));
+        return new Value(new RationalNumber(String.valueOf(System.currentTimeMillis())));
     }
 
     @FunctionDefine(name = "timestamp")
@@ -127,9 +129,9 @@ public class LangFunctionController {
             }
             pattern = patternVal.to(String.class);
         }
-        Number num;
+        RationalNumber num;
         try {
-            num = new Number(new SimpleDateFormat(pattern).parse(dateStr).getTime());
+            num = new RationalNumber(String.valueOf(new SimpleDateFormat(pattern).parse(dateStr).getTime()));
         } catch (ParseException e) {
             throw new ExecuteException(dateStr + " convert to timestamp failed with pattern " + pattern);
         }
@@ -163,7 +165,7 @@ public class LangFunctionController {
         if(args == null){
             throw new ExecuteException("add function at least one argument");
         }
-        BigDecimal d = new BigDecimal(0);
+        RationalNumber d = RationalNumber.ZERO;
         if(args.length == 1){
             Value val = args[0];
             if(val.getType() == ValueType.LIST){
@@ -172,7 +174,7 @@ public class LangFunctionController {
                     if(v.getType() != ValueType.NUMBER){
                         throw new ExecuteException("list element must number type for add");
                     }
-                    d = d.add(v.to(BigDecimal.class));
+                    d = d.add(v.to(RationalNumber.class));
                 }
             }else if(val.getType() == ValueType.NUMBER){
                 return val;
@@ -184,7 +186,7 @@ public class LangFunctionController {
                 if(v.getType() != ValueType.NUMBER){
                     throw new ExecuteException("list element must number type for add");
                 }
-                d = d.add(v.to(BigDecimal.class));
+                d = d.add(v.to(RationalNumber.class));
             }
         }
         return Value.of(d);
@@ -195,7 +197,7 @@ public class LangFunctionController {
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
         }
-        BigDecimal d = new BigDecimal(0);
+        RationalNumber d = RationalNumber.ZERO;
         boolean first = true;
         if(args.length == 1){
             Value val = args[0];
@@ -206,10 +208,10 @@ public class LangFunctionController {
                         throw new ExecuteException("list element must number type for add");
                     }
                     if(first){
-                        d = d.add(v.to(BigDecimal.class));
+                        d = d.add(v.to(RationalNumber.class));
                         first = false;
                     }else{
-                        d = d.subtract(v.to(BigDecimal.class));
+                        d = d.sub(v.to(RationalNumber.class));
                     }
                 }
             }else if(val.getType() == ValueType.NUMBER){
@@ -223,10 +225,10 @@ public class LangFunctionController {
                     throw new ExecuteException("list element must number type for add");
                 }
                 if(first){
-                    d = d.add(v.to(BigDecimal.class));
+                    d = d.add(v.to(RationalNumber.class));
                     first = false;
                 }else{
-                    d = d.subtract(v.to(BigDecimal.class));
+                    d = d.sub(v.to(RationalNumber.class));
                 }
             }
         }
@@ -238,7 +240,7 @@ public class LangFunctionController {
         if(args == null){
             throw new ExecuteException("add function at least one argument");
         }
-        BigDecimal d = new BigDecimal(1);
+        RationalNumber d = RationalNumber.ONE;
         if(args.length == 1){
             Value val = args[0];
             if(val.getType() == ValueType.LIST){
@@ -247,7 +249,7 @@ public class LangFunctionController {
                     if(v.getType() != ValueType.NUMBER){
                         throw new ExecuteException("list element must number type for add");
                     }
-                    d = d.multiply(v.to(BigDecimal.class));
+                    d = d.mult(v.to(RationalNumber.class));
                 }
             }else if(val.getType() == ValueType.NUMBER){
                 return val;
@@ -259,7 +261,7 @@ public class LangFunctionController {
                 if(v.getType() != ValueType.NUMBER){
                     throw new ExecuteException("list element must number type for add");
                 }
-                d = d.multiply(v.to(BigDecimal.class));
+                d = d.mult(v.to(RationalNumber.class));
             }
         }
         return Value.of(d);
@@ -270,7 +272,7 @@ public class LangFunctionController {
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
         }
-        BigDecimal d = new BigDecimal(1);
+        RationalNumber d = RationalNumber.ONE;
         boolean first = true;
         if(args.length == 1){
             Value val = args[0];
@@ -281,10 +283,10 @@ public class LangFunctionController {
                         throw new ExecuteException("list element must number type for add");
                     }
                     if(first){
-                        d = d.multiply(v.to(BigDecimal.class));
+                        d = d.mult(v.to(RationalNumber.class));
                         first = false;
                     }else{
-                        d = d.divide(v.to(BigDecimal.class));   // TODO 改成精度无损
+                        d = d.div(v.to(RationalNumber.class));   // TODO 改成精度无损
                     }
                 }
             }else if(val.getType() == ValueType.NUMBER){
@@ -298,10 +300,10 @@ public class LangFunctionController {
                     throw new ExecuteException("list element must number type for add");
                 }
                 if(first){
-                    d = d.multiply(v.to(BigDecimal.class));
+                    d = d.mult(v.to(RationalNumber.class));
                     first = false;
                 }else{
-                    d = d.divide(v.to(BigDecimal.class));
+                    d = d.div(v.to(RationalNumber.class));
                 }
             }
         }
@@ -420,6 +422,36 @@ public class LangFunctionController {
             throw new ExecuteException("url_decode argument type must string, but " + arg.getType());
         }
         return new Value(URLDecoder.decode(arg.to(String.class), StandardCharsets.UTF_8));
+    }
+
+    private final CellCalculator cellCalculator = new CellCalculator();
+
+    @FunctionDefine(name = "calc")
+    public Value calc(Value expression){
+        if(expression.getType() != ValueType.STRING){
+            throw new ExecuteException("calc must input string expression");
+        }
+        ComplexNumber number = cellCalculator.calculate(expression.to(String.class));
+        RationalNumber rational = number.toRational();
+        if(rational == null){
+            throw new ExecuteException("result is not rational number, system unsupported.");
+        }
+        return new Value(rational);
+    }
+
+    @FunctionDefine(name = "numScale")
+    public Value numScale(Value num, Value mode, Value scale){
+        if(num.getType() != ValueType.NUMBER){
+            throw new ExecuteException("numScale first argument must number, but " + num.getType());
+        }
+        if(mode.getType() != ValueType.STRING){
+            throw new ExecuteException("numScale second argument must string, but " + num.getType());
+        }
+        if(scale.getType() != ValueType.NUMBER){
+            throw new ExecuteException("numScale third argument must number, but " + num.getType());
+        }
+        String plainString = num.to(RationalNumber.class).toPlainString(scale.to(int.class), NumberRoundingMode.valueOf(mode.to(String.class)));
+        return new Value(plainString);
     }
 
 }
