@@ -35,7 +35,7 @@ public class ArgumentListGrammarNode extends AbstractLeftAssociativeGrammarNode 
         if(selfFinish){
             boolean success;
             if(succeed == null){
-                success = (succeed = GeneralGrammarNodeBuilder.buildForRef(token)) != null;
+                success = (succeed = GrammarNodeBuilder.buildForRef(token)) != null;
             }else{
                 success = succeed.add(token);
             }
@@ -53,7 +53,7 @@ public class ArgumentListGrammarNode extends AbstractLeftAssociativeGrammarNode 
                 this.selfFinish = true;
                 return true;
             }else if(this.cursor == null){
-                IGrammarNode node = GeneralGrammarNodeBuilder.buildForValuable(token);
+                IGrammarNode node = GrammarNodeBuilder.buildForValuable(token);
                 if(node == null){ throw new GrammarException(token); }
                 this.cursor = node;
                 list.add(node);

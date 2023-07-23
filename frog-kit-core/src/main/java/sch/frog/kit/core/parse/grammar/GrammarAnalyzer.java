@@ -18,11 +18,11 @@ public class GrammarAnalyzer {
         Token root = tokenItr.next();
         TokenType type = root.type();
         if(type == TokenType.STRUCT){
-            rootNode = GeneralGrammarNodeBuilder.buildForObject(root);
+            rootNode = GrammarNodeBuilder.buildForObject(root);
         }else if(type == TokenType.IDENTIFIER){
             rootNode = new IdentifierGrammarNode(root);
         }else{
-            rootNode = GeneralGrammarNodeBuilder.buildForConstant(root);
+            rootNode = GrammarNodeBuilder.buildForConstant(root);
         }
         if(rootNode == null){
             throw new GrammarException(root);

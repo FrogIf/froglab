@@ -14,8 +14,6 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
 
     private AbstractLeftAssociativeGrammarNode succeed = null;
 
-    private Type type = Type.VARIABLE;
-
     public IdentifierGrammarNode(Token token){
         super(token);
         if(token.type() != TokenType.IDENTIFIER){
@@ -33,17 +31,14 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
         if(status == 0){ // 初始化
             if(token.type() == TokenType.STRUCT){
                 if("(".equals(token.literal())){
-                    type = Type.FUNCTION;
                     succeed = new ArgumentListGrammarNode(token);
                     status = 1;
                     return true;
                 }else if(".".equals(token.literal())){
-                    type = Type.VARIABLE;
                     status = 1;
                     succeed = new PropertyGrammarNode(token);
                     return true;
                 }else if("[".equals(token.literal())){
-                    type = Type.VARIABLE;
                     status = 1;
                     succeed = new ArrayIndexGrammarNode(token);
                     return true;
@@ -75,11 +70,6 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
         }
         Value result = session.getVariable(token.literal());
         return succeed.succeedEvaluate(result, session);
-    }
-
-    private enum Type{
-        VARIABLE,
-        FUNCTION;
     }
 
 }

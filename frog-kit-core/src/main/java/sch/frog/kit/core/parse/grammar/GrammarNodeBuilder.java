@@ -3,7 +3,7 @@ package sch.frog.kit.core.parse.grammar;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 
-public class GeneralGrammarNodeBuilder {
+public class GrammarNodeBuilder {
 
     // 构建引用: a.b.c  aaa()   aa[0]
     public static AbstractLeftAssociativeGrammarNode buildForRef(Token token){
@@ -22,11 +22,11 @@ public class GeneralGrammarNodeBuilder {
         TokenType type = token.type();
         IGrammarNode node;
         if(type == TokenType.STRUCT){
-            node = GeneralGrammarNodeBuilder.buildForObject(token);
+            node = GrammarNodeBuilder.buildForObject(token);
         }else if(type == TokenType.IDENTIFIER){
             node = new IdentifierGrammarNode(token);
         }else{
-            node = GeneralGrammarNodeBuilder.buildForConstant(token);
+            node = GrammarNodeBuilder.buildForConstant(token);
         }
         return node;
     }

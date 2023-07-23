@@ -52,7 +52,7 @@ public class PropertyGrammarNode extends AbstractLeftAssociativeGrammarNode {
         }else if(succeed != null){
             this.closed = !succeed.add(token);
         }else{
-            succeed = GeneralGrammarNodeBuilder.buildForRef(token);
+            succeed = GrammarNodeBuilder.buildForRef(token);
             this.closed = succeed == null;
         }
         return !this.closed;

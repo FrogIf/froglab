@@ -77,7 +77,7 @@ public class ArrayIndexGrammarNode extends AbstractLeftAssociativeGrammarNode {
             }
             return success;
         }else{
-            indexNode = GeneralGrammarNodeBuilder.buildForValuable(token);
+            indexNode = GrammarNodeBuilder.buildForValuable(token);
             if(indexNode == null){
                 throw new GrammarException(token);
             }

@@ -109,14 +109,14 @@ public class ObjectGrammarNode extends AbstractGrammarNode{
                     this.closed = true;
                     return true;
                 }else if(token.type() == TokenType.STRUCT){
-                    this.activeNode = GeneralGrammarNodeBuilder.buildForObject(token);
+                    this.activeNode = GrammarNodeBuilder.buildForObject(token);
                     if(this.activeNode == null){
                         throw new GrammarException(token);
                     }
                 }else if(token.type() == TokenType.IDENTIFIER){
                     this.activeNode = new IdentifierGrammarNode(token);
                 }else if(TokenUtil.isConstant(token.type())){
-                    this.activeNode = GeneralGrammarNodeBuilder.buildForConstant(token);
+                    this.activeNode = GrammarNodeBuilder.buildForConstant(token);
                 }else{
                     throw new GrammarException(token);
                 }
@@ -178,9 +178,9 @@ public class ObjectGrammarNode extends AbstractGrammarNode{
                     if(token.type() == TokenType.IDENTIFIER){
                         valueNode = new IdentifierGrammarNode(token);
                     }else if(TokenUtil.isConstant(token.type())){
-                        valueNode = GeneralGrammarNodeBuilder.buildForConstant(token);
+                        valueNode = GrammarNodeBuilder.buildForConstant(token);
                     }else if(token.type() == TokenType.STRUCT){
-                        valueNode = GeneralGrammarNodeBuilder.buildForObject(token);
+                        valueNode = GrammarNodeBuilder.buildForObject(token);
                     }
                     if(valueNode == null){
                         throw new GrammarException(token);

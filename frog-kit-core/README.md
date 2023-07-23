@@ -24,9 +24,15 @@ date(now(), 'yyyy-MM-dd')
 自定义函数的写法示例如下:
 
 ```scheme
-@(aFun, (a, b) => date(a, b))
+(a, b) => date(a, b)
 ```
 
-* `@`是声明符号, 可以声明一个变量, 不仅可以是函数, 也可以是普通的值变量
-* `(x, y) => fun(x, y)`是常见的lambda表达式定义形式
-* 上面表达式的意思是, 声明一个变量`aFun`, 并将一个函数表达式赋值给它, 即定义了一个名字叫`aFun`的函数
+## 复杂示例
+
+```scheme
+define(bbb, {aaa: {bbb: [1, (a, b) => begin(print(a), print(b), (a, b) => date(a, b))]}}).aaa.bbb[1]('aaa', 'bbb')(now(), 'yyyy-MM-dd')
+```
+
+## 计划
+
+1. 目前符号系统混乱, 需要改造
