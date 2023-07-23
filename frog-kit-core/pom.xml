@@ -25,7 +25,7 @@
             <artifactId>calculator-core</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/calculator-core.jar</systemPath>
+            <systemPath>${project.basedir}/libs/calculator-core.jar</systemPath>
         </dependency>
     </dependencies>
 
