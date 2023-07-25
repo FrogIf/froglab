@@ -1,6 +1,7 @@
 package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.GrammarException;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.parse.common.TokenRuleUtil;
 import sch.frog.kit.core.parse.lexical.Token;
@@ -58,17 +59,17 @@ public class ObjectGrammarNode extends AbstractGrammarNode{
     }
 
     @Override
-    public Value evaluate(ISession session) {
+    public Value evaluate(IRuntimeContext context) {
         if(map != null){
             VMap obj = new VMap();
             for (Map.Entry<String, IGrammarNode> entry : map.entrySet()) {
-                obj.put(entry.getKey(), entry.getValue().evaluate(session));
+                obj.put(entry.getKey(), entry.getValue().evaluate(context));
             }
             return new Value(obj);
         }else{
             VList l = new VList();
             for (IGrammarNode node : list) {
-                l.add(node.evaluate(session));
+                l.add(node.evaluate(context));
             }
             return new Value(l);
         }

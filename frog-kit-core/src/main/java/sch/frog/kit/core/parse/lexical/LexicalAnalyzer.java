@@ -25,14 +25,6 @@ public class LexicalAnalyzer {
         specialWord.put("=>", TokenType.STRUCT);
     }
 
-    /*
-     * uuid()
-     * now()
-     * add(now(), 1000)
-     * date(now(), 'yyyy-MM-dd HH:mm:ss')
-     * concat('a', 'b', 'c', 'd')
-     * open('color'), open('json')
-     */
     public List<Token> getToken(String expression) throws IncorrectExpressionException {
         int len = expression.length();
         ArrayList<Token> tokens = new ArrayList<>();
@@ -67,6 +59,12 @@ public class LexicalAnalyzer {
                 token = new Token("{", TokenType.STRUCT, i);
             }else if(ch == '}'){
                 token = new Token("}", TokenType.STRUCT, i);
+            }else if(ch == '/'){
+                String comment = TokenRuleUtil.matchComment(i, expression);
+                if(comment == null){
+                    throw new IncorrectExpressionException("comment incorrect", i);
+                }
+                token = new Token(comment, TokenType.COMMENT, i);
             }else {
                 // 匹配数字
                 String num = TokenRuleUtil.matchNumber(i, expression);
@@ -94,7 +92,7 @@ public class LexicalAnalyzer {
                 }
             }
             if(token == null){
-                throw new IncorrectExpressionException("expression parse failed for : " + expression + " at " + i);
+                throw new IncorrectExpressionException("expression parse failed for : " + expression + " at " + i, i);
             }
             tokens.add(token);
             i += token.literal().length();

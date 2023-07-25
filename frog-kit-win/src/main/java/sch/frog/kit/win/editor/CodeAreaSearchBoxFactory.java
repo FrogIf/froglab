@@ -3,19 +3,19 @@ package sch.frog.kit.win.editor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import org.fxmisc.richtext.CodeArea;
-import sch.frog.kit.win.MessageEmitter;
+import sch.frog.kit.win.MessageUtil;
 
 import java.util.ArrayList;
 
 public class CodeAreaSearchBoxFactory {
 
-    public static SearchBox createSearchBox(BorderPane parentContainer, CodeArea codeArea, MessageEmitter messageEmitter){
-        SearchAction searchAction = new SearchAction(codeArea, messageEmitter);
+    public static SearchBox createSearchBox(BorderPane parentContainer, CodeArea codeArea){
+        SearchAction searchAction = new SearchAction(codeArea);
         SearchBox searchBox = new SearchBox(parentContainer, (text, searchOverviewFetcher) -> {
-            messageEmitter.clear();
+            MessageUtil.clear();
             searchAction.search(text, true, searchOverviewFetcher);
         }, (text, searchOverviewFetcher) -> {
-            messageEmitter.clear();
+            MessageUtil.clear();
             searchAction.search(text, false, searchOverviewFetcher);
         });
         searchBox.onClose(codeArea::requestFocus);
@@ -33,11 +33,8 @@ public class CodeAreaSearchBoxFactory {
 
         private final CodeArea codeArea;
 
-        private final MessageEmitter messageEmitter;
-
-        public SearchAction(CodeArea codeArea, MessageEmitter messageEmitter) {
+        public SearchAction(CodeArea codeArea) {
             this.codeArea = codeArea;
-            this.messageEmitter = messageEmitter;
         }
 
         private ArrayList<SearchResult> searchResults = null;
@@ -60,7 +57,7 @@ public class CodeAreaSearchBoxFactory {
 
             int cursorIndex = -1;
             if(this.searchResults.isEmpty()){
-                messageEmitter.emitWarn("no result found for : " + searchText);
+                MessageUtil.warn("no result found for : " + searchText);
             }else{
                 int startIndex = backward ? searchResults.size() - 1 : 0;
                 int start = codeArea.getCaretPosition();
@@ -86,7 +83,7 @@ public class CodeAreaSearchBoxFactory {
                     if(nextIndex == searchResults.size()){
                         if(!this.reachBottom){
                             cursorIndex = nextIndex - 1;
-                            this.messageEmitter.emitWarn("search reach bottom");
+                            MessageUtil.warn("search reach bottom");
                         }else{
                             cursorIndex = 0;
                         }
@@ -99,7 +96,7 @@ public class CodeAreaSearchBoxFactory {
                     if(nextIndex == -1){
                         if(!this.reachTop){
                             cursorIndex = 0;
-                            this.messageEmitter.emitWarn("search reach top");
+                            MessageUtil.warn("search reach top");
                         }else{
                             cursorIndex = searchResults.size() - 1;
                         }

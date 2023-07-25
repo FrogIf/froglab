@@ -1,7 +1,7 @@
 package sch.frog.kit.core.fun.lang;
 
 import sch.frog.kit.core.exception.ExecuteException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.fun.AbstractFunction;
 import sch.frog.kit.core.value.Locator;
 import sch.frog.kit.core.value.Value;
@@ -20,7 +20,7 @@ public class GET extends AbstractFunction {
     }
 
     @Override
-    public Value execute(Value[] args, ISession session) {
+    public Value execute(Value[] args, IRuntimeContext context) {
         if(args.length != 1){
             throw new ExecuteException("set function must has 1 arguments");
         }
@@ -29,7 +29,7 @@ public class GET extends AbstractFunction {
             throw new ExecuteException("set function first argument must string type");
         }
         Locator locator = arg.to(Locator.class);
-        return locator.get(session);
+        return context.getVariable(locator.getKey());
     }
 
 

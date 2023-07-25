@@ -1,7 +1,7 @@
 package sch.frog.kit.core.fun;
 
 import sch.frog.kit.core.exception.ExecuteException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.value.Value;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +21,9 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
 
     private int valueCount = 0; // 0 - 无参函数, >0 多个参数的函数, -1 - Value数组
 
-    private int[] valueIndexMark = null; // 0 - 未定义; 1 - session; 2 - Value; 3 - Value[]
+    private int[] valueIndexMark = null; // 0 - 未定义; 1 - context; 2 - Value; 3 - Value[]
+
+    private final boolean returnVoid;
 
     public GeneralFunctionWrapper(FunctionDefine define, Object instance, Method method){
         this.name = define.name();
@@ -29,16 +31,14 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
         this.instance = instance;
         this.method = method;
         this.argCount = method.getParameterCount();
-        if(!Value.class.isAssignableFrom(method.getReturnType())){
-            throw new IllegalArgumentException(method.getName() + " return type must Value.class");
-        }
         valueIndexMark = new int[this.argCount];
         boolean findValueArr = false;
         boolean findValue = false;
+        returnVoid = method.getReturnType() == void.class;
         Class<?>[] types = method.getParameterTypes();
         for(int i = 0; i < types.length; i++){
             Class<?> type = types[i];
-            if(ISession.class.isAssignableFrom(type)){
+            if(IRuntimeContext.class.isAssignableFrom(type)){
                 valueIndexMark[i] = 1;
             }else if(Value.class.isAssignableFrom(type)){
                 if(findValueArr){
@@ -62,7 +62,7 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
     }
 
     @Override
-    protected Value doExec(Value[] args, ISession session) {
+    protected Value doExec(Value[] args, IRuntimeContext context) {
         Object[] arguments = new Object[argCount];
         if(this.valueCount != -1){
             if(args.length != this.valueCount){
@@ -73,7 +73,7 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
         for (int i = 0; i < this.argCount; i++){
             int mark = valueIndexMark[i];
             if(mark == 1){
-                arguments[i] = session;
+                arguments[i] = context;
             }else if(mark == 2){
                 arguments[i] = args[a++];
             }else if(mark == 3){
@@ -81,7 +81,8 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
             }
         }
         try {
-            return (Value) method.invoke(instance, arguments);
+            Object result = method.invoke(instance, arguments);
+            return returnVoid ? Value.VOID : Value.of(result);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e){

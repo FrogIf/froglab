@@ -2,15 +2,14 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.ISession;
-import sch.frog.kit.core.execute.SessionWrapper;
+import sch.frog.kit.core.execute.GeneralRuntimeContext;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.fun.AbstractFunction;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 import sch.frog.kit.core.value.Value;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /*
@@ -85,7 +84,7 @@ public class FunctionObjectGrammarNode extends ObjectGrammarNode {
     }
 
     @Override
-    public Value evaluate(ISession session) {
+    public Value evaluate(IRuntimeContext context) {
         return new Value(new BodyFunction(this.arguments, this.body));
     }
 
@@ -111,51 +110,15 @@ public class FunctionObjectGrammarNode extends ObjectGrammarNode {
         }
 
         @Override
-        public Value execute(Value[] args, ISession session) {
-            session = new InnerSession(session);
+        public Value execute(Value[] args, IRuntimeContext context) {
+            context = new GeneralRuntimeContext(context);
             if(args.length != arguments.size()){
                 throw new ExecuteException("real args count except " + arguments.size() + ", but " + args.length);
             }
             for(int i = 0; i < arguments.size(); i++){
-                session.addValue(arguments.get(i), args[i]);
+                context.addLocalVariable(arguments.get(i), args[i]);
             }
-            return this.body.evaluate(session);
-        }
-    }
-
-    private static class InnerSession extends SessionWrapper {
-
-        private final HashMap<String, Value> innerVariable = new HashMap<>();
-
-        public InnerSession(ISession session) {
-            super(session);
-        }
-
-        @Override
-        public Value getVariable(String key) {
-            Value val = innerVariable.get(key);
-            if(val == null){
-                return super.getVariable(key);
-            }else{
-                return val;
-            }
-        }
-
-        @Override
-        public void setValue(String key, Value value) {
-            if(innerVariable.containsKey(key)){
-                innerVariable.put(key, value);
-            }else{
-                session.setValue(key, value);
-            }
-        }
-
-        @Override
-        public void addValue(String key, Value value) {
-            if(innerVariable.containsKey(key)){
-                throw new ExecuteException(key + " has defined");
-            }
-            innerVariable.put(key, value);
+            return this.body.evaluate(context);
         }
     }
 

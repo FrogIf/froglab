@@ -7,11 +7,10 @@ import sch.frog.kit.core.value.Locator;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
 
-public class Define extends AbstractFunction {
-
+public class LET extends AbstractFunction {
     @Override
     public String name() {
-        return "define";
+        return "let";
     }
 
     @Override
@@ -33,7 +32,7 @@ public class Define extends AbstractFunction {
             throw new ExecuteException("index can't as variable name");
         }
         Value v = args.length == 1 ? Value.NULL : args[1];
-        context.addSessionVariable(locator.getKey(), v);
+        context.addLocalVariable(locator.getKey(), v);
         return v;
     }
 }

@@ -91,6 +91,39 @@ public class TokenRuleUtil {
         return number.toString();
     }
 
+    public static String matchComment(int start, String str){
+        int len = str.length();
+        if(str.charAt(start) == '/' && start < len - 1){
+            if(str.charAt(start + 1) == '/'){
+                start += 2;
+                StringBuilder sb = new StringBuilder("//");
+                for(; start < len; start++){
+                    char ch = str.charAt(start);
+                    if(ch == '\n'){
+                        break;
+                    }
+                    sb.append(ch);
+                }
+                return sb.toString();
+            }else if(str.charAt(start + 1) == '*'){
+                start += 2;
+                StringBuilder sb = new StringBuilder("/*");
+                boolean isStar = false;
+                for(; start < len; start++){
+                    char ch = str.charAt(start);
+                    if(ch == '/' && isStar){
+                        sb.append('/');
+                        break;
+                    }
+                    isStar = ch == '*';
+                    sb.append(ch);
+                }
+                return sb.toString();
+            }
+        }
+        return null;
+    }
+
     public static boolean isLetter(char ch){
         return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
     }

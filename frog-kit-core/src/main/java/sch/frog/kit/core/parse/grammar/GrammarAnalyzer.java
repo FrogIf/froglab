@@ -15,7 +15,14 @@ public class GrammarAnalyzer {
     public IGrammarNode getGrammarTree(List<Token> tokens) throws GrammarException {
         IGrammarNode rootNode = null;
         Iterator<Token> tokenItr = tokens.iterator();
-        Token root = tokenItr.next();
+        Token root = null;
+        while(tokenItr.hasNext()){
+            root = tokenItr.next();
+            if(root.type() != TokenType.COMMENT){ break; }
+            else{ root = null; }
+        }
+        if(root == null){ return new EmptyGrammarNode(); }
+
         TokenType type = root.type();
         if(type == TokenType.STRUCT){
             rootNode = GrammarNodeBuilder.buildForObject(root);
@@ -29,6 +36,7 @@ public class GrammarAnalyzer {
         }
         while(tokenItr.hasNext()){
             Token t = tokenItr.next();
+            if(t.type() == TokenType.COMMENT){ continue; }  // 跳过注释
             if(!rootNode.add(t)){
                 throw new GrammarException(t);
             }

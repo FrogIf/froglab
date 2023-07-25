@@ -5,7 +5,14 @@ package sch.frog.kit.core.exception;
  */
 public class IncorrectExpressionException extends Exception{
 
-    public IncorrectExpressionException(String message) {
+    private int pos;
+
+    public IncorrectExpressionException(String message, int pos){
         super(message);
+        this.pos = pos;
+    }
+
+    public int getPos() {
+        return pos;
     }
 }

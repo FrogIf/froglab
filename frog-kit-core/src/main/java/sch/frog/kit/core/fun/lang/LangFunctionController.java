@@ -5,8 +5,10 @@ import sch.frog.calculator.number.ComplexNumber;
 import sch.frog.calculator.number.NumberRoundingMode;
 import sch.frog.calculator.number.RationalNumber;
 import sch.frog.kit.core.exception.ExecuteException;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.fun.FunctionDefine;
+import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.value.VList;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
@@ -17,12 +19,22 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Date;
 
 public class LangFunctionController {
 
     @FunctionDefine(name = "print")
-    public Value print(Value[] args, ISession session){
+    public void print(Value[] args, IRuntimeContext context){
+        writeToOutput(args, context, false);
+    }
+
+    @FunctionDefine(name = "println")
+    public void println(Value[] args, IRuntimeContext context){
+        writeToOutput(args, context, true);
+    }
+
+    private void writeToOutput(Value[] args, IRuntimeContext context, boolean newline){
         if(args.length == 0){
             throw new ExecuteException("print at least 1 argument");
         }
@@ -31,7 +43,7 @@ public class LangFunctionController {
             throw new ExecuteException("print first argument must string, but " + log.getType());
         }
         if(args.length == 1){
-            session.getOutput().write(log.toString());
+            context.getOutput().write(log + (newline ? "\n" : ""));
         }else{
             String logExp = log.to(String.class);
             StringBuilder sb = new StringBuilder();
@@ -64,52 +76,59 @@ public class LangFunctionController {
                 }
             }
             if(escape){ sb.append('\\'); }
-            session.getOutput().write(sb.toString());
+            context.getOutput().write(sb + (newline ? "\n" : ""));
         }
-        return Value.VOID;
     }
 
-    @FunctionDefine(name = "begin")
-    public Value begin(Value[] args){
+    @FunctionDefine(name = "exec")
+    public Value exec(Value[] args){
         if(args != null && args.length > 0){
             return args[args.length - 1];
         }
         return Value.VOID;
     }
 
+    @FunctionDefine(name = "lambda")
+    public Value lambda(Value arg){
+        if(arg.getType() != ValueType.FUNCTION){
+            throw new ExecuteException("lambda argument type must function, but " + arg.getType());
+        }
+        return arg;
+    }
+
     @FunctionDefine(name = "uuid")
-    public Value uuid(){
-        return new Value(java.util.UUID.randomUUID().toString());
+    public String uuid(){
+        return java.util.UUID.randomUUID().toString();
     }
 
     @FunctionDefine(name = "uuidi")
-    public Value uuidi(){
-        return new Value(java.util.UUID.randomUUID().toString().replaceAll("-", ""));
+    public String uuidi(){
+        return java.util.UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @FunctionDefine(name = "upper")
-    public Value upper(Value arg){
+    public String upper(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("upper function argument's type must string");
         }
-        return new Value(arg.to(String.class).toUpperCase());
+        return arg.to(String.class).toUpperCase();
     }
 
     @FunctionDefine(name = "lower")
-    public Value lower(Value arg){
+    public String lower(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("lower function argument's type must string");
         }
-        return new Value(arg.to(String.class).toLowerCase());
+        return arg.to(String.class).toLowerCase();
     }
 
     @FunctionDefine(name = "now")
-    public Value now(){
-        return new Value(new RationalNumber(String.valueOf(System.currentTimeMillis())));
+    public RationalNumber now(){
+        return new RationalNumber(String.valueOf(System.currentTimeMillis()));
     }
 
     @FunctionDefine(name = "timestamp")
-    public Value timestamp(Value[] args){
+    public RationalNumber timestamp(Value[] args){
         if(args.length < 1){
             throw new ExecuteException("timestamp at least have 1 argument");
         }
@@ -135,13 +154,13 @@ public class LangFunctionController {
         } catch (ParseException e) {
             throw new ExecuteException(dateStr + " convert to timestamp failed with pattern " + pattern);
         }
-        return new Value(num);
+        return num;
     }
 
     @FunctionDefine(name = "date")
-    public Value date(Value[] args){
+    public String date(Value[] args){
         if(args.length == 0){
-            return new Value(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         }
         Value first = args[0];
         if(first.getType() != ValueType.NUMBER){
@@ -151,17 +170,15 @@ public class LangFunctionController {
         Date date = new Date();
         if(args.length == 1){
             date.setTime(timeMillis);
-            String result = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-            return new Value(result);
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
         }else{
             date.setTime(timeMillis);
-            String result = new SimpleDateFormat(args[1].toString()).format(date);
-            return new Value(result);
+            return new SimpleDateFormat(args[1].toString()).format(date);
         }
     }
 
     @FunctionDefine(name = "add")
-    public Value add(Value[] args){
+    public RationalNumber add(Value[] args){
         if(args == null){
             throw new ExecuteException("add function at least one argument");
         }
@@ -177,7 +194,7 @@ public class LangFunctionController {
                     d = d.add(v.to(RationalNumber.class));
                 }
             }else if(val.getType() == ValueType.NUMBER){
-                return val;
+                return val.to(RationalNumber.class);
             }else{
                 throw new ExecuteException("add function's argument type must number or list, but " + val.getType());
             }
@@ -189,11 +206,11 @@ public class LangFunctionController {
                 d = d.add(v.to(RationalNumber.class));
             }
         }
-        return Value.of(d);
+        return d;
     }
 
     @FunctionDefine(name = "sub")
-    public Value sub(Value[] args){
+    public RationalNumber sub(Value[] args){
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
         }
@@ -215,7 +232,7 @@ public class LangFunctionController {
                     }
                 }
             }else if(val.getType() == ValueType.NUMBER){
-                return val;
+                return val.to(RationalNumber.class);
             }else{
                 throw new ExecuteException("add function's argument type must number or list, but " + val.getType());
             }
@@ -232,11 +249,11 @@ public class LangFunctionController {
                 }
             }
         }
-        return Value.of(d);
+        return d;
     }
 
     @FunctionDefine(name = "mul")
-    public Value mul(Value[] args){
+    public RationalNumber mul(Value[] args){
         if(args == null){
             throw new ExecuteException("add function at least one argument");
         }
@@ -252,7 +269,7 @@ public class LangFunctionController {
                     d = d.mult(v.to(RationalNumber.class));
                 }
             }else if(val.getType() == ValueType.NUMBER){
-                return val;
+                return val.to(RationalNumber.class);
             }else{
                 throw new ExecuteException("add function's argument type must number or list, but " + val.getType());
             }
@@ -264,11 +281,11 @@ public class LangFunctionController {
                 d = d.mult(v.to(RationalNumber.class));
             }
         }
-        return Value.of(d);
+        return d;
     }
 
     @FunctionDefine(name = "div")
-    public Value div(Value[] args){
+    public RationalNumber div(Value[] args){
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
         }
@@ -290,7 +307,7 @@ public class LangFunctionController {
                     }
                 }
             }else if(val.getType() == ValueType.NUMBER){
-                return val;
+                return val.to(RationalNumber.class);
             }else{
                 throw new ExecuteException("add function's argument type must number or list, but " + val.getType());
             }
@@ -307,15 +324,15 @@ public class LangFunctionController {
                 }
             }
         }
-        return Value.of(d);
+        return d;
     }
 
     @FunctionDefine(name = "unicode")
-    public Value unicode(Value arg){
+    public String unicode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("unicode function argument's type must string");
         }
-        return new Value(encodeUnicode(arg.to(String.class)));
+        return encodeUnicode(arg.to(String.class));
     }
 
     private String encodeUnicode(String origin){
@@ -338,11 +355,11 @@ public class LangFunctionController {
     }
 
     @FunctionDefine(name = "unicodei")
-    public Value unicodei(Value arg){
+    public String unicodei(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("invUnicode function argument's type must string");
         }
-        return new Value(decodeUnicode(arg.to(String.class)));
+        return decodeUnicode(arg.to(String.class));
     }
 
     private String decodeUnicode(String origin){
@@ -362,25 +379,23 @@ public class LangFunctionController {
     }
 
     @FunctionDefine(name = "base64")
-    public Value base64(Value arg){
+    public String base64(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("base64 argument type must string, but " + arg.getType());
         }
-        String s = Base64.getEncoder().encodeToString(arg.to(String.class).getBytes(StandardCharsets.UTF_8));
-        return new Value(s);
+        return Base64.getEncoder().encodeToString(arg.to(String.class).getBytes(StandardCharsets.UTF_8));
     }
 
     @FunctionDefine(name = "base64i")
-    public Value base64i(Value arg){
+    public String base64i(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("base64i argument type must string, but " + arg.getType());
         }
-        String s = new String(Base64.getDecoder().decode(arg.to(String.class).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-        return new Value(s);
+        return new String(Base64.getDecoder().decode(arg.to(String.class).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
     }
 
     @FunctionDefine(name = "hex")
-    public Value hex(Value arg){
+    public String hex(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("hex argument type must string, but " + arg.getType());
         }
@@ -390,11 +405,11 @@ public class LangFunctionController {
             sb.append(String.format("%02X", b));
             sb.append(' ');
         }
-        return new Value(sb.toString());
+        return sb.toString();
     }
 
     @FunctionDefine(name = "hexi")
-    public Value hexi(Value arg){
+    public String hexi(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("hexi argument type must string, but " + arg.getType());
         }
@@ -405,29 +420,29 @@ public class LangFunctionController {
         for(int j = 0, i = 0; j < bytes.length; i += 2, j++){
             bytes[j] = (byte)Integer.parseInt(content.substring(i, i + 2), 16);
         }
-        return new Value(new String(bytes, StandardCharsets.UTF_8));
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     @FunctionDefine(name = "url_encode")
-    public Value urlEncode(Value arg){
+    public String urlEncode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("url_encode argument type must string, but " + arg.getType());
         }
-        return new Value(URLEncoder.encode(arg.to(String.class), StandardCharsets.UTF_8));
+        return URLEncoder.encode(arg.to(String.class), StandardCharsets.UTF_8);
     }
 
     @FunctionDefine(name = "url_decode")
-    public Value urlDecode(Value arg){
+    public String urlDecode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("url_decode argument type must string, but " + arg.getType());
         }
-        return new Value(URLDecoder.decode(arg.to(String.class), StandardCharsets.UTF_8));
+        return URLDecoder.decode(arg.to(String.class), StandardCharsets.UTF_8);
     }
 
     private final CellCalculator cellCalculator = new CellCalculator();
 
     @FunctionDefine(name = "calc")
-    public Value calc(Value expression){
+    public RationalNumber calc(Value expression){
         if(expression.getType() != ValueType.STRING){
             throw new ExecuteException("calc must input string expression");
         }
@@ -436,11 +451,11 @@ public class LangFunctionController {
         if(rational == null){
             throw new ExecuteException("result is not rational number, system unsupported.");
         }
-        return new Value(rational);
+        return rational;
     }
 
     @FunctionDefine(name = "numScale")
-    public Value numScale(Value num, Value mode, Value scale){
+    public String numScale(Value num, Value mode, Value scale){
         if(num.getType() != ValueType.NUMBER){
             throw new ExecuteException("numScale first argument must number, but " + num.getType());
         }
@@ -450,8 +465,38 @@ public class LangFunctionController {
         if(scale.getType() != ValueType.NUMBER){
             throw new ExecuteException("numScale third argument must number, but " + num.getType());
         }
-        String plainString = num.to(RationalNumber.class).toPlainString(scale.to(int.class), NumberRoundingMode.valueOf(mode.to(String.class)));
-        return new Value(plainString);
+        return num.to(RationalNumber.class).toPlainString(scale.to(int.class), NumberRoundingMode.valueOf(mode.to(String.class)));
+    }
+
+    @FunctionDefine(name = "funs")
+    public String funs(Value[] args, IRuntimeContext context){
+        ISession session = context.getSession();
+        StringBuilder sb = new StringBuilder();
+        if(args.length == 0){
+            Collection<IFunction> functions = session.getFunctions();
+            boolean start = true;
+            for (IFunction function : functions) {
+                if(!start){
+                    sb.append(',');
+                }
+                sb.append(function.name());
+                start = false;
+            }
+        }else{
+            boolean start = true;
+            for (Value arg : args) {
+                if(arg.getType() != ValueType.STRING){ throw new ExecuteException("funs arguments type must string"); }
+                Collection<IFunction> functions = session.getFunctions(arg.to(String.class));
+                for (IFunction function : functions) {
+                    if(!start){
+                        sb.append(',');
+                    }
+                    sb.append(function.name());
+                    start = false;
+                }
+            }
+        }
+        return sb.toString();
     }
 
 }

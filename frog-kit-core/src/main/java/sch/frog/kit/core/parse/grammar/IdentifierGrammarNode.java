@@ -1,7 +1,7 @@
 package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 import sch.frog.kit.core.value.Locator;
@@ -64,12 +64,12 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
     }
 
     @Override
-    public Value evaluate(ISession session) {
+    public Value evaluate(IRuntimeContext context) {
         if(succeed == null){
             return new Value(new Locator(this.token.literal()));
         }
-        Value result = session.getVariable(token.literal());
-        return succeed.succeedEvaluate(result, session);
+        Value result = context.getVariable(token.literal());
+        return succeed.succeedEvaluate(result, context);
     }
 
 }

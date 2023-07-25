@@ -1,7 +1,7 @@
 package sch.frog.kit.core.fun.lang;
 
 import sch.frog.kit.core.exception.ExecuteException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.fun.AbstractFunction;
 import sch.frog.kit.core.value.Locator;
 import sch.frog.kit.core.value.Value;
@@ -19,7 +19,7 @@ public class SET extends AbstractFunction {
     }
 
     @Override
-    public Value execute(Value[] args, ISession session) {
+    public Value execute(Value[] args, IRuntimeContext context) {
         if(args.length != 2){
             throw new ExecuteException("set function must has 2 arguments");
         }
@@ -31,19 +31,10 @@ public class SET extends AbstractFunction {
         if(locator.isIndex()){
             throw new ExecuteException("index can't as variable name");
         }
-        if(session.getVariable(locator.getKey()) == null){
+        if(context.getVariable(locator.getKey()) == null){
             throw new ExecuteException("variable " + locator.getKey() + " is not exist");
         }
-        Locator cursor = locator.next();
-        if(cursor == null){
-            session.setValue(locator.getKey(), args[1]);
-        }else{
-            Value cursorVal = session.getVariable(locator.getKey());
-            if(cursorVal == null){
-                throw new NullPointerException("variable : " + locator.getKey() + "is null");
-            }
-            cursor.set(cursorVal, args[1]);
-        }
+        context.setVariable(locator.getKey(), args[1]);
         return Value.VOID;
     }
 }

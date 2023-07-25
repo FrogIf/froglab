@@ -1,7 +1,7 @@
 package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.value.Value;
 
@@ -12,5 +12,6 @@ public interface IGrammarNode {
 
     void grammarCheck() throws GrammarException;
 
-    Value evaluate(ISession session);
+    Value evaluate(IRuntimeContext context);
+
 }

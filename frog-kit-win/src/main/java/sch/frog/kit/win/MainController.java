@@ -1,24 +1,23 @@
 package sch.frog.kit.win;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sch.frog.kit.core.FrogLangApp;
+import sch.frog.kit.win.editor.ScriptWorkspace;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
@@ -31,17 +30,7 @@ public class MainController implements Initializable {
     @FXML
     private Label msgText;
 
-    @FXML
-    private ComboBox<String> editorType;
-
     private FrogLangApp frogLangApp;
-
-    private MessageEmitter messageEmitter;
-
-    @FXML
-    protected void onNewTabBtnClick() {
-        EditTabManager.addTab(mainTabPane, this.messageEmitter, editorType.getSelectionModel().getSelectedItem(), frogLangApp);
-    }
 
     private Stage aboutStage = null;
 
@@ -81,12 +70,10 @@ public class MainController implements Initializable {
             frogLangApp = FrogLangApp.getInstance();
         }
 
-        messageEmitter = new MessageEmitter(msgText);
-        EditTabManager.addTab(mainTabPane, messageEmitter, Constants.EDITOR_TYPE_CONSOLE, frogLangApp);
+        MessageUtil.messageEmitter = new MessageEmitter(msgText);
+        EditTabManager.addTab(mainTabPane, Constants.EDITOR_TYPE_CONSOLE, frogLangApp);
         mainTabPane.setContextMenu(initTabPaneContextMenu(mainTabPane));
         mainTabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        editorType.setItems(FXCollections.observableArrayList(Constants.EDITOR_TYPE_CONSOLE, Constants.EDITOR_TYPE_SCRIPT));
-        editorType.getSelectionModel().select(0);
     }
 
     private ContextMenu initTabPaneContextMenu(TabPane tabPane) {
@@ -97,7 +84,7 @@ public class MainController implements Initializable {
             if(selectTab != null){
                 tabPane.getTabs().remove(selectTab);
             }else{
-                messageEmitter.emitWarn("no tab select");
+                MessageUtil.warn("no tab select");
             }
         });
 
@@ -109,7 +96,7 @@ public class MainController implements Initializable {
                 tabs.clear();
                 tabs.add(selectTab);
             }else{
-                messageEmitter.emitWarn("no tab select");
+                MessageUtil.warn("no tab select");
             }
         });
 
@@ -131,7 +118,7 @@ public class MainController implements Initializable {
                     iterator.remove();
                 }
             }else{
-                messageEmitter.emitWarn("no tab select");
+                MessageUtil.warn("no tab select");
             }
         });
 
@@ -151,7 +138,7 @@ public class MainController implements Initializable {
                     }
                 }
             }else{
-                messageEmitter.emitWarn("no tab select");
+                MessageUtil.warn("no tab select");
             }
         });
 
@@ -161,7 +148,7 @@ public class MainController implements Initializable {
             if(selectTab != null){
                 openRenameStage();
             }else{
-                messageEmitter.emitWarn("no tab select");
+                MessageUtil.warn("no tab select");
             }
         });
 
@@ -213,6 +200,50 @@ public class MainController implements Initializable {
             renameStage.setIconified(false);
         }else{
             renameStage.requestFocus();
+        }
+    }
+
+    @FXML
+    public void addConsole(){
+        EditTabManager.addTab(mainTabPane, Constants.EDITOR_TYPE_CONSOLE, frogLangApp);
+    }
+
+    @FXML
+    public void addScript(){
+        EditTabManager.addTab(mainTabPane, Constants.EDITOR_TYPE_SCRIPT, frogLangApp);
+    }
+
+    @FXML
+    public void loadScript(){
+        FileChooser fileChooser = new FileChooser();
+        if(ScriptWorkspace.historyDirectory() != null){
+            fileChooser.setInitialDirectory(ScriptWorkspace.historyDirectory());  // 指定上次加载路径为当前加载路径
+        }
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Script File (*.frog)", "*.frog");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showOpenDialog(null);
+        if(file != null){
+            ScriptWorkspace.setHistoryDirectory(file.getParentFile());
+            EditTabManager.TabElement tabElement = EditTabManager.addOrSelectForScript(mainTabPane, file.getName(), frogLangApp, file.getAbsolutePath());
+            try (
+                    FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8);
+                    BufferedReader reader = new BufferedReader(fileReader)
+            ){
+                StringBuilder sb = new StringBuilder();
+                String line;
+                boolean start = true;
+                while((line = reader.readLine()) != null){
+                    if(!start){
+                        sb.append('\n');
+                    }else{
+                        start = false;
+                    }
+                    sb.append(line);
+                }
+                tabElement.getWorkspace().setContent(sb.toString());
+            } catch (IOException e) {
+                MessageUtil.error(e.getMessage());
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
 import sch.frog.kit.core.value.VMap;
@@ -25,7 +25,7 @@ public class PropertyGrammarNode extends AbstractLeftAssociativeGrammarNode {
     }
 
     @Override
-    public Value succeedEvaluate(Value value, ISession session){
+    public Value succeedEvaluate(Value value, IRuntimeContext context){
         if(value.getType() != ValueType.OBJECT){
             throw new ExecuteException(value + " is not object but " + value.getType());
         }
@@ -36,7 +36,7 @@ public class PropertyGrammarNode extends AbstractLeftAssociativeGrammarNode {
             }
             return result;
         }else{
-            return succeed.succeedEvaluate(result, session);
+            return succeed.succeedEvaluate(result, context);
         }
     }
 

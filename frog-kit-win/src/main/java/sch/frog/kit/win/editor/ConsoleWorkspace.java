@@ -8,26 +8,18 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import sch.frog.kit.core.FrogLangApp;
-import sch.frog.kit.core.execute.IOutput;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.win.ClipboardUtil;
-import sch.frog.kit.win.MessageEmitter;
 
-public class ConsoleWorkspace extends BorderPane {
+public class ConsoleWorkspace extends BorderPane implements IWorkspace{
 
     private final ConsoleCodeArea codeArea;
 
-    private final MessageEmitter messageEmitter;
-
     private final SearchBox textSearchBox;
-
-    private final FrogLangApp frogLangApp;
 
     private final ISession session;
 
-    public ConsoleWorkspace(MessageEmitter messageEmitter, FrogLangApp frogLangApp) {
-        this.messageEmitter = messageEmitter;
-        this.frogLangApp = frogLangApp;
+    public ConsoleWorkspace(FrogLangApp frogLangApp) {
         session = frogLangApp.generateSession();
         codeArea = new ConsoleCodeArea(">>>", line -> {
             try {
@@ -41,7 +33,7 @@ public class ConsoleWorkspace extends BorderPane {
         initCodeArea();
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         super.setCenter(scrollPane);
-        textSearchBox = CodeAreaSearchBoxFactory.createSearchBox(this, codeArea, messageEmitter);
+        textSearchBox = CodeAreaSearchBoxFactory.createSearchBox(this, codeArea);
     }
 
     private void initCodeArea(){
@@ -66,19 +58,29 @@ public class ConsoleWorkspace extends BorderPane {
         find.setOnAction(event -> {
             this.searchBegin();
         });
-        MenuItem test = new MenuItem("Test");
-        test.setOnAction(event -> {
-            codeArea.appendText("testsetset\n");
-        });
         ObservableList<MenuItem> items = contextMenu.getItems();
         items.add(copy);
         items.add(find);
-        items.add(test);
         return contextMenu;
     }
 
     private void searchBegin(){
         this.setTop(textSearchBox);
         textSearchBox.focusSearch(codeArea.getSelectedText());
+    }
+
+    @Override
+    public void setContent(String content) {
+        throw new UnsupportedOperationException("console workspace can't set content");
+    }
+
+    @Override
+    public void setPath(String path) {
+        throw new UnsupportedOperationException("console workspace can't set path");
+    }
+
+    @Override
+    public String getPath() {
+        return null;
     }
 }

@@ -2,7 +2,7 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.value.Value;
@@ -75,20 +75,20 @@ public class ArgumentListGrammarNode extends AbstractLeftAssociativeGrammarNode 
     }
 
     @Override
-    public Value succeedEvaluate(Value value, ISession session){
+    public Value succeedEvaluate(Value value, IRuntimeContext context){
         if(value.getType() != ValueType.FUNCTION){
             throw new ExecuteException(value.toString() + " is not a function");
         }
         IFunction fun = value.to(IFunction.class);
         Value[] args = new Value[list.size()];
         for (int i = 0; i < args.length; i++){
-            args[i] = list.get(i).evaluate(session);
+            args[i] = list.get(i).evaluate(context);
         }
-        Value result = fun.execute(args, session);
+        Value result = fun.execute(args, context);
         if(succeed == null){
             return result;
         }else{
-            return succeed.succeedEvaluate(result, session);
+            return succeed.succeedEvaluate(result, context);
         }
     }
 }

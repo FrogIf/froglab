@@ -2,6 +2,7 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.calculator.number.RationalNumber;
 import sch.frog.kit.core.exception.GrammarException;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
@@ -40,7 +41,7 @@ public class ConstantGrammarNode extends AbstractGrammarNode {
     }
 
     @Override
-    public Value evaluate(ISession session) {
+    public Value evaluate(IRuntimeContext context) {
         return value;
     }
 }

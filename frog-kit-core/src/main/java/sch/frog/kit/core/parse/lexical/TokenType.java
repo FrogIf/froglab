@@ -7,6 +7,7 @@ public enum TokenType {
     NULL,
     NUMBER,
     STRING,
-    IDENTIFIER;
+    IDENTIFIER,
+    COMMENT;
 
 }

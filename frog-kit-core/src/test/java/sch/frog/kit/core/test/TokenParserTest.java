@@ -8,8 +8,6 @@ import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.value.Value;
 import sch.frog.kit.core.value.ValueType;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class TokenParserTest {
@@ -18,7 +16,8 @@ public class TokenParserTest {
     public static void main(String[] args) throws IncorrectExpressionException, GrammarException, ExecuteException {
         Scanner sc = new Scanner(System.in);
 
-        FrogLangApp instance = FrogLangApp.getInstance(List.of("external/test-kit.jar"));
+        FrogLangApp instance = FrogLangApp.getInstance();
+//        FrogLangApp instance = FrogLangApp.getInstance(List.of("external/test-kit.jar"));
         ISession session = instance.generateSession();
         while(true){
             String expression = sc.nextLine();

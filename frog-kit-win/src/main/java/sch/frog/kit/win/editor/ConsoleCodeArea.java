@@ -26,10 +26,12 @@ public class ConsoleCodeArea extends CustomCodeArea {
         this.appendText(prefix);
         this.inputListener = inputListener;
         this.historyChain = new HistoryChain(historyCount);
-        this.caretPositionProperty().addListener((observableValue, o, n) -> {
-            int d = this.deadline();
-            if(n < d){
-                this.displaceCaret(d);
+        this.setWrapText(true);
+        this.caretPositionProperty().addListener((observable, o, n) -> {
+            int d1 = this.deadline();
+            int d2 = d1 - this.prefixLen;
+            if(n >= d2 && n < d1){
+                this.displaceCaret(d1);
             }
         });
         this.selectionProperty().addListener((observableValue, or, nr) -> {
@@ -44,39 +46,25 @@ public class ConsoleCodeArea extends CustomCodeArea {
         this.addEventFilter(KeyEvent.KEY_TYPED, this::keyEventFilter);
         this.addEventFilter(KeyEvent.KEY_PRESSED, this::keyEventFilter);
         this.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            boolean resetHistoryViewer = true;
             if(e.getCode() == KeyCode.ENTER){
                 String preLine = this.getParagraph(this.getParagraphs().size() - 2).getText();
                 if(preLine.startsWith(prefix)){
                     preLine = preLine.substring(prefixLen);
                 }
-                historyChain.add(preLine);
-                String resp = inputListener.txAndRx(preLine);
-                if(resp != null){
-                    this.appendText(resp + "\n");
+                if(!preLine.isBlank()){
+                    historyChain.add(preLine);
+                    String resp = inputListener.txAndRx(preLine);
+                    if(resp != null){
+                        this.appendText(resp + "\n");
+                    }
                 }
                 this.append(prefix, List.of("console-prefix"));
-            }else if(e.getCode() == KeyCode.UP){
-                if(this.deadline() <= this.getCaretPosition()){
-                    String command = historyChain.up();
-                    if(command != null){
-                        inputCommand(command);
-                    }
-                    resetHistoryViewer = false;
-                }
-            }else if(e.getCode() == KeyCode.DOWN){
-                if(this.deadline() <= this.getCaretPosition()){
-                    String command = historyChain.down();
-                    if(command == null){ command = ""; }
-                    inputCommand(command);
-                    resetHistoryViewer = false;
-                }
             }else if(e.isControlDown()){
                 if(e.getCode() == KeyCode.L){
                     this.clearConsole();
                 }
             }
-            if(resetHistoryViewer){ historyChain.reset(); }
+            historyChain.reset();
         });
     }
 
@@ -96,6 +84,21 @@ public class ConsoleCodeArea extends CustomCodeArea {
             int len = this.getText().length();
             this.selectRange(len, len);
             this.displaceCaret(len);
+        } else if(e.getCode() == KeyCode.UP){   // 历史命令
+            if(this.deadline() <= this.getCaretPosition()){
+                String command = historyChain.up();
+                if(command != null){
+                    inputCommand(command);
+                }
+                e.consume();
+            }
+        } else if(e.getCode() == KeyCode.DOWN){ // 历史命令
+            if(this.deadline() <= this.getCaretPosition()){
+                String command = historyChain.down();
+                if(command == null){ command = ""; }
+                inputCommand(command);
+                e.consume();
+            }
         }
     }
 

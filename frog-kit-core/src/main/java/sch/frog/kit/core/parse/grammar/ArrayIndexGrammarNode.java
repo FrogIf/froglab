@@ -2,6 +2,7 @@ package sch.frog.kit.core.parse.grammar;
 
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
+import sch.frog.kit.core.execute.IRuntimeContext;
 import sch.frog.kit.core.execute.ISession;
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.value.VList;
@@ -27,11 +28,11 @@ public class ArrayIndexGrammarNode extends AbstractLeftAssociativeGrammarNode {
     }
 
     @Override
-    public Value succeedEvaluate(Value value, ISession session){
+    public Value succeedEvaluate(Value value, IRuntimeContext context){
         if(value.getType() != ValueType.LIST){
             throw new ExecuteException(value + " is not list but " + value.getType());
         }
-        Value index = indexNode.evaluate(session);
+        Value index = indexNode.evaluate(context);
         if(index.getType()!= ValueType.NUMBER){
             throw new ExecuteException(indexNode.name() + " result is not number but " + index.getType());
         }
@@ -40,7 +41,7 @@ public class ArrayIndexGrammarNode extends AbstractLeftAssociativeGrammarNode {
         if(succeed == null){
             return result;
         }else{
-            return succeed.succeedEvaluate(result, session);
+            return succeed.succeedEvaluate(result, context);
         }
     }
 

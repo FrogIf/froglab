@@ -1,7 +1,10 @@
 package sch.frog.kit.core.execute;
 
 import sch.frog.kit.core.AppContext;
+import sch.frog.kit.core.fun.IFunction;
 import sch.frog.kit.core.value.Value;
+
+import java.util.Collection;
 
 public interface ISession {
 
@@ -11,10 +14,14 @@ public interface ISession {
 
     Value getVariable(String key);
 
-    void setValue(String key, Value value);
+    void setVariable(String key, Value value);
 
-    void addValue(String key, Value value);
+    void addVariable(String key, Value value);
 
     void setOutput(IOutput output);
+
+    Collection<IFunction> getFunctions();
+
+    Collection<IFunction> getFunctions(String packName);
 
 }
