@@ -2,7 +2,6 @@ package sch.frog.kit.core.util;
 
 import sch.frog.kit.core.parse.lexical.Token;
 import sch.frog.kit.core.parse.lexical.TokenType;
-import sch.frog.kit.core.parse.lexical.TokenUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,80 +14,43 @@ public class ExpressionFormatUtil {
 
     private final static String TAB_SPACE = "    ";
 
-    public static String pretty(List<Token> tokens){
-        if(tokens != null && !tokens.isEmpty()){
-            List<StringBuilder> lines = new ArrayList<>();
-            Token[] tokenArr = new Token[tokens.size()];
-            int i = 0;
+    public static String pretty(List<Token> tokens) {
+        if (tokens != null && !tokens.isEmpty()) {
+            ExpressionBlock block = new ExpressionBlock("");
+            block.type = -1;
             for (Token token : tokens) {
-                tokenArr[i] = token;
-                i++;
-            }
-
-            int tab = 0;
-            StringBuilder sb = new StringBuilder();
-            lines.add(sb);
-            int len = tokenArr.length;
-            boolean newLine = false;
-            for(i = 0; i < len; i++){
-                Token token = tokenArr[i];
-                if(i != 0){
-                    if(",".equals(tokenArr[i - 1].literal())){
-                        sb.append(' ');
-                    }
-                }
-                if(TokenUtil.isConstant(token.type())){
-                    sb.append(token.literal());
-                }else if(token.type() == TokenType.IDENTIFIER){
-                    if(i < len - 1){
-                        if("(".equals(tokenArr[i + 1].literal())){
-                            sb = new StringBuilder();
-                            lines.add(sb);
-                            newLine = true;
-                            tab++;
-                            sb.append(TAB_SPACE.repeat(tab));
-                        }
-                        sb.append(token.literal());
-                    }
-                }else if(token.type() == TokenType.COMMENT){
-
-                }else if(token.type() == TokenType.STRUCT){
-                    if(")".equals(token.literal())){
-                        if(newLine){
-                            tab--;
-                            if(tab < 0){ tab = 0; }
-                        }
-                    }
-                }else{
-
+                if (!block.add(token)) {
+                    throw new IllegalStateException("pretty failed");
                 }
             }
-            return sb.toString();
+            PrettyWriter writer = new PrettyWriter();
+            writer.write(block);
+            return writer.getString();
         }
         return "";
     }
 
-    public static String compress(List<Token> tokens){
-        if(tokens != null && !tokens.isEmpty()){
+    public static String compress(List<Token> tokens) {
+        if (tokens != null && !tokens.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Token token : tokens) {
-                if(token.type() == TokenType.COMMENT){
+                if (token.type() == TokenType.COMMENT) {
                     String comment = token.literal();
                     StringBuilder c = new StringBuilder();
-                    if(comment.startsWith("//")){
+                    if (comment.startsWith("//")) {
                         c.append("/*").append(comment.substring(2)).append("*/");
-                    }else if(comment.startsWith("/*")){
-                        for(int i = 0, len = comment.length(); i < len; i++){
+                    } else if (comment.startsWith("/*")) {
+                        for (int i = 0, len = comment.length(); i < len; i++) {
                             char ch = comment.charAt(i);
-                            if(ch == '\n'){
+                            if (ch == '\n') {
                                 c.append("\\n");
-                            }else{
+                            } else {
                                 c.append(ch);
                             }
                         }
                     }
                     sb.append(c);
-                }else{
+                } else {
                     sb.append(token.literal());
                 }
             }
@@ -97,44 +59,148 @@ public class ExpressionFormatUtil {
         return "";
     }
 
-    private static class ExpressionBlock{
-        private int type; // 1 - 括号, 0 - 其他, -1 - 根
-        private String literal;
+    private static class ExpressionBlock {
+        private int type; // 1 - 括号, 0 - 其他, -1 - 根, 2 - 注释
+        private final String literal;
+
+        private boolean noBracketChild = true;
 
         public ExpressionBlock(String literal) {
             this.literal = literal;
-            if("(".equals(literal)){
-               type = 1;
+            if ("(".equals(literal) || "{".equals(literal)) {
+                type = 1;
+            }else if(literal.startsWith("//") || literal.startsWith("/*")){
+                type = 2;
             }
         }
 
-        private final ArrayList<ExpressionBlock> innerBlocks = new ArrayList<>();
+        // 子级(只有type = 1时才存在)
+        private final ArrayList<ExpressionBlock> children = new ArrayList<>();
+
+        // 上一个
+        private ExpressionBlock pre = null;
+
+        // 下一个
+        private ExpressionBlock next = null;
+
         private boolean closed = false;
-        public boolean add(Token token){
-            if(closed){ return false; }
-            int count = innerBlocks.size();
-            String t = token.literal();
-            if (count != 0) {
-                ExpressionBlock block = innerBlocks.get(count - 1);
-                if (block.add(token)) {
-                    return true;
+
+        public boolean add(Token token) {
+            if (closed) {
+                return false;
+            }
+            if (type == 0 || type == 2) {
+                return false;
+            } else {
+                int count = children.size();
+                String t = token.literal();
+                ExpressionBlock tail = null;
+                if (count != 0) {
+                    tail = children.get(count - 1);
+                    if (tail.add(token)) {
+                        return true;
+                    }
                 }
+                if (
+                        type != -1 &&
+                                (
+                                        ("(".equals(literal) && ")".equals(token.literal()))
+                                                || ("{".equals(literal) && "}".equals(token.literal()))
+                                )
+                ) {
+                    closed = true;
+                } else {
+                    ExpressionBlock b = new ExpressionBlock(t);
+                    b.pre = tail;
+                    if(tail != null){ tail.next = b; }
+                    noBracketChild = noBracketChild && b.type != 1;
+                    children.add(b);
+                }
+                return true;
             }
-            if(")".equals(token.literal())){
-                closed = true;
-            }else{
-                innerBlocks.add(new ExpressionBlock(t));
-            }
-            return true;
         }
 
-        public void write(PrettyContext context){
-
-        }
     }
 
-    private static class PrettyContext {
+    private static class PrettyWriter {
         private int tab;
+
+        private final StringBuilder sb = new StringBuilder();
+
+        public void write(ExpressionBlock block) {
+            if(block.type == 1){ // 括号
+                char closeChar = ' ';
+                switch (block.literal) {
+                    case "(":
+                        closeChar = ')';
+                        break;
+                    case "{":
+                        closeChar = '}';
+                        break;
+                }
+                if (block.children.isEmpty()) {
+                    sb.append(block.literal).append(closeChar);
+                } else {
+                    if(block.noBracketChild){
+                        sb.append(block.literal);
+                        for (ExpressionBlock child : block.children) {
+                            write(child);
+                        }
+                        sb.append(closeChar);
+                    }else{
+                        boolean lambdaDeclare = block.next != null && "=>".equals(block.next.literal);
+                        tab++;
+                        int tt = tab;
+                        if(lambdaDeclare){
+                            sb.append(block.literal);
+                        }else{
+                            sb.append(block.literal).append(NEXT_LINE).append(TAB_SPACE.repeat(tt));
+                        }
+                        for (ExpressionBlock innerBlock : block.children) {
+                            write(innerBlock);
+                        }
+                        tab = tt - 1;
+
+                        if(lambdaDeclare){
+                            sb.append(closeChar);
+                        }else{
+                            sb.append(NEXT_LINE).append(TAB_SPACE.repeat(tab)).append(closeChar);
+                        }
+                    }
+                }
+            }else if(block.type == 0){
+                sb.append(block.literal);
+                if (",".equals(block.literal)) {
+                    if(block.pre != null && block.pre.type == 1 && !block.pre.noBracketChild){
+                        sb.append('\n').append(TAB_SPACE.repeat(tab));
+                    }else{
+                        sb.append(' ');
+                    }
+                }
+                for (ExpressionBlock innerBlock : block.children) {
+                    write(innerBlock);
+                }
+            }else if(block.type == 2){ // 注释
+                String repeat = TAB_SPACE.repeat(tab);
+                int index = sb.lastIndexOf("\n");
+                index = index == -1 ? 0 : index;
+                if(!sb.substring(index).isBlank()){
+                    sb.append('\n').append(repeat);
+                }
+                String[] lines = block.literal.split("\n");
+                for (String line : lines) {
+                    sb.append(line.trim()).append('\n').append(repeat);
+                }
+            }else{
+                for (ExpressionBlock innerBlock : block.children) {
+                    write(innerBlock);
+                }
+            }
+        }
+
+        public String getString() {
+            return sb.toString();
+        }
 
     }
 

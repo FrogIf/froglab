@@ -68,6 +68,7 @@ public class IdentifierGrammarNode extends AbstractGrammarNode{
         if(succeed == null){
             return new Value(new Locator(this.token.literal()));
         }
+
         Value result = context.getVariable(token.literal());
         return succeed.succeedEvaluate(result, context);
     }

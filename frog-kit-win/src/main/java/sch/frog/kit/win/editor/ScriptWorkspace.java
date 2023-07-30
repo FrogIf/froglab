@@ -307,32 +307,18 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
     }
 
     public void prettyCode(){
-//        String text = codeArea.getText();
-//        if(!text.isBlank()){
-//            try {
-//                List<Token> tokens = frogLangApp.tokens(text);
-//                StringBuilder sb = new StringBuilder();
-//                String blank = "";
-//                for (Token token : tokens) {
-//                    String t = token.literal();
-//                    if("(".equals(t) || "{".equals(t)){
-//                        sb.append(t).append("\n");
-//                        blank = "    " + blank;
-//                        sb.append(blank);
-//                    }else if(",".equals(t)){
-//                        sb.append(t).append(' ');
-//                    }else if("".equals(t)){
-//
-//                    }
-//                    sb.append(token.literal());
-//                }
-//                codeArea.clear();
-//                codeArea.appendText(sb.toString());
-//            } catch (IncorrectExpressionException e) {
-//                // TODO 标记
-//                MessageUtil.error(e.getMessage());
-//            }
-//        }
+        String text = codeArea.getText();
+        if(!text.isBlank()){
+            try {
+                List<Token> tokens = frogLangApp.tokens(text);
+                text = ExpressionFormatUtil.pretty(tokens);
+                codeArea.clear();
+                codeArea.appendText(text);
+            } catch (IncorrectExpressionException e) {
+                // TODO 标记
+                MessageUtil.error(e.getMessage());
+            }
+        }
     }
 
     public void compressCode(){

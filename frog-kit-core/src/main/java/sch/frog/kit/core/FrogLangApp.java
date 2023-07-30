@@ -9,7 +9,14 @@ import sch.frog.kit.core.ext.ExternalFunctionLoadUtil;
 import sch.frog.kit.core.fun.AbstractGeneralFunction;
 import sch.frog.kit.core.fun.FunctionLoadUtil;
 import sch.frog.kit.core.fun.IFunction;
-import sch.frog.kit.core.fun.lang.*;
+import sch.frog.kit.core.fun.lang.COND;
+import sch.frog.kit.core.fun.lang.Define;
+import sch.frog.kit.core.fun.lang.GET;
+import sch.frog.kit.core.fun.lang.IF;
+import sch.frog.kit.core.fun.lang.LET;
+import sch.frog.kit.core.fun.lang.LangFunctionController;
+import sch.frog.kit.core.fun.lang.SET;
+import sch.frog.kit.core.fun.lang.WHILE;
 import sch.frog.kit.core.parse.grammar.GrammarAnalyzer;
 import sch.frog.kit.core.parse.grammar.IGrammarNode;
 import sch.frog.kit.core.parse.lexical.LexicalAnalyzer;
@@ -63,6 +70,9 @@ public class FrogLangApp {
         context.addFunction(new GET());
         context.addFunction(new Define());
         context.addFunction(new LET());
+        context.addFunction(new IF());
+        context.addFunction(new COND());
+        context.addFunction(new WHILE());
         List<AbstractGeneralFunction> funList = FunctionLoadUtil.load(new LangFunctionController());
         for (AbstractGeneralFunction fun : funList) {
             context.addFunction(fun);

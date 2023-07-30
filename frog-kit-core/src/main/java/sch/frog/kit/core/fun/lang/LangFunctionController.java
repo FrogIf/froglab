@@ -24,6 +24,93 @@ import java.util.Date;
 
 public class LangFunctionController {
 
+    @FunctionDefine(name = "eq")
+    public boolean equal(Value v1, Value v2){
+        return v1.equals(v2);
+    }
+
+    @FunctionDefine(name = "lt")
+    public boolean lessThan(Value v1, Value v2){
+        if(v1.getType() != ValueType.NUMBER){
+            throw new ExecuteException("lt function first argument type must number, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.NUMBER){
+            throw new ExecuteException("lt function second argument type must number, but " + v2.getType());
+        }
+        RationalNumber r1 = v1.to(RationalNumber.class);
+        RationalNumber r2 = v2.to(RationalNumber.class);
+        return r1.compareTo(r2) < 0;
+    }
+
+    @FunctionDefine(name = "gt")
+    public boolean greaterThan(Value v1, Value v2){
+        if(v1.getType() != ValueType.NUMBER){
+            throw new ExecuteException("gt function first argument type must number, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.NUMBER){
+            throw new ExecuteException("gt function second argument type must number, but " + v2.getType());
+        }
+        RationalNumber r1 = v1.to(RationalNumber.class);
+        RationalNumber r2 = v2.to(RationalNumber.class);
+        return r1.compareTo(r2) > 0;
+    }
+
+    @FunctionDefine(name = "gte")
+    public boolean greaterThanOrEqual(Value v1, Value v2){
+        if(v1.getType() != ValueType.NUMBER){
+            throw new ExecuteException("gte function first argument type must number, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.NUMBER){
+            throw new ExecuteException("gte function second argument type must number, but " + v2.getType());
+        }
+        RationalNumber r1 = v1.to(RationalNumber.class);
+        RationalNumber r2 = v2.to(RationalNumber.class);
+        return r1.compareTo(r2) >= 0;
+    }
+
+    @FunctionDefine(name = "lte")
+    public boolean lessThanOrEqual(Value v1, Value v2){
+        if(v1.getType() != ValueType.NUMBER){
+            throw new ExecuteException("lte function first argument type must number, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.NUMBER){
+            throw new ExecuteException("lte function second argument type must number, but " + v2.getType());
+        }
+        RationalNumber r1 = v1.to(RationalNumber.class);
+        RationalNumber r2 = v2.to(RationalNumber.class);
+        return r1.compareTo(r2) <= 0;
+    }
+
+    @FunctionDefine(name = "not")
+    public boolean not(Value v){
+        if(v.getType() != ValueType.BOOL){
+            throw new ExecuteException("not function argument type must bool, but " + v.getType());
+        }
+        return !v.to(boolean.class);
+    }
+
+    @FunctionDefine(name = "and")
+    public boolean and(Value v1, Value v2){
+        if(v1.getType() != ValueType.BOOL){
+            throw new ExecuteException("and function first argument type must bool, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.BOOL){
+            throw new ExecuteException("and function second argument type must bool, but " + v2.getType());
+        }
+        return v1.to(Boolean.class) && v2.to(Boolean.class);
+    }
+
+    @FunctionDefine(name = "or")
+    public boolean or(Value v1, Value v2){
+        if(v1.getType() != ValueType.BOOL){
+            throw new ExecuteException("or function first argument type must bool, but " + v1.getType());
+        }
+        if(v2.getType() != ValueType.BOOL){
+            throw new ExecuteException("or function second argument type must bool, but " + v2.getType());
+        }
+        return v1.to(Boolean.class) || v2.to(Boolean.class);
+    }
+
     @FunctionDefine(name = "print")
     public void print(Value[] args, IRuntimeContext context){
         writeToOutput(args, context, false);

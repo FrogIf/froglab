@@ -77,14 +77,10 @@ public class ArgumentListGrammarNode extends AbstractLeftAssociativeGrammarNode 
     @Override
     public Value succeedEvaluate(Value value, IRuntimeContext context){
         if(value.getType() != ValueType.FUNCTION){
-            throw new ExecuteException(value.toString() + " is not a function");
+            throw new ExecuteException(value + " is not a function");
         }
         IFunction fun = value.to(IFunction.class);
-        Value[] args = new Value[list.size()];
-        for (int i = 0; i < args.length; i++){
-            args[i] = list.get(i).evaluate(context);
-        }
-        Value result = fun.execute(args, context);
+        Value result = fun.process(list.toArray(IGrammarNode[]::new), context);
         if(succeed == null){
             return result;
         }else{

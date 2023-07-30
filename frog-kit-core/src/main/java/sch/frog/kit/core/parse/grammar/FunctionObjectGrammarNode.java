@@ -85,7 +85,7 @@ public class FunctionObjectGrammarNode extends ObjectGrammarNode {
 
     @Override
     public Value evaluate(IRuntimeContext context) {
-        return new Value(new BodyFunction(this.arguments, this.body));
+        return new Value(new BodyFunction(this.arguments, this.body, context));
     }
 
     private static class BodyFunction extends AbstractFunction{
@@ -94,9 +94,12 @@ public class FunctionObjectGrammarNode extends ObjectGrammarNode {
 
         private final List<String> arguments;
 
-        public BodyFunction(List<String> arguments, IdentifierGrammarNode body) {
+        private final IRuntimeContext declareContextSnapshot;
+
+        public BodyFunction(List<String> arguments, IdentifierGrammarNode body, IRuntimeContext declareContextSnapshot) {
             this.body = body;
             this.arguments = arguments;
+            this.declareContextSnapshot = declareContextSnapshot;
         }
 
         @Override
@@ -110,8 +113,8 @@ public class FunctionObjectGrammarNode extends ObjectGrammarNode {
         }
 
         @Override
-        public Value execute(Value[] args, IRuntimeContext context) {
-            context = new GeneralRuntimeContext(context);
+        public Value execute(Value[] args, IRuntimeContext outerContext) {
+            GeneralRuntimeContext context = new GeneralRuntimeContext(declareContextSnapshot);
             if(args.length != arguments.size()){
                 throw new ExecuteException("real args count except " + arguments.size() + ", but " + args.length);
             }
