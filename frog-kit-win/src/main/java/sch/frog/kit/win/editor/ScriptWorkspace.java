@@ -47,10 +47,13 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
     private final TextArea logTextArea = new TextArea();
     private final LogWriter writer;
 
-    public ScriptWorkspace(FrogLangApp frogLangApp) {
+    private final Tab selfTab;
+
+    public ScriptWorkspace(FrogLangApp frogLangApp, Tab selfTab) {
         this.frogLangApp = frogLangApp;
         writer = new LogWriter(logTextArea);
         initView();
+        this.selfTab = selfTab;
     }
 
     private void initView(){
@@ -292,6 +295,7 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
                 FileWriter fileWriter = new FileWriter(file)
         ){
             fileWriter.write(codeArea.getText());
+            selfTab.setText(file.getName());
             MessageUtil.info("save success");
         } catch (IOException e) {
             MessageUtil.error("save script failed : " + e.getMessage());

@@ -171,7 +171,10 @@ public class ExpressionFormatUtil {
             }else if(block.type == 0){
                 sb.append(block.literal);
                 if (",".equals(block.literal)) {
-                    if(block.pre != null && block.pre.type == 1 && !block.pre.noBracketChild){
+                    if(
+                            (block.pre != null && block.pre.type == 1 && !block.pre.noBracketChild)
+                            || (block.next != null && block.next.next != null && block.next.next.type == 1)
+                    ){
                         sb.append('\n').append(TAB_SPACE.repeat(tab));
                     }else{
                         sb.append(' ');

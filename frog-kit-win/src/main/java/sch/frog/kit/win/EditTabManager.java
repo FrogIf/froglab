@@ -54,7 +54,7 @@ class EditTabManager {
         if(Constants.EDITOR_TYPE_CONSOLE.equals(type)){
             pane = new ConsoleWorkspace(frogLangApp);
         }else{
-            pane = new ScriptWorkspace(frogLangApp);
+            pane = new ScriptWorkspace(frogLangApp, newTab);
         }
         newTab.setContent((Node) pane);
         tabPane.getTabs().add(newTab);
