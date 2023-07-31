@@ -3,8 +3,11 @@ package sch.frog.kit.win.editor;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.richtext.model.StyledDocument;
 import sch.frog.kit.core.exception.IncorrectExpressionException;
 import sch.frog.kit.core.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.core.parse.lexical.Token;
@@ -13,7 +16,14 @@ import sch.frog.kit.win.GlobalApplicationLifecycleUtil;
 import sch.frog.kit.win.util.StringUtils;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,7 +50,7 @@ public class CodeAreaAssist {
             codeArea.getContext().put(AssistObject.class, null);
         });
 
-//        codeHighLight.enable(codeArea);
+        codeHighLight.enable(codeArea);
         bracketHighLight.enable(codeArea);
     }
 
@@ -91,101 +101,112 @@ public class CodeAreaAssist {
         private static final int MAX_SPAN_COUNT_IN_ONE_PARAGRAPH = 2000;
 
         private StyleSpans<Collection<String>> computeHighlighting(CustomCodeArea codeArea) {
-//            StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-//            List<Token> tokens = getAssistObject(codeArea).getTokens();
-//            if(tokens == null || tokens.isEmpty()){
-//                spansBuilder.add(Collections.emptyList(), codeArea.getText().length());
-//                return spansBuilder.create();
-//            }
-//            ArrayList<String> preStyles = null;
-//            ArrayList<String> cursorStyles = null;
-//            ArrayList<StyleBox> styleList = new ArrayList<>(tokens.size());
-//            for (Token token : tokens) {
-//                TokenType type = token.type();
-//                String style;
-//                switch (type){
-//                    case BOOL:
-//                        style = "boolean";
-//                        break;
-//                    case NULL:
-//                        style = "null";
-//                        break;
-//                    case NUMBER:
-//                        style = "number";
-//                        break;
-//                    case STRING:
-//                        style = "string-value";
-//                        break;
-//                    case STRUCT:
-//                        String literal = token.literal();
-//                        if("{".equals(literal) || "}".equals(literal)){ style = "brace"; }
-//                        else if ("[".equals(literal) || "]".equals(literal)){ style = "bracket"; }
-//                        else if ("(".equals(literal) || ")".equals(literal)){ style = "parentheses"; }
-//                        else if (",".equals(literal) || ":".equals(literal) || ".".equals(literal)){ style = "splitter"; }
-//                        else { style = "unknown"; }
-//                        break;
-//                    default:
-//                        style = "unknown";
-//                        break;
-//                }
-//                ArrayList<String> styles = new ArrayList<>();
-//                if(token.isError() || token.getType() == JsonToken.Type.UNKNOWN){
+            StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+            List<Token> tokens = getAssistObject(codeArea).getTokens();
+            if(tokens == null || tokens.isEmpty()){
+                spansBuilder.add(Collections.emptyList(), codeArea.getText().length());
+                return spansBuilder.create();
+            }
+            ArrayList<String> preStyles = null;
+            ArrayList<String> cursorStyles = null;
+            ArrayList<StyleBox> styleList = new ArrayList<>(tokens.size());
+            for (Token token : tokens) {
+                TokenType type = token.type();
+                String style;
+                switch (type){
+                    case STRUCT:
+                        String literal = token.literal();
+                        if("{".equals(literal) || "}".equals(literal)){ style = "brace"; }
+                        else if ("[".equals(literal) || "]".equals(literal)){ style = "bracket"; }
+                        else if ("(".equals(literal) || ")".equals(literal)){ style = "parentheses"; }
+                        else if (",".equals(literal) || ":".equals(literal) || ".".equals(literal)){ style = "splitter"; }
+                        else { style = "unknown"; }
+                        break;
+                    case BOOL:
+                        style = "boolean";
+                        break;
+                    case NULL:
+                        style = "null";
+                        break;
+                    case NUMBER:
+                        style = "number";
+                        break;
+                    case STRING:
+                        style = "string-value";
+                        break;
+                    case COMMENT:
+                        style = "comment";
+                        break;
+                    case IDENTIFIER:
+                        style = "identifier";
+                        break;
+                    default:
+                        style = "unknown";
+                        break;
+                }
+                ArrayList<String> styles = new ArrayList<>();
+//                if(token.isError() || token.type() == TokenType.UNKNOWN){
 //                    styles.add("underlined");
 //                }
-//                preStyles = cursorStyles;
-//                cursorStyles = styles;
-//                styles.add(style);
-//                styleList.add(new StyleBox(token.getLiteral(), styles));
-//            }
+                preStyles = cursorStyles;
+                cursorStyles = styles;
+                styles.add(style);
+                styleList.add(new StyleBox(token.literal(), token.pos(), styles));
+            }
 //            if(preStyles != null){
 //                Token t = tokens.get(tokens.size() - 1);
 //                if(t.type() == JsonToken.Type.BLANK && t.isError()){
 //                    preStyles.add("underlined");
 //                }
 //            }
-//
-//            if(styleList.size() > MAX_SPAN_COUNT_IN_ONE_PARAGRAPH){
-//                // 如果一行包含的spanCount过多, 则多出部分不高亮
-//                StyledDocument<Collection<String>, String, Collection<String>> doc = codeArea.getDocument();
-//                List<Paragraph<Collection<String>, String, Collection<String>>> paragraphs = doc.getParagraphs();
-//                int[] paragraphRange = new int[paragraphs.size() + 1];
-//                int i = 1;
-//                for (Paragraph<Collection<String>, String, Collection<String>> paragraph : paragraphs) {
-//                    String text = paragraph.getText();
-//                    paragraphRange[i] = paragraphRange[i - 1] + text.length();
-//                    i++;
-//                }
-//                int cursor = 1;
-//                int spanCount = 0;
-//                int textLen = 0;
-//                boolean plain;
-//                int plainTextLen = 0;
-//                for (StyleBox styleBox : styleList) {
-//                    textLen += styleBox.token.length();
-//                    spanCount++;
-//                    plain = spanCount > MAX_SPAN_COUNT_IN_ONE_PARAGRAPH;
-//                    if(!plain){
-//                        spansBuilder.add(styleBox.styles, styleBox.token.length());
-//                    }else{
-//                        plainTextLen += styleBox.token.length();
-//                    }
-//                    if(textLen >= paragraphRange[cursor]){
-//                        if(plain){
-//                            spansBuilder.add(Collections.singletonList("unknown"), plainTextLen);
-//                        }
-//                        textLen = 0;
-//                        spanCount = 0;
-//                        cursor++;
-//                        plainTextLen = 0;
-//                    }
-//                }
-//            }else{
-//                for (StyleBox styleBox : styleList) {
-//                    spansBuilder.add(styleBox.styles, styleBox.token.length());
-//                }
-//            }
-//            return spansBuilder.create();
-            return null;
+
+            if(styleList.size() > MAX_SPAN_COUNT_IN_ONE_PARAGRAPH){
+                // 如果一行包含的spanCount过多, 则多出部分不高亮
+                StyledDocument<Collection<String>, String, Collection<String>> doc = codeArea.getDocument();
+                List<Paragraph<Collection<String>, String, Collection<String>>> paragraphs = doc.getParagraphs();
+                int[] paragraphRange = new int[paragraphs.size() + 1];
+                int i = 1;
+                for (Paragraph<Collection<String>, String, Collection<String>> paragraph : paragraphs) {
+                    String text = paragraph.getText();
+                    paragraphRange[i] = paragraphRange[i - 1] + text.length();
+                    i++;
+                }
+                int cursor = 1;
+                int spanCount = 0;
+                int textLen = 0;
+                boolean plain;
+                int plainTextLen = 0;
+                for (StyleBox styleBox : styleList) {
+                    textLen += styleBox.token.length();
+                    spanCount++;
+                    plain = spanCount > MAX_SPAN_COUNT_IN_ONE_PARAGRAPH;
+                    if(!plain){
+                        spansBuilder.add(styleBox.styles, styleBox.token.length());
+                    }else{
+                        plainTextLen += styleBox.token.length();
+                    }
+                    if(textLen >= paragraphRange[cursor]){
+                        if(plain){
+                            spansBuilder.add(Collections.singletonList("unknown"), plainTextLen);
+                        }
+                        textLen = 0;
+                        spanCount = 0;
+                        cursor++;
+                        plainTextLen = 0;
+                    }
+                }
+            }else{
+                int start = 0;
+                for (StyleBox styleBox : styleList) {
+                    if(styleBox.start != start){
+                        spansBuilder.add(Collections.emptyList(), styleBox.start - start);
+                    }
+                    int len = styleBox.token.length();
+                    spansBuilder.add(styleBox.styles, len);
+                    start = styleBox.start + len;
+                }
+            }
+            return spansBuilder.create();
         }
 
         public void stop() {
@@ -359,9 +380,11 @@ public class CodeAreaAssist {
     private static class StyleBox{
         private final String token;
         private final List<String> styles;
-        public StyleBox(String token, List<String> styles) {
+        private final int start;
+        public StyleBox(String token, int start, List<String> styles) {
             this.token = token;
             this.styles = styles;
+            this.start = start;
         }
     }
 

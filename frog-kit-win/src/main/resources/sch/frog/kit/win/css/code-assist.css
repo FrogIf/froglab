@@ -24,7 +24,7 @@
 }
 .string-value{
     -fx-font-weight: bold;
-    -fx-fill: #993300;
+    -fx-fill: #ab3030;
 }
 .structure {
     -fx-font-weight: bold;
@@ -32,7 +32,7 @@
 }
 .brace{
     -fx-font-weight: bold;
-    -fx-fill: #e6994d;
+    -fx-fill: #bb7733;
 }
 .underlined {
     -rtfx-background-color: #f0f0f0;
@@ -41,8 +41,18 @@
     -rtfx-underline-width: 1;
     -rtfx-underline-cap: butt;
 }
+.identifier{
+    -fx-fill: #994d00;
+    -fx-font-weight: bold;
+}
 .unknown{
     -fx-fill: black;
+}
+.comment{
+    -fx-fill: green;
+}
+.parentheses{
+    -fx-fill: #e6994d;
 }
 .paragraph-box:has-caret {
     -fx-background-color: #f2f9fc;

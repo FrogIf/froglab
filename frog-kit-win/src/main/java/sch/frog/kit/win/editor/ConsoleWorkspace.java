@@ -42,7 +42,7 @@ public class ConsoleWorkspace extends BorderPane implements IWorkspace{
         codeArea.prefWidthProperty().bind(this.widthProperty());
         codeArea.setContextMenu(initContextMenu());
         CodeAreaAssist highlight = CodeAreaAssist.getInstance();
-        highlight.enableAssist(codeArea);
+//        highlight.enableAssist(codeArea);
     }
 
     private ContextMenu initContextMenu(){
