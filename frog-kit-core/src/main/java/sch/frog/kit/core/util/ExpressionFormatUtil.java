@@ -173,7 +173,7 @@ public class ExpressionFormatUtil {
                 if (",".equals(block.literal)) {
                     if(
                             (block.pre != null && block.pre.type == 1 && !block.pre.noBracketChild)
-                            || (block.next != null && block.next.next != null && block.next.next.type == 1)
+                            || (block.next != null && block.next.next != null && block.next.next.type == 1 && !block.next.next.noBracketChild)
                     ){
                         sb.append('\n').append(TAB_SPACE.repeat(tab));
                     }else{
@@ -191,8 +191,9 @@ public class ExpressionFormatUtil {
                     sb.append('\n').append(repeat);
                 }
                 String[] lines = block.literal.split("\n");
+                int start = lines[0].indexOf('/');
                 for (String line : lines) {
-                    sb.append(line.trim()).append('\n').append(repeat);
+                    sb.append(StringUtils.trimLeft(line, start)).append('\n').append(repeat);
                 }
             }else{
                 for (ExpressionBlock innerBlock : block.children) {

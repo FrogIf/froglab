@@ -110,47 +110,69 @@ public class CodeAreaAssist {
             ArrayList<String> preStyles = null;
             ArrayList<String> cursorStyles = null;
             ArrayList<StyleBox> styleList = new ArrayList<>(tokens.size());
+            int rainbowMark = 0;
             for (Token token : tokens) {
                 TokenType type = token.type();
-                String style;
+                ArrayList<String> styles = new ArrayList<>();
                 switch (type){
                     case STRUCT:
                         String literal = token.literal();
-                        if("{".equals(literal) || "}".equals(literal)){ style = "brace"; }
-                        else if ("[".equals(literal) || "]".equals(literal)){ style = "bracket"; }
-                        else if ("(".equals(literal) || ")".equals(literal)){ style = "parentheses"; }
-                        else if (",".equals(literal) || ":".equals(literal) || ".".equals(literal)){ style = "splitter"; }
-                        else { style = "unknown"; }
+                        if("{".equals(literal)){
+                            styles.add("brace");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                            rainbowMark++;
+                        }else if("}".equals(literal)){
+                            rainbowMark--;
+                            styles.add("brace");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                        } else if ("[".equals(literal)){
+                            styles.add("bracket");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                            rainbowMark++;
+                        }else if("]".equals(literal)){
+                            rainbowMark--;
+                            styles.add("bracket");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                        }else if ("(".equals(literal)){
+                            styles.add("parentheses");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                            rainbowMark++;
+                        }else if(")".equals(literal)){
+                            rainbowMark--;
+                            styles.add("parentheses");
+                            styles.add("rainbow-" + rainbowMark % 6);
+                        }
+                        else if (",".equals(literal) || ":".equals(literal) || ".".equals(literal)){ styles.add("splitter"); }
+                        else { styles.add("unknown"); }
                         break;
                     case BOOL:
-                        style = "boolean";
+                        styles.add("boolean");
                         break;
                     case NULL:
-                        style = "null";
+                        styles.add("null");
                         break;
                     case NUMBER:
-                        style = "number";
+                        styles.add("number");
                         break;
                     case STRING:
-                        style = "string-value";
+                        styles.add("string-value");
                         break;
                     case COMMENT:
-                        style = "comment";
+                        styles.add("comment");
                         break;
                     case IDENTIFIER:
-                        style = "identifier";
+                        styles.add("identifier");
                         break;
                     default:
-                        style = "unknown";
+                        styles.add("unknown");
                         break;
                 }
-                ArrayList<String> styles = new ArrayList<>();
+
 //                if(token.isError() || token.type() == TokenType.UNKNOWN){
 //                    styles.add("underlined");
 //                }
                 preStyles = cursorStyles;
                 cursorStyles = styles;
-                styles.add(style);
                 styleList.add(new StyleBox(token.literal(), token.pos(), styles));
             }
 //            if(preStyles != null){

@@ -4,7 +4,14 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -17,6 +24,7 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.reactfx.collection.LiveList;
 import sch.frog.kit.core.FrogLangApp;
 import sch.frog.kit.core.exception.ExecuteException;
 import sch.frog.kit.core.exception.GrammarException;
@@ -28,7 +36,11 @@ import sch.frog.kit.core.value.Value;
 import sch.frog.kit.win.ClipboardUtil;
 import sch.frog.kit.win.MessageUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -135,6 +147,8 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
         Tooltip.install(btn, tooltip);
     }
 
+    private static final String TAB_SPACE = "    ";
+
     private void initCodeArea(){
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.prefHeightProperty().bind(this.heightProperty());
@@ -163,6 +177,73 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
                 executeCode();
             }else if(e.isControlDown() && e.getCode() == KeyCode.S){
                 saveScript();
+            }
+        });
+        codeArea.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if(e.getCode() == KeyCode.TAB){
+                IndexRange range = codeArea.getSelection();
+                if(range.getLength() > 0){
+                    int start = range.getStart();
+                    int end = range.getEnd();
+                    LiveList<Paragraph<Collection<String>, String, Collection<String>>> paragraphs = codeArea.getParagraphs();
+                    if(e.isShiftDown()){
+                        int lineStart = 0;
+                        int newStart = start;
+                        int newEnd = end;
+                        boolean edit = false;
+                        for (Paragraph<Collection<String>, String, Collection<String>> paragraph : paragraphs) {
+                            int len = paragraph.length();
+                            int lineEnd = lineStart + len;
+                            if((lineStart >= start && lineStart < end) || (start >= lineStart && start < lineEnd) || (end >= lineStart && end < lineEnd)){
+                                String text = paragraph.getText();
+                                int l = 0;
+                                while(l < len && l < 4){
+                                    char ch = text.charAt(l);
+                                    if(ch == ' '){
+                                        l++;
+                                    }else{
+                                        if(ch == '\t'){ l++; }
+                                        break;
+                                    }
+                                }
+                                codeArea.deleteText(lineStart, lineStart + l);
+                                if(!edit){  // 第一次移动时执行
+                                    newStart -= l;
+                                    if(newStart < lineStart){
+                                        newStart = lineStart;
+                                    }
+                                }
+                                newEnd -= l;
+                                lineEnd = lineEnd - l;
+                                edit = true;
+                            }else if(edit){
+                                break;
+                            }
+                            lineStart = lineEnd + 1;
+                        }
+                        codeArea.selectRange(newStart, newEnd);
+                    }else{
+                        int lineStart = 0;
+                        int offset = 0;
+                        boolean edit = false;
+                        for (Paragraph<Collection<String>, String, Collection<String>> paragraph : paragraphs) {
+                            int len = paragraph.length();
+                            int lineEnd = lineStart + len;
+                            if((lineStart >= start && lineStart < end) || (start >= lineStart && start < lineEnd) || (end >= lineStart && end < lineEnd)){
+                                edit = true;
+                                codeArea.insert(lineStart + offset, TAB_SPACE, "");
+                                offset += 4;
+                            }else if(edit){
+                                break;
+                            }
+                            lineStart = lineEnd + 1;
+                        }
+                        codeArea.selectRange(start + 4, end + offset);
+                    }
+                }else{
+                    codeArea.insert(codeArea.getCaretPosition(), TAB_SPACE, "");
+                }
+                e.consume();
             }
         });
         CodeAreaAssist highlight = CodeAreaAssist.getInstance();
