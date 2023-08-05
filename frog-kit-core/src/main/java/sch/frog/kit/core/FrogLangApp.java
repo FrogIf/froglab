@@ -36,7 +36,17 @@ public class FrogLangApp {
         return instance;
     }
 
-    public static FrogLangApp getInstance(List<String> externalPaths){
+    public static FrogLangApp getInstance(IFunction[] funs){
+        FrogLangApp app = new FrogLangApp();
+        if(funs != null){
+            for (IFunction fun : funs) {
+                app.context.addVariable(fun.name(), new Value(fun));
+            }
+        }
+        return app;
+    }
+
+    public static FrogLangApp getInstance(List<String> externalPaths, IFunction[] funs){
         FrogLangApp app = new FrogLangApp();
         for (String externalPath : externalPaths) {
             try {
@@ -51,6 +61,11 @@ public class FrogLangApp {
                 }
             } catch (Exception e) {
                 throw new Error(e);
+            }
+        }
+        if(funs != null){
+            for (IFunction fun : funs) {
+                app.context.addVariable(fun.name(), new Value(fun));
             }
         }
         return app;

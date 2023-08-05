@@ -5,12 +5,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sch.frog.kit.core.FrogLangApp;
+import sch.frog.kit.core.fun.IFunction;
+import sch.frog.kit.win.component.WinFunction;
 import sch.frog.kit.win.editor.ScriptWorkspace;
+import sch.frog.kit.win.extfun.Md5Function;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,6 +60,10 @@ public class MainController implements Initializable {
         }
     }
 
+    private static final IFunction[] funs = new IFunction[]{
+            new Md5Function(),
+            new WinFunction()
+    };
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,9 +76,9 @@ public class MainController implements Initializable {
                     jarFiles.add(f.getPath());
                 }
             }
-            frogLangApp = FrogLangApp.getInstance(jarFiles);
+            frogLangApp = FrogLangApp.getInstance(jarFiles, funs);
         }else{
-            frogLangApp = FrogLangApp.getInstance();
+            frogLangApp = FrogLangApp.getInstance(funs);
         }
 
         MessageUtil.messageEmitter = new MessageEmitter(msgText);
