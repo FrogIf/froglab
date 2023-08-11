@@ -9,7 +9,7 @@
         <Button text="console" onAction="#addConsole" />
         <Button text="script" onAction="#addScript" />
         <Pane HBox.hgrow="ALWAYS"><!-- nothing --></Pane>
-        <Button alignment="CENTER_RIGHT" onAction="#onAboutBtnClick" styleClass="frog-btn" style="-fx-background-color: #0090ff;" text="i" textFill="WHITE" />
+        <Button alignment="CENTER_RIGHT" onAction="#onAboutBtnClick" styleClass="-fx-font-size:10" style="-fx-background-color: #0090ff;" text="i" textFill="WHITE" />
     </ToolBar>
     <TabPane fx:id="mainTabPane" prefHeight="229.0" prefWidth="290.0" VBox.vgrow="ALWAYS" tabMinWidth="60">
     </TabPane>

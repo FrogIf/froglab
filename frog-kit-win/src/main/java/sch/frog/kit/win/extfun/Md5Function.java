@@ -1,11 +1,11 @@
 package sch.frog.kit.win.extfun;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import sch.frog.kit.core.exception.ExecuteException;
-import sch.frog.kit.core.execute.IRuntimeContext;
-import sch.frog.kit.core.fun.AbstractGeneralFunction;
-import sch.frog.kit.core.value.Value;
-import sch.frog.kit.core.value.ValueType;
+import sch.frog.kit.lang.exception.ExecuteException;
+import sch.frog.kit.lang.execute.IRuntimeContext;
+import sch.frog.kit.lang.fun.AbstractGeneralFunction;
+import sch.frog.kit.lang.value.Value;
+import sch.frog.kit.lang.value.ValueType;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,7 +31,7 @@ public class Md5Function extends AbstractGeneralFunction {
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("md5 function expect string argument, but " + arg.getType());
         }
-        String path = arg.to(String.class);
+        String path = arg.cast(String.class);
         File file = new File(path);
         if(!file.exists()){
             throw new ExecuteException("file not found for path :" + path);

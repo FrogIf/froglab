@@ -9,8 +9,9 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>frog-kit-core</module>
+        <module>frog-kit-lang</module>
         <module>frog-kit-win</module>
+        <module>frog-kit-common</module>
     </modules>
 
     <properties>

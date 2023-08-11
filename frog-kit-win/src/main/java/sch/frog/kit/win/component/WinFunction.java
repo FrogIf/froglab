@@ -3,10 +3,10 @@ package sch.frog.kit.win.component;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sch.frog.kit.core.exception.ExecuteException;
-import sch.frog.kit.core.execute.IRuntimeContext;
-import sch.frog.kit.core.fun.AbstractGeneralFunction;
-import sch.frog.kit.core.value.Value;
+import sch.frog.kit.lang.exception.ExecuteException;
+import sch.frog.kit.lang.execute.IRuntimeContext;
+import sch.frog.kit.lang.fun.AbstractGeneralFunction;
+import sch.frog.kit.lang.value.Value;
 import sch.frog.kit.win.ImageResources;
 
 public class WinFunction extends AbstractGeneralFunction {

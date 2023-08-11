@@ -3,7 +3,7 @@ package sch.frog.kit.win;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import sch.frog.kit.core.FrogLangApp;
+import sch.frog.kit.lang.FrogLangApp;
 import sch.frog.kit.win.editor.ConsoleWorkspace;
 import sch.frog.kit.win.editor.IWorkspace;
 import sch.frog.kit.win.editor.ScriptWorkspace;

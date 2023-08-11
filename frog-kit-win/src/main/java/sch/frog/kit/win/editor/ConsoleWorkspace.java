@@ -7,8 +7,8 @@ import javafx.scene.layout.BorderPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import sch.frog.kit.core.FrogLangApp;
-import sch.frog.kit.core.execute.ISession;
+import sch.frog.kit.lang.FrogLangApp;
+import sch.frog.kit.lang.execute.ISession;
 import sch.frog.kit.win.ClipboardUtil;
 
 public class ConsoleWorkspace extends BorderPane implements IWorkspace{

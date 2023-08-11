@@ -20,8 +20,6 @@ public class FrogKitApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(FrogKitApplication.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         scene.getStylesheets().add(FrogKitApplication.class.getResource("css/code-assist.css").toExternalForm());
-        scene.getStylesheets().add(FrogKitApplication.class.getResource("css/common.css").toExternalForm());
-        scene.getStylesheets().add(FrogKitApplication.class.getResource("css/console.css").toExternalForm());
         stage.setTitle("FrogKit " + GlobalInnerProperties.getProperty("application.version"));
         stage.setScene(scene);
         stage.getIcons().add(ImageResources.appIcon);

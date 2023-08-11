@@ -7,6 +7,7 @@ import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyledDocument;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ConsoleCodeArea extends CustomCodeArea {
@@ -58,7 +59,7 @@ public class ConsoleCodeArea extends CustomCodeArea {
                         this.appendText(resp + "\n");
                     }
                 }
-                this.append(prefix, List.of("console-prefix"));
+                this.append(prefix, Collections.emptyList());
             }else if(e.isControlDown()){
                 if(e.getCode() == KeyCode.L){
                     this.clearConsole();
