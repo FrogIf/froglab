@@ -1,0 +1,77 @@
+.boolean {
+    -fx-font-weight: bold;
+    -fx-fill: green;
+}
+.splitter {
+    -fx-font-weight: bold;
+    -fx-fill: black;
+}
+.bracket {
+    -fx-font-weight: bold;
+}
+.key {
+    -fx-font-weight: bold;
+    -fx-fill: #1a66b7;
+}
+.number {
+    -fx-font-weight: bold;
+    -fx-fill: green;
+}
+.null{
+    -fx-font-weight: bold;
+    -fx-fill: green;
+}
+.string-value{
+    -fx-font-weight: bold;
+    -fx-fill: #ab3030;
+}
+.structure {
+    -fx-font-weight: bold;
+    -fx-fill: gray;
+}
+.brace{
+    -fx-font-weight: bold;
+}
+.underlined {
+    -rtfx-background-color: #f0f0f0;
+    -rtfx-underline-color: red;
+    -rtfx-underline-dash-array: 2 2;
+    -rtfx-underline-width: 1;
+    -rtfx-underline-cap: butt;
+}
+.identifier{
+    -fx-fill: blue;
+}
+.unknown{
+    -fx-fill: black;
+}
+.comment{
+    -fx-fill: green;
+}
+.parentheses{
+}
+.paragraph-box:has-caret {
+    -fx-background-color: #f2f9fc;
+}
+.code-area .paragraph-box .text.match-pair {
+    -rtfx-background-color: #00000033;
+}
+
+.rainbow-0{
+    -fx-fill: red;
+}
+.rainbow-1{
+    -fx-fill: #00a7ff;
+}
+.rainbow-2{
+    -fx-fill: orange;
+}
+.rainbow-3{
+    -fx-fill: #41ff00;
+}
+.rainbow-4{
+    -fx-fill: #8066cc;
+}
+.rainbow-5{
+    -fx-fill: #669999;
+}
