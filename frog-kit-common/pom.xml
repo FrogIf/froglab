@@ -6,7 +6,8 @@
     <parent>
         <groupId>sch.frog.kit</groupId>
         <artifactId>frog-kit</artifactId>
-        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <groupId>sch.frog.kit.common</groupId>

@@ -6,15 +6,17 @@
     <parent>
         <groupId>sch.frog.kit</groupId>
         <artifactId>frog-kit</artifactId>
-        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <groupId>sch.frog.kit.win</groupId>
     <artifactId>frog-kit-win</artifactId>
-    <version>${project.version}</version>
 
     <properties>
         <javafx.version>11.0.2</javafx.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
