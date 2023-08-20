@@ -23,6 +23,20 @@ public class LexicalAnalyzer {
         specialWord.put("false", TokenType.BOOL);
         specialWord.put("null", TokenType.NULL);
         specialWord.put("=>", TokenType.STRUCT);
+
+        specialWord.put("+", TokenType.OPERATOR);
+        specialWord.put("-", TokenType.OPERATOR);
+        specialWord.put("*", TokenType.OPERATOR);
+        specialWord.put("/", TokenType.OPERATOR);
+        specialWord.put(">", TokenType.OPERATOR);
+        specialWord.put(">=", TokenType.OPERATOR);
+        specialWord.put("<", TokenType.OPERATOR);
+        specialWord.put("<=", TokenType.OPERATOR);
+        specialWord.put("==", TokenType.OPERATOR);
+        specialWord.put("!=", TokenType.OPERATOR);
+        specialWord.put("&&", TokenType.OPERATOR);
+        specialWord.put("||", TokenType.OPERATOR);
+        specialWord.put("!", TokenType.OPERATOR);
     }
 
     public List<Token> getToken(String expression) throws IncorrectExpressionException {

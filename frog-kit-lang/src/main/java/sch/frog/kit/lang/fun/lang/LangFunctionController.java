@@ -1,9 +1,7 @@
 package sch.frog.kit.lang.fun.lang;
 
-import sch.frog.calculator.cell.CellCalculator;
-import sch.frog.calculator.number.ComplexNumber;
-import sch.frog.calculator.number.NumberRoundingMode;
-import sch.frog.calculator.number.RationalNumber;
+import sch.frog.calculator.base.number.NumberRoundingMode;
+import sch.frog.calculator.base.number.RationalNumber;
 import sch.frog.kit.common.FunctionDefine;
 import sch.frog.kit.lang.exception.ExecuteException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
@@ -524,21 +522,6 @@ public class LangFunctionController {
             throw new ExecuteException("url_decode argument type must string, but " + arg.getType());
         }
         return URLDecoder.decode(arg.cast(String.class), StandardCharsets.UTF_8);
-    }
-
-    private final CellCalculator cellCalculator = new CellCalculator();
-
-    @FunctionDefine(name = "calc")
-    public RationalNumber calc(Value expression){
-        if(expression.getType() != ValueType.STRING){
-            throw new ExecuteException("calc must input string expression");
-        }
-        ComplexNumber number = cellCalculator.calculate(expression.cast(String.class));
-        RationalNumber rational = number.toRational();
-        if(rational == null){
-            throw new ExecuteException("result is not rational number, system unsupported.");
-        }
-        return rational;
     }
 
     @FunctionDefine(name = "numScale")

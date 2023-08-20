@@ -1,8 +1,8 @@
 package sch.frog.kit.lang.value;
 
-import sch.frog.calculator.number.IntegerNumber;
-import sch.frog.calculator.number.NumberRoundingMode;
-import sch.frog.calculator.number.RationalNumber;
+import sch.frog.calculator.base.number.IntegerNumber;
+import sch.frog.calculator.base.number.NumberRoundingMode;
+import sch.frog.calculator.base.number.RationalNumber;
 import sch.frog.kit.lang.exception.ValueCastException;
 import sch.frog.kit.lang.fun.IFunction;
 

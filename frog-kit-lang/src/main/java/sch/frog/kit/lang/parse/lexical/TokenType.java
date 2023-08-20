@@ -8,6 +8,7 @@ public enum TokenType {
     NUMBER,
     STRING,
     IDENTIFIER,
-    COMMENT;
+    COMMENT,
+    OPERATOR;
 
 }
