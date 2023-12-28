@@ -9,6 +9,10 @@ public enum TokenType {
     STRING,
     IDENTIFIER,
     COMMENT,
-    OPERATOR;
+    OPERATOR,
+    ASSIGN,
+    GLOBAL_DECLARE,
+    LOCAL_DECLARE,
+    ILLEGAL;
 
 }

@@ -11,7 +11,7 @@
     <modules>
         <module>frog-kit-lang</module>
         <module>frog-kit-win</module>
-        <module>frog-kit-common</module>
+        <module>frog-kit-ext</module>
     </modules>
 
     <properties>

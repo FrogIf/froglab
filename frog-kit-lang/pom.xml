@@ -20,16 +20,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>sch.frog.kit.common</groupId>
-            <artifactId>frog-kit-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>sch.frog</groupId>
-            <artifactId>calculator-base</artifactId>
+            <groupId>io.github.frogif</groupId>
+            <artifactId>calculator-number</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/calculator-base.jar</systemPath>
         </dependency>
     </dependencies>
 

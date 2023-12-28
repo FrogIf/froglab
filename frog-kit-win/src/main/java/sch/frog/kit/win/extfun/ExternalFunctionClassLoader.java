@@ -1,4 +1,4 @@
-package sch.frog.kit.lang.ext;
+package sch.frog.kit.win.extfun;
 
 import java.net.URL;
 import java.net.URLClassLoader;

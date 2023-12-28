@@ -1,8 +1,7 @@
 package sch.frog.kit.lang.parse.grammar;
 
-import sch.frog.kit.lang.exception.GrammarException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
-import sch.frog.kit.lang.parse.common.TokenRuleUtil;
+import sch.frog.kit.lang.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.parse.lexical.TokenType;
 import sch.frog.kit.lang.parse.lexical.TokenUtil;
@@ -161,7 +160,7 @@ public class ObjectGrammarNode extends AbstractGrammarNode{
                 }else{
                     throw new GrammarException(token);
                 }
-                if(!TokenRuleUtil.isIdentifier(this.activeKey)){
+                if(!LexicalAnalyzer.isIdentifier(this.activeKey)){
                     throw new GrammarException(token);
                 }
                 objStatus = 1;

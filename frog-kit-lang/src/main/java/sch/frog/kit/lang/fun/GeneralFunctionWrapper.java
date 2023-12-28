@@ -1,6 +1,5 @@
 package sch.frog.kit.lang.fun;
 
-import sch.frog.kit.common.FunctionDefine;
 import sch.frog.kit.lang.exception.ExecuteException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.value.Value;
@@ -29,9 +28,9 @@ public class GeneralFunctionWrapper extends AbstractGeneralFunction{
 
     private final boolean returnVoid;
 
-    public GeneralFunctionWrapper(FunctionDefine define, Object instance, Method method){
-        this.name = define.name();
-        this.description = define.description();
+    public GeneralFunctionWrapper(FunctionInfo define, Object instance, Method method){
+        this.name = define.getName();
+        this.description = define.getDescription();
         this.instance = instance;
         this.method = method;
         this.argCount = method.getParameterCount();

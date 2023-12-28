@@ -1,11 +1,11 @@
 package sch.frog.kit.lang.fun.lang;
 
-import sch.frog.calculator.base.number.NumberRoundingMode;
-import sch.frog.calculator.base.number.RationalNumber;
-import sch.frog.kit.common.FunctionDefine;
+import io.github.frogif.calculator.number.impl.NumberRoundingMode;
+import io.github.frogif.calculator.number.impl.RationalNumber;
 import sch.frog.kit.lang.exception.ExecuteException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.execute.ISession;
+import sch.frog.kit.lang.fun.FunDef;
 import sch.frog.kit.lang.fun.IFunction;
 import sch.frog.kit.lang.value.VList;
 import sch.frog.kit.lang.value.Value;
@@ -22,12 +22,12 @@ import java.util.Date;
 
 public class LangFunctionController {
 
-    @FunctionDefine(name = "eq")
+    @FunDef(name = "eq")
     public boolean equal(Value v1, Value v2){
         return v1.equals(v2);
     }
 
-    @FunctionDefine(name = "lt")
+    @FunDef(name = "lt")
     public boolean lessThan(Value v1, Value v2){
         if(v1.getType() != ValueType.NUMBER){
             throw new ExecuteException("lt function first argument type must number, but " + v1.getType());
@@ -40,7 +40,7 @@ public class LangFunctionController {
         return r1.compareTo(r2) < 0;
     }
 
-    @FunctionDefine(name = "gt")
+    @FunDef(name = "gt")
     public boolean greaterThan(Value v1, Value v2){
         if(v1.getType() != ValueType.NUMBER){
             throw new ExecuteException("gt function first argument type must number, but " + v1.getType());
@@ -53,7 +53,7 @@ public class LangFunctionController {
         return r1.compareTo(r2) > 0;
     }
 
-    @FunctionDefine(name = "gte")
+    @FunDef(name = "gte")
     public boolean greaterThanOrEqual(Value v1, Value v2){
         if(v1.getType() != ValueType.NUMBER){
             throw new ExecuteException("gte function first argument type must number, but " + v1.getType());
@@ -66,7 +66,7 @@ public class LangFunctionController {
         return r1.compareTo(r2) >= 0;
     }
 
-    @FunctionDefine(name = "lte")
+    @FunDef(name = "lte")
     public boolean lessThanOrEqual(Value v1, Value v2){
         if(v1.getType() != ValueType.NUMBER){
             throw new ExecuteException("lte function first argument type must number, but " + v1.getType());
@@ -79,7 +79,7 @@ public class LangFunctionController {
         return r1.compareTo(r2) <= 0;
     }
 
-    @FunctionDefine(name = "not")
+    @FunDef(name = "not")
     public boolean not(Value v){
         if(v.getType() != ValueType.BOOL){
             throw new ExecuteException("not function argument type must bool, but " + v.getType());
@@ -87,7 +87,7 @@ public class LangFunctionController {
         return !v.cast(boolean.class);
     }
 
-    @FunctionDefine(name = "and")
+    @FunDef(name = "and")
     public boolean and(Value v1, Value v2){
         if(v1.getType() != ValueType.BOOL){
             throw new ExecuteException("and function first argument type must bool, but " + v1.getType());
@@ -98,7 +98,7 @@ public class LangFunctionController {
         return v1.cast(Boolean.class) && v2.cast(Boolean.class);
     }
 
-    @FunctionDefine(name = "or")
+    @FunDef(name = "or")
     public boolean or(Value v1, Value v2){
         if(v1.getType() != ValueType.BOOL){
             throw new ExecuteException("or function first argument type must bool, but " + v1.getType());
@@ -109,12 +109,12 @@ public class LangFunctionController {
         return v1.cast(Boolean.class) || v2.cast(Boolean.class);
     }
 
-    @FunctionDefine(name = "print")
+    @FunDef(name = "print")
     public void print(Value[] args, IRuntimeContext context){
         writeToOutput(args, context, false);
     }
 
-    @FunctionDefine(name = "println")
+    @FunDef(name = "println")
     public void println(Value[] args, IRuntimeContext context){
         writeToOutput(args, context, true);
     }
@@ -165,7 +165,7 @@ public class LangFunctionController {
         }
     }
 
-    @FunctionDefine(name = "exec")
+    @FunDef(name = "exec")
     public Value exec(Value[] args){
         if(args != null && args.length > 0){
             return args[args.length - 1];
@@ -173,7 +173,7 @@ public class LangFunctionController {
         return Value.VOID;
     }
 
-    @FunctionDefine(name = "lambda")
+    @FunDef(name = "lambda")
     public Value lambda(Value arg){
         if(arg.getType() != ValueType.FUNCTION){
             throw new ExecuteException("lambda argument type must function, but " + arg.getType());
@@ -181,17 +181,17 @@ public class LangFunctionController {
         return arg;
     }
 
-    @FunctionDefine(name = "uuid")
+    @FunDef(name = "uuid")
     public String uuid(){
         return java.util.UUID.randomUUID().toString();
     }
 
-    @FunctionDefine(name = "uuidi")
+    @FunDef(name = "uuidi")
     public String uuidi(){
         return java.util.UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    @FunctionDefine(name = "upper")
+    @FunDef(name = "upper")
     public String upper(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("upper function argument's type must string");
@@ -199,7 +199,7 @@ public class LangFunctionController {
         return arg.cast(String.class).toUpperCase();
     }
 
-    @FunctionDefine(name = "lower")
+    @FunDef(name = "lower")
     public String lower(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("lower function argument's type must string");
@@ -207,12 +207,12 @@ public class LangFunctionController {
         return arg.cast(String.class).toLowerCase();
     }
 
-    @FunctionDefine(name = "now")
+    @FunDef(name = "now")
     public RationalNumber now(){
         return new RationalNumber(String.valueOf(System.currentTimeMillis()));
     }
 
-    @FunctionDefine(name = "timestamp")
+    @FunDef(name = "timestamp")
     public RationalNumber timestamp(Value[] args){
         if(args.length < 1){
             throw new ExecuteException("timestamp at least have 1 argument");
@@ -242,7 +242,7 @@ public class LangFunctionController {
         return num;
     }
 
-    @FunctionDefine(name = "date")
+    @FunDef(name = "date")
     public String date(Value[] args){
         if(args.length == 0){
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -262,7 +262,7 @@ public class LangFunctionController {
         }
     }
 
-    @FunctionDefine(name = "add")
+    @FunDef(name = "add")
     public RationalNumber add(Value[] args){
         if(args == null){
             throw new ExecuteException("add function at least one argument");
@@ -294,7 +294,7 @@ public class LangFunctionController {
         return d;
     }
 
-    @FunctionDefine(name = "sub")
+    @FunDef(name = "sub")
     public RationalNumber sub(Value[] args){
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
@@ -337,7 +337,7 @@ public class LangFunctionController {
         return d;
     }
 
-    @FunctionDefine(name = "mul")
+    @FunDef(name = "mul")
     public RationalNumber mul(Value[] args){
         if(args == null){
             throw new ExecuteException("add function at least one argument");
@@ -369,7 +369,7 @@ public class LangFunctionController {
         return d;
     }
 
-    @FunctionDefine(name = "div")
+    @FunDef(name = "div")
     public RationalNumber div(Value[] args){
         if(args == null){
             throw new ExecuteException("sub function at least one argument");
@@ -412,7 +412,7 @@ public class LangFunctionController {
         return d;
     }
 
-    @FunctionDefine(name = "unicode")
+    @FunDef(name = "unicode")
     public String unicode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("unicode function argument's type must string");
@@ -439,7 +439,7 @@ public class LangFunctionController {
         return sb.toString();
     }
 
-    @FunctionDefine(name = "unicodei")
+    @FunDef(name = "unicodei")
     public String unicodei(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("invUnicode function argument's type must string");
@@ -463,7 +463,7 @@ public class LangFunctionController {
         return sb.toString();
     }
 
-    @FunctionDefine(name = "base64")
+    @FunDef(name = "base64")
     public String base64(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("base64 argument type must string, but " + arg.getType());
@@ -471,7 +471,7 @@ public class LangFunctionController {
         return Base64.getEncoder().encodeToString(arg.cast(String.class).getBytes(StandardCharsets.UTF_8));
     }
 
-    @FunctionDefine(name = "base64i")
+    @FunDef(name = "base64i")
     public String base64i(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("base64i argument type must string, but " + arg.getType());
@@ -479,7 +479,7 @@ public class LangFunctionController {
         return new String(Base64.getDecoder().decode(arg.cast(String.class).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
     }
 
-    @FunctionDefine(name = "hex")
+    @FunDef(name = "hex")
     public String hex(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("hex argument type must string, but " + arg.getType());
@@ -493,7 +493,7 @@ public class LangFunctionController {
         return sb.toString();
     }
 
-    @FunctionDefine(name = "hexi")
+    @FunDef(name = "hexi")
     public String hexi(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("hexi argument type must string, but " + arg.getType());
@@ -508,7 +508,7 @@ public class LangFunctionController {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    @FunctionDefine(name = "url_encode")
+    @FunDef(name = "url_encode")
     public String urlEncode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("url_encode argument type must string, but " + arg.getType());
@@ -516,7 +516,7 @@ public class LangFunctionController {
         return URLEncoder.encode(arg.cast(String.class), StandardCharsets.UTF_8);
     }
 
-    @FunctionDefine(name = "url_decode")
+    @FunDef(name = "url_decode")
     public String urlDecode(Value arg){
         if(arg.getType() != ValueType.STRING){
             throw new ExecuteException("url_decode argument type must string, but " + arg.getType());
@@ -524,7 +524,7 @@ public class LangFunctionController {
         return URLDecoder.decode(arg.cast(String.class), StandardCharsets.UTF_8);
     }
 
-    @FunctionDefine(name = "numScale")
+    @FunDef(name = "numScale")
     public String numScale(Value num, Value mode, Value scale){
         if(num.getType() != ValueType.NUMBER){
             throw new ExecuteException("numScale first argument must number, but " + num.getType());
@@ -538,7 +538,7 @@ public class LangFunctionController {
         return num.cast(RationalNumber.class).toPlainString(scale.cast(int.class), NumberRoundingMode.valueOf(mode.cast(String.class)));
     }
 
-    @FunctionDefine(name = "funs")
+    @FunDef(name = "funs")
     public String funs(Value[] args, IRuntimeContext context){
         ISession session = context.getSession();
         StringBuilder sb = new StringBuilder();

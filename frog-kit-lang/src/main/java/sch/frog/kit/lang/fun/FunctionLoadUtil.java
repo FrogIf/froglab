@@ -1,7 +1,5 @@
 package sch.frog.kit.lang.fun;
 
-import sch.frog.kit.common.FunctionDefine;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +11,9 @@ public class FunctionLoadUtil {
         Class<?> clazz = instance.getClass();
         Method[] methods = clazz.getMethods();
         for (Method m : methods) {
-            FunctionDefine funDefine = m.getAnnotation(FunctionDefine.class);
+            FunDef funDefine = m.getAnnotation(FunDef.class);
             if(funDefine != null){
-                list.add(new GeneralFunctionWrapper(funDefine, instance, m));
+                list.add(new GeneralFunctionWrapper(new FunctionInfo(funDefine), instance, m));
             }
         }
         return list;

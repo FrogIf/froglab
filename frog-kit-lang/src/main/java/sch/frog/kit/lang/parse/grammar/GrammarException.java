@@ -1,4 +1,4 @@
-package sch.frog.kit.lang.exception;
+package sch.frog.kit.lang.parse.grammar;
 
 import sch.frog.kit.lang.parse.lexical.Token;
 

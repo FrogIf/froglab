@@ -27,7 +27,7 @@ import org.fxmisc.richtext.model.Paragraph;
 import org.reactfx.collection.LiveList;
 import sch.frog.kit.lang.FrogLangApp;
 import sch.frog.kit.lang.exception.ExecuteException;
-import sch.frog.kit.lang.exception.GrammarException;
+import sch.frog.kit.lang.parse.grammar.GrammarException;
 import sch.frog.kit.lang.exception.IncorrectExpressionException;
 import sch.frog.kit.lang.execute.ISession;
 import sch.frog.kit.lang.parse.lexical.Token;

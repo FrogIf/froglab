@@ -1,4 +1,4 @@
-package sch.frog.kit.win.component;
+package sch.frog.kit.win.extfun;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,6 +8,7 @@ import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.fun.AbstractGeneralFunction;
 import sch.frog.kit.lang.value.Value;
 import sch.frog.kit.win.ImageResources;
+import sch.frog.kit.win.component.MainComponentView;
 
 public class WinFunction extends AbstractGeneralFunction {
 

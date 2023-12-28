@@ -1,6 +1,8 @@
 package sch.frog.kit.core.test;
 
 import sch.frog.kit.lang.exception.IncorrectExpressionException;
+import sch.frog.kit.lang.parse.io.StringScriptStream;
+import sch.frog.kit.lang.parse.lexical.GeneralTokenStream;
 import sch.frog.kit.lang.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.lang.parse.lexical.Token;
 
@@ -18,8 +20,12 @@ public class TokenParserTest {
         while(true){
             String expression = sc.nextLine();
             if("exit".equals(expression)){ break; }
-            List<Token> token = analyzer.getToken(expression);
-            System.out.println(token);
+            GeneralTokenStream tokenStream = analyzer.parse(new StringScriptStream(expression));
+            while(tokenStream.peek() != null){
+                System.out.print(tokenStream.current() + ", ");
+                tokenStream.next();
+            }
+            System.out.println();
         }
 
     }

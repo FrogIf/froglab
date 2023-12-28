@@ -15,7 +15,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sch.frog.kit.lang.FrogLangApp;
 import sch.frog.kit.lang.fun.IFunction;
-import sch.frog.kit.win.component.WinFunction;
+import sch.frog.kit.lang.value.VMap;
+import sch.frog.kit.lang.value.Value;
+import sch.frog.kit.win.extfun.ExternalFunctionLoadUtil;
+import sch.frog.kit.win.extfun.FunctionPackage;
+import sch.frog.kit.win.extfun.WinFunction;
 import sch.frog.kit.win.editor.ScriptWorkspace;
 import sch.frog.kit.win.extfun.Md5Function;
 
@@ -25,9 +29,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
 
@@ -60,26 +62,38 @@ public class MainController implements Initializable {
         }
     }
 
-    private static final IFunction[] funs = new IFunction[]{
+    private static final IFunction[] INNER_FUNS = new IFunction[]{
             new Md5Function(),
             new WinFunction()
     };
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ArrayList<IFunction> funs = new ArrayList<>(Arrays.asList(INNER_FUNS));
+
         File externalDir = new File("external");
         File[] fileList = externalDir.listFiles();
+        HashMap<String, Value> valueMap = new HashMap<>();
         if(fileList != null){
-            ArrayList<String> jarFiles = new ArrayList<>(fileList.length);
             for (File f : fileList) {
                 if(f.getName().endsWith(".jar")){
-                    jarFiles.add(f.getPath());
+                    try{
+                        List<FunctionPackage> packages = ExternalFunctionLoadUtil.load(f.getPath());
+                        for (FunctionPackage pak : packages) {
+                            VMap funMap = new VMap();
+                            List<IFunction> funList = pak.getFunctions();
+                            for (IFunction fun : funList) {
+                                funMap.put(fun.name(), new Value(fun));
+                            }
+                            valueMap.put(pak.getName(), new Value(funMap));
+                        }
+                    }catch (Exception e){
+                        throw new Error(e);
+                    }
                 }
             }
-            frogLangApp = FrogLangApp.getInstance(jarFiles, funs);
-        }else{
-            frogLangApp = FrogLangApp.getInstance(funs);
         }
+        frogLangApp = FrogLangApp.getInstance(funs.toArray(IFunction[]::new), valueMap);
 
         MessageUtil.messageEmitter = new MessageEmitter(msgText);
         EditTabManager.addTab(mainTabPane, Constants.EDITOR_TYPE_CONSOLE, frogLangApp);

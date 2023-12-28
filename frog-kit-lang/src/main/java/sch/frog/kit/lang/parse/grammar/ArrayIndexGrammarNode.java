@@ -1,7 +1,6 @@
 package sch.frog.kit.lang.parse.grammar;
 
 import sch.frog.kit.lang.exception.ExecuteException;
-import sch.frog.kit.lang.exception.GrammarException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.value.VList;

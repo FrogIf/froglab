@@ -1,8 +1,11 @@
-package sch.frog.kit.lang.common;
+package sch.frog.kit.lang.parse.lexical;
+
+import sch.frog.kit.lang.parse.io.IScriptStream;
+import sch.frog.kit.lang.parse.io.StringScriptStream;
 
 import java.util.ArrayList;
 
-public class SearchMap<V>{
+public class TokenSearcher<V>{
 
     private final Node<V> root = new Node<>();
 
@@ -18,8 +21,8 @@ public class SearchMap<V>{
         return null;
     }
 
-    public Entry<V> match(String content, int start){
-        return root.match(start, content);
+    public Entry<V> match(IScriptStream inputStream){
+        return root.match(inputStream);
     }
 
 
@@ -59,16 +62,15 @@ public class SearchMap<V>{
         }
 
         public Entry<V> get(String literal){
-            Entry<V> entry = match(0, literal);
+            Entry<V> entry = match(new StringScriptStream(literal));
             if(entry != null && entry.key.equals(literal)){
                 return entry;
             }
             return null;
         }
 
-        public Entry<V> match(int start, String expression){
-            if(start >= expression.length()){ return null; }
-            char c = expression.charAt(start);
+        public Entry<V> match(IScriptStream inputStream){
+            char c = inputStream.current();
             Node<V> cursor = null;
             for (Node<V> n : children) {
                 if(n.ch == c){
@@ -79,7 +81,10 @@ public class SearchMap<V>{
             if(cursor == null){
                 return null;
             }else{
-                Entry<V> entry = cursor.match(start + 1, expression);
+                if(inputStream.next() == IScriptStream.EOF){
+                    return cursor.entry;
+                }
+                Entry<V> entry = cursor.match(inputStream);
                 if(entry == null){
                     return cursor.entry;
                 }else{

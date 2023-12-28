@@ -1,7 +1,6 @@
 package sch.frog.kit.lang.parse.grammar;
 
-import sch.frog.calculator.base.number.RationalNumber;
-import sch.frog.kit.lang.exception.GrammarException;
+import io.github.frogif.calculator.number.impl.RationalNumber;
 import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.parse.lexical.TokenType;
