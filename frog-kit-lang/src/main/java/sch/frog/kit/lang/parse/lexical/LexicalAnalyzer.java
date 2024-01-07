@@ -14,39 +14,51 @@ public class LexicalAnalyzer {
     }
 
     private void init(){
-        specialWord.put("true", TokenType.BOOL);
-        specialWord.put("false", TokenType.BOOL);
-        specialWord.put("null", TokenType.NULL);
+        specialWord.put(TokenConstant.TRUE, TokenType.BOOL);
+        specialWord.put(TokenConstant.FALSE, TokenType.BOOL);
+        specialWord.put(TokenConstant.NULL, TokenType.NULL);
 
-        specialWord.put("=", TokenType.ASSIGN);
-        specialWord.put("var", TokenType.GLOBAL_DECLARE);
-        specialWord.put("let", TokenType.LOCAL_DECLARE);
+        specialWord.put(TokenConstant.ASSIGN, TokenType.ASSIGN);
+        specialWord.put(TokenConstant.VAR, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.LET, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.CONTINUE, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.BREAK, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.PACKAGE, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.IMPORT, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.IF, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.ELSE, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.WHILE, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.DO, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.FOR, TokenType.KEYWORD);
 
-        specialWord.put("+", TokenType.OPERATOR);
-        specialWord.put("-", TokenType.OPERATOR);
-        specialWord.put("*", TokenType.OPERATOR);
-        specialWord.put("/", TokenType.OPERATOR);
-        specialWord.put(">", TokenType.OPERATOR);
-        specialWord.put(">=", TokenType.OPERATOR);
-        specialWord.put("<", TokenType.OPERATOR);
-        specialWord.put("<=", TokenType.OPERATOR);
-        specialWord.put("==", TokenType.OPERATOR);
-        specialWord.put("!=", TokenType.OPERATOR);
-        specialWord.put("&&", TokenType.OPERATOR);
-        specialWord.put("||", TokenType.OPERATOR);
-        specialWord.put("!", TokenType.OPERATOR);
+        specialWord.put(TokenConstant.PLUS, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.MINUS, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.STAR, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.SLASH, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.LT, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.LTE, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.GT, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.GTE, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.EQ, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.NOT_EQ, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.AND, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.OR, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.BANG, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.SHORT_CIRCLE_AND, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.SHORT_CIRCLE_OR, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.REFERENCE, TokenType.OPERATOR);
 
-        specialWord.put("(", TokenType.STRUCT);
-        specialWord.put(")", TokenType.STRUCT);
-        specialWord.put("[", TokenType.STRUCT);
-        specialWord.put("]", TokenType.STRUCT);
-        specialWord.put("{", TokenType.STRUCT);
-        specialWord.put("}", TokenType.STRUCT);
-        specialWord.put(",", TokenType.STRUCT);
-        specialWord.put(".", TokenType.STRUCT);
-        specialWord.put(":", TokenType.STRUCT);
-        specialWord.put("=>", TokenType.STRUCT);
-        specialWord.put(";", TokenType.STRUCT);
+        specialWord.put(TokenConstant.LPAREN, TokenType.STRUCT);
+        specialWord.put(TokenConstant.RPAREN, TokenType.STRUCT);
+        specialWord.put(TokenConstant.LBRACKET, TokenType.STRUCT);
+        specialWord.put(TokenConstant.RBRACKET, TokenType.STRUCT);
+        specialWord.put(TokenConstant.LBRACE, TokenType.STRUCT);
+        specialWord.put(TokenConstant.RBRACE, TokenType.STRUCT);
+        specialWord.put(TokenConstant.COMMA, TokenType.STRUCT);
+        specialWord.put(TokenConstant.DOT, TokenType.STRUCT);
+        specialWord.put(TokenConstant.COLON, TokenType.STRUCT);
+        specialWord.put(TokenConstant.ARROW, TokenType.STRUCT);
+        specialWord.put(TokenConstant.SEMICOLON, TokenType.STRUCT);
     }
 
     public GeneralTokenStream parse(IScriptStream scriptStream){
@@ -71,7 +83,7 @@ public class LexicalAnalyzer {
             if(str != null){
                 token = new Token(str, TokenType.STRING, i);
             }
-        }else if(ch == '/'){
+        }else if(ch == '/'){ // 注释
             String comment = matchComment(scriptStream);
             if(comment != null){
                 token = new Token(comment, TokenType.COMMENT, i);
@@ -153,19 +165,50 @@ public class LexicalAnalyzer {
     private String matchUnsignedNumber(IScriptStream scriptStream){
         char ch = scriptStream.current();
         if(!isDigit(ch)){ return null; }
-        StringBuilder sb = new StringBuilder();
-        sb.append(ch);
-        boolean dot = false;
-        boolean digit;
-        boolean loop = false;
-        while((ch = scriptStream.next()) != IScriptStream.EOF){
-            digit = isDigit(ch)
-                    || (!dot && (dot = ch == '.'))  // 小数点
-                    || (dot && !loop && (loop = ch == '_')); // 循环节
-            if(!digit){ break; }
+        char p;
+        if(ch == '0' && (p = scriptStream.peek()) != '.' && p != IScriptStream.EOF){ // 非十进制数
+            StringBuilder sb = new StringBuilder();
+            /*
+             * 二进制, 0b或者0B开头
+             * 八进制, 以0开头
+             * 十六进制, 0x或者0X开头
+             */
+            INumberMatcher m;
+            if(isDigit(p)){
+                m = c -> c >= '0' && c <= '7';
+                sb.append(ch).append(scriptStream.next());
+            }else if(p == 'b' || p == 'B'){
+                m = c -> c == '0' || c == '1';
+                sb.append(ch).append(scriptStream.next());
+            }else if(p == 'x' || p == 'X'){
+                m = c -> (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+                sb.append(ch).append(scriptStream.next());
+            }else{
+                m = c -> false;
+                sb.append(ch);
+            }
+            boolean mat;
+            while((ch = scriptStream.next()) != IScriptStream.EOF){
+                mat = m.judge(ch);
+                if(!mat){ break; }
+                sb.append(ch);
+            }
+            return sb.toString();
+        }else{
+            StringBuilder sb = new StringBuilder();
             sb.append(ch);
+            boolean dot = false;
+            boolean digit;
+            boolean loop = false;
+            while((ch = scriptStream.next()) != IScriptStream.EOF){
+                digit = isDigit(ch)
+                        || (!dot && (dot = ch == '.'))  // 小数点
+                        || (dot && !loop && (loop = ch == '_')); // 循环节
+                if(!digit){ break; }
+                sb.append(ch);
+            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     public static String matchComment(IScriptStream scriptStream){
@@ -223,6 +266,10 @@ public class LexicalAnalyzer {
             }
         }
         return true;
+    }
+
+    private interface INumberMatcher{
+        boolean judge(char ch);
     }
 
 }

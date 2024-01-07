@@ -15,6 +15,11 @@ public class GeneralTokenStream implements ITokenStream{
     public GeneralTokenStream(IScriptStream scriptStream, LexicalAnalyzer lexicalAnalyzer) {
         this.scriptStream = scriptStream;
         this.lexicalAnalyzer = lexicalAnalyzer;
+        /*
+         * 双指针(peek, current)
+         * 第一次next, peek指针指向开始token
+         * 第二次next, current指针指向开始token
+         */
         this.next();
         this.next();
     }
@@ -31,10 +36,12 @@ public class GeneralTokenStream implements ITokenStream{
 
     @Override
     public Token next() {
-        if(peek != null){
-            current = peek;
-        }
+        current = peek;
+        if(current == null){ current = Token.EOF; }
+
         peek = lexicalAnalyzer.read(scriptStream);
+        if(peek == null){ peek = Token.EOF; }
+
         return current;
     }
 }

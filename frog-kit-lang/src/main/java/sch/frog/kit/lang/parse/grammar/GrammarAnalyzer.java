@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class GrammarAnalyzer {
 
-    public List<Statement> parse(ITokenStream stream){
+    public List<Statement> parse(ITokenStream stream) throws GrammarException {
         LinkedList<Statement> statements = new LinkedList<>();
         while(stream.current() != null){
             statements.add(parseStatement(stream));

@@ -11,8 +11,8 @@ public enum TokenType {
     COMMENT,
     OPERATOR,
     ASSIGN,
-    GLOBAL_DECLARE,
-    LOCAL_DECLARE,
-    ILLEGAL;
+    KEYWORD,
+    ILLEGAL,
+    EOF;
 
 }

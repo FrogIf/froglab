@@ -2,6 +2,8 @@ package sch.frog.kit.lang.parse.lexical;
 
 public class Token {
 
+    public static final Token EOF = new Token("EOF", TokenType.EOF, -1);
+
     private final int pos;
 
     private final String literal;

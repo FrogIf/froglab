@@ -9,6 +9,7 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.richtext.model.StyledDocument;
 import sch.frog.kit.lang.exception.IncorrectExpressionException;
+import sch.frog.kit.lang.parse.io.StringScriptStream;
 import sch.frog.kit.lang.parse.lexical.LexicalAnalyzer;
 import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.parse.lexical.TokenType;
@@ -382,7 +383,7 @@ public class CodeAreaAssist {
                 String text = codeArea.getText();
                 if(StringUtils.isNotBlank(text)){
                     try {
-                        tokens = lexicalAnalyzer.getToken(text);
+                        tokens = lexicalAnalyzer.parse(new StringScriptStream(text));
                     } catch (IncorrectExpressionException e) {
                         throw new RuntimeException(e);
                     }
