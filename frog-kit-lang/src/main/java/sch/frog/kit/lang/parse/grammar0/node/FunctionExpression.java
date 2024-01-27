@@ -1,7 +1,10 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IExpression;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.value.Value;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +43,16 @@ public class FunctionExpression implements IExpression {
             return Collections.singletonList(functionDefine);
         }else{
             return Arrays.asList(functionDefine, functionCaller);
+        }
+    }
+
+    @Override
+    public Value evaluate(IExecuteContext context) throws ExecuteException {
+        Value result = functionDefine.evaluate(context);
+        if(functionCaller != null){
+            return functionCaller.evaluate(result, context);
+        }else{
+            return result;
         }
     }
 }

@@ -37,6 +37,10 @@ public enum ValueType {
     /**
      * 空值
      */
-    VOID;
+    VOID,
+    /**
+     * 未定义
+     */
+    UNDEFINE;
 
 }

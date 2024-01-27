@@ -4,6 +4,7 @@ import sch.frog.kit.lang.exception.ExecuteException;
 import sch.frog.kit.lang.execute.IRuntimeContext;
 import sch.frog.kit.lang.fun.IFunction;
 import sch.frog.kit.lang.parse.grammar.IGrammarNode;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
 import sch.frog.kit.lang.value.Value;
 
 public class WHILE implements IFunction {
@@ -20,6 +21,11 @@ public class WHILE implements IFunction {
     @Override
     public Value execute(Value[] args, IRuntimeContext context) {
         throw new UnsupportedOperationException("while can't execute");
+    }
+
+    @Override
+    public Value execute(Value[] args, IExecuteContext context) throws sch.frog.kit.lang.parse.exception.ExecuteException {
+        return null;
     }
 
     @Override

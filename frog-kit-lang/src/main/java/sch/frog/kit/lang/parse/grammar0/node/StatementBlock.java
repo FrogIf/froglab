@@ -23,4 +23,8 @@ public class StatementBlock implements IStatement {
     public List<IAstNode> getChildren() {
         return Collections.singletonList(statements);
     }
+
+    public Statements getStatements() {
+        return statements;
+    }
 }

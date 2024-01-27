@@ -1,7 +1,10 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IExpression;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.value.Value;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,21 +12,22 @@ import java.util.List;
 
 public class ObjectExpression implements IExpression {
 
-    private final IExpression objectObj;
+    private final IdentifierNode objIdentifier;
+
+    private final ObjectNode objectNode;
 
     private final ObjectCaller objectCaller;
 
-    public ObjectExpression(IExpression objectObj, ObjectCaller objectCaller) {
-        this.objectObj = objectObj;
+    public ObjectExpression(IdentifierNode objIdentifier, ObjectNode objectNode, ObjectCaller objectCaller) {
+        this.objIdentifier = objIdentifier;
+        this.objectNode = objectNode;
         this.objectCaller = objectCaller;
-    }
-
-    public IExpression getObjectObj() {
-        return objectObj;
-    }
-
-    public ObjectCaller getObjectCaller() {
-        return objectCaller;
+        if(objIdentifier == null && objectNode == null){
+            throw new IllegalArgumentException("object and identifier both null");
+        }
+        if(objIdentifier != null && objectNode != null){
+            throw new IllegalArgumentException("object and identifier both not null");
+        }
     }
 
     @Override
@@ -34,9 +38,31 @@ public class ObjectExpression implements IExpression {
     @Override
     public List<IAstNode> getChildren() {
         if(objectCaller == null){
-            return Collections.singletonList(objectObj);
+            if(objIdentifier == null){
+                return Collections.singletonList(objectNode);
+            }else{
+                return Collections.singletonList(objIdentifier);
+            }
         }else{
-            return Arrays.asList(objectObj, objectCaller);
+            if(objIdentifier == null){
+                return Arrays.asList(objectNode, objectCaller);
+            }else{
+                return Arrays.asList(objIdentifier, objectCaller);
+            }
         }
+    }
+
+    @Override
+    public Value evaluate(IExecuteContext context) throws ExecuteException {
+        Value val = null;
+        if(objIdentifier != null){
+            val = objIdentifier.evaluate(context);
+        }else{
+            val = objectNode.evaluate(context);
+        }
+
+        if(objectCaller == null){ return val; }
+
+        return objectCaller.evaluate(val, context);
     }
 }

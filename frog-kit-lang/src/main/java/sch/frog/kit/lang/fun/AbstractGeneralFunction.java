@@ -1,6 +1,7 @@
 package sch.frog.kit.lang.fun;
 
 import sch.frog.kit.lang.execute.IRuntimeContext;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
 import sch.frog.kit.lang.value.Locator;
 import sch.frog.kit.lang.value.Value;
 import sch.frog.kit.lang.value.ValueType;
@@ -24,4 +25,8 @@ public abstract class AbstractGeneralFunction extends AbstractFunction{
 
     protected abstract Value doExec(Value[] args, IRuntimeContext context);
 
+    @Override
+    public Value execute(Value[] args, IExecuteContext context) {
+        return null;
+    }
 }

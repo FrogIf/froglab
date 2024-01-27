@@ -18,6 +18,18 @@ public class VariableBody implements IAstNode {
         this.body = body;
     }
 
+    public String name(){
+        return variableName.identifier();
+    }
+
+    public IExpression expressionBody(){
+        return body;
+    }
+
+    public String getVariableName() {
+        return variableName.identifier();
+    }
+
     @Override
     public String literal() {
         if(body == null){

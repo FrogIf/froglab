@@ -1,47 +1,7 @@
 package sch.frog.kit.lang.parse.grammar0;
 
 import sch.frog.kit.lang.parse.exception.GrammarException;
-import sch.frog.kit.lang.parse.grammar0.node.AbstractCaller;
-import sch.frog.kit.lang.parse.grammar0.node.ArrayCaller;
-import sch.frog.kit.lang.parse.grammar0.node.ArrayExpression;
-import sch.frog.kit.lang.parse.grammar0.node.ArrayIndex;
-import sch.frog.kit.lang.parse.grammar0.node.ArrayNode;
-import sch.frog.kit.lang.parse.grammar0.node.BoolNode;
-import sch.frog.kit.lang.parse.grammar0.node.BreakStatement;
-import sch.frog.kit.lang.parse.grammar0.node.ContinueStatement;
-import sch.frog.kit.lang.parse.grammar0.node.DoWhileStatement;
-import sch.frog.kit.lang.parse.grammar0.node.ElseEntry;
-import sch.frog.kit.lang.parse.grammar0.node.ElseIfEntry;
-import sch.frog.kit.lang.parse.grammar0.node.ExpressionGroup;
-import sch.frog.kit.lang.parse.grammar0.node.ExpressionList;
-import sch.frog.kit.lang.parse.grammar0.node.ForInitializer;
-import sch.frog.kit.lang.parse.grammar0.node.ForStatement;
-import sch.frog.kit.lang.parse.grammar0.node.FunctionCaller;
-import sch.frog.kit.lang.parse.grammar0.node.FunctionDefineExpression;
-import sch.frog.kit.lang.parse.grammar0.node.FunctionExpression;
-import sch.frog.kit.lang.parse.grammar0.node.FunctionFormalArgumentExpression;
-import sch.frog.kit.lang.parse.grammar0.node.FunctionRefCallExpression;
-import sch.frog.kit.lang.parse.grammar0.node.IdentifierNode;
-import sch.frog.kit.lang.parse.grammar0.node.IfEntry;
-import sch.frog.kit.lang.parse.grammar0.node.IfStatement;
-import sch.frog.kit.lang.parse.grammar0.node.ImportStatement;
-import sch.frog.kit.lang.parse.grammar0.node.InfixExpression;
-import sch.frog.kit.lang.parse.grammar0.node.IterationStatement;
-import sch.frog.kit.lang.parse.grammar0.node.NestStatement;
-import sch.frog.kit.lang.parse.grammar0.node.NullNode;
-import sch.frog.kit.lang.parse.grammar0.node.NumberNode;
-import sch.frog.kit.lang.parse.grammar0.node.ObjectCaller;
-import sch.frog.kit.lang.parse.grammar0.node.ObjectExpression;
-import sch.frog.kit.lang.parse.grammar0.node.ObjectNode;
-import sch.frog.kit.lang.parse.grammar0.node.PackageStatement;
-import sch.frog.kit.lang.parse.grammar0.node.PrefixExpression;
-import sch.frog.kit.lang.parse.grammar0.node.ReturnStatement;
-import sch.frog.kit.lang.parse.grammar0.node.StatementBlock;
-import sch.frog.kit.lang.parse.grammar0.node.Statements;
-import sch.frog.kit.lang.parse.grammar0.node.StringNode;
-import sch.frog.kit.lang.parse.grammar0.node.VariableBody;
-import sch.frog.kit.lang.parse.grammar0.node.VariableStatement;
-import sch.frog.kit.lang.parse.grammar0.node.WhileStatement;
+import sch.frog.kit.lang.parse.grammar0.node.*;
 import sch.frog.kit.lang.parse.lexical.ITokenStream;
 import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.parse.lexical.TokenConstant;
@@ -581,11 +541,12 @@ public class GrammarAnalyzer {
 
     private ObjectExpression objectExpression(ITokenStream tokenStream) throws GrammarException {
         Token current = tokenStream.current();
-        IExpression objectObj;
+        ObjectNode objectObj = null;
+        IdentifierNode iden = null;
         if(TokenConstant.LBRACE.equals(current.literal())){
             objectObj = parseObject(tokenStream);
         }else if(current.type() == TokenType.IDENTIFIER){
-            objectObj = new IdentifierNode(current);
+            iden = new IdentifierNode(current);
             tokenStream.next();
         }else{
             throw buildException(current, "object start prefix is incorrect");
@@ -597,7 +558,7 @@ public class GrammarAnalyzer {
             objectCaller = objectCaller(tokenStream);
         }
 
-        return new ObjectExpression(objectObj, objectCaller);
+        return new ObjectExpression(iden, objectObj, objectCaller);
     }
 
     private ObjectCaller objectCaller(ITokenStream tokenStream) throws GrammarException {
@@ -636,11 +597,12 @@ public class GrammarAnalyzer {
 
     private ArrayExpression arrayExpression(ITokenStream tokenStream) throws GrammarException {
         Token current = tokenStream.current();
-        IExpression arrayObj;
+        ArrayNode arrayObj = null;
+        IdentifierNode arrayIdentifier = null;
         if (TokenConstant.LBRACKET.equals(current.literal())) {
             arrayObj = parseArray(tokenStream);
         } else if (current.type() == TokenType.IDENTIFIER) {
-            arrayObj = new IdentifierNode(current);
+            arrayIdentifier = new IdentifierNode(current);
             tokenStream.next();
         } else {
             throw buildException(current, "array format is not right");
@@ -651,7 +613,7 @@ public class GrammarAnalyzer {
         if(TokenConstant.LBRACKET.equals(current.literal())){
             arrayCaller = arrayCaller(tokenStream);
         }
-        return new ArrayExpression(arrayObj, arrayCaller);
+        return new ArrayExpression(arrayObj, arrayIdentifier, arrayCaller);
     }
 
     private boolean isCaller(Token token){

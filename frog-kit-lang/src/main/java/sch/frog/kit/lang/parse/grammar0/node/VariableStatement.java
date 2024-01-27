@@ -2,6 +2,7 @@ package sch.frog.kit.lang.parse.grammar0.node;
 
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IStatement;
+import sch.frog.kit.lang.parse.lexical.TokenConstant;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,10 @@ public class VariableStatement implements IStatement {
 
     public String getScopeMark() {
         return scopeMark;
+    }
+
+    public boolean isGlobalVar(){
+        return TokenConstant.VAR.equals(scopeMark);
     }
 
     public List<VariableBody> getBodyList() {

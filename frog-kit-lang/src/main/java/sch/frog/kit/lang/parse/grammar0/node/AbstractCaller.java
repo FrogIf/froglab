@@ -1,6 +1,9 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.value.Value;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,4 +32,6 @@ public abstract class AbstractCaller implements IAstNode {
             return Arrays.asList(cursor, next);
         }
     }
+
+    public abstract Value evaluate(Value upValue, IExecuteContext context) throws ExecuteException;
 }

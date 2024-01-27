@@ -4,7 +4,7 @@ import sch.frog.kit.lang.parse.lexical.Token;
 import sch.frog.kit.lang.parse.lexical.TokenType;
 import sch.frog.kit.lang.value.Value;
 
-public class BoolNode extends ValuableNode {
+public class BoolNode extends ValueNode {
 
     public BoolNode(Token token){
         super(token);

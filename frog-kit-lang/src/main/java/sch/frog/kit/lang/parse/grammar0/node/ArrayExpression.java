@@ -1,7 +1,10 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IExpression;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.value.Value;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,13 +12,22 @@ import java.util.List;
 
 public class ArrayExpression implements IExpression {
 
-    private final IExpression arrayObj;
+    private final ArrayNode arrayObj;
+
+    private final IdentifierNode arrayIdentifier;
 
     private final ArrayCaller arrayCaller;
 
-    public ArrayExpression(IExpression arrayObj, ArrayCaller arrayCaller) {
+    public ArrayExpression(ArrayNode arrayObj, IdentifierNode arrayIdentifier, ArrayCaller arrayCaller) {
         this.arrayObj = arrayObj;
+        this.arrayIdentifier = arrayIdentifier;
         this.arrayCaller = arrayCaller;
+        if(arrayObj == null && arrayIdentifier == null){
+            throw new IllegalArgumentException("array obj and array identifier both null");
+        }
+        if(arrayObj != null && arrayIdentifier != null){
+            throw new IllegalArgumentException("array obj and array identifier both not null");
+        }
     }
 
     public IExpression getArrayObj() {
@@ -34,9 +46,31 @@ public class ArrayExpression implements IExpression {
     @Override
     public List<IAstNode> getChildren() {
         if(arrayCaller == null){
-            return Collections.singletonList(arrayObj);
+            if(this.arrayIdentifier == null){
+                return Collections.singletonList(arrayObj);
+            }else{
+                return Collections.singletonList(arrayIdentifier);
+            }
         }else{
-            return Arrays.asList(arrayObj, arrayCaller);
+            if(this.arrayIdentifier == null){
+                return Arrays.asList(arrayObj, arrayCaller);
+            }else{
+                return Arrays.asList(arrayIdentifier, arrayCaller);
+            }
         }
+    }
+
+    @Override
+    public Value evaluate(IExecuteContext context) throws ExecuteException {
+        Value val = null;
+        if(this.arrayIdentifier != null){
+            val = this.arrayIdentifier.evaluate(context);
+        }else{
+            val = arrayObj.evaluate(context);
+        }
+        if(this.arrayCaller == null){
+            return val;
+        }
+        return arrayCaller.evaluate(val, context);
     }
 }

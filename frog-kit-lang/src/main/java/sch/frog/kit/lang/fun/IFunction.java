@@ -1,8 +1,10 @@
 package sch.frog.kit.lang.fun;
 
 import sch.frog.kit.lang.execute.IRuntimeContext;
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar.IGrammarNode;
 import sch.frog.kit.lang.parse.grammar.IProcess;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
 import sch.frog.kit.lang.value.Value;
 
 public interface IFunction extends IProcess {
@@ -12,6 +14,8 @@ public interface IFunction extends IProcess {
     String description();
 
     Value execute(Value[] args, IRuntimeContext context);
+
+    Value execute(Value[] args, IExecuteContext context) throws ExecuteException;
 
     default Value process(IGrammarNode[] children, IRuntimeContext context){
         if(children == null || children.length == 0){

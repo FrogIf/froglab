@@ -1,7 +1,13 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IExpression;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.parse.semantic.InnerExecuteContext;
+import sch.frog.kit.lang.parse.semantic.Result;
+import sch.frog.kit.lang.parse.semantic.ResultType;
+import sch.frog.kit.lang.value.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,5 +64,39 @@ public class ForStatement implements IterationStatement{
         }
         nodes.add(nestStatement);
         return nodes;
+    }
+
+    public Result execute(IExecuteContext context) throws ExecuteException {
+        InnerExecuteContext innerContext = new InnerExecuteContext(context);
+        if(forInitializer != null){
+            VariableStatement variableStatement = forInitializer.getVariableStatement();
+            VariableBody variableBody = forInitializer.getVariableBody();
+            if(variableStatement != null){
+                context.executor().executeVariableStatement(variableStatement, innerContext);
+            }else if(variableBody != null){
+                String variableName = variableBody.getVariableName();
+                IExpression expressionBody = variableBody.expressionBody();
+                if(expressionBody == null){
+                    throw new ExecuteException("variable not assign");
+                }
+                Value value = expressionBody.evaluate(context);
+                context.setVariable(variableName, value);
+            }
+        }
+
+        while(condition.evaluate(innerContext).cast(boolean.class)){
+            Result result = nestStatement.execute(context);
+            if(result.type() == ResultType.BREAK){
+                return new Result(result.value(), ResultType.NORMAL);
+            }else if(result.type() == ResultType.RETURN){
+                return result;
+            }
+
+            if(afterOnce != null){
+                afterOnce.evaluate(innerContext);
+            }
+        }
+
+        return Result.VOID;
     }
 }

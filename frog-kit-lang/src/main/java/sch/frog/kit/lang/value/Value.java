@@ -18,6 +18,8 @@ public class Value {
 
     public static final Value NULL = new Value(ValueType.NULL);
 
+    public static final Value UNDEFINE = new Value(ValueType.UNDEFINE);
+
     private static final Map<Class<?>, TypeConvertor> valueToJavaTypeConvertor = new LinkedHashMap<>();
     private static final Map<Class<?>, ValueConvertor> javaTypeToValueConvertor = new LinkedHashMap<>();
 

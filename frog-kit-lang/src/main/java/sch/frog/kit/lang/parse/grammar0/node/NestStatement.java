@@ -1,7 +1,10 @@
 package sch.frog.kit.lang.parse.grammar0.node;
 
+import sch.frog.kit.lang.parse.exception.ExecuteException;
 import sch.frog.kit.lang.parse.grammar0.IAstNode;
 import sch.frog.kit.lang.parse.grammar0.IStatement;
+import sch.frog.kit.lang.parse.semantic.IExecuteContext;
+import sch.frog.kit.lang.parse.semantic.Result;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,5 +38,14 @@ public class NestStatement implements IAstNode {
             return Collections.singletonList(statementBlock);
         }
         return null;
+    }
+
+    public Result execute(IExecuteContext context) throws ExecuteException {
+        if(statement != null){
+            return context.executor().execute(new Statements(Collections.singleton(statement)), context);
+        }else if(statementBlock != null){
+            return context.executor().execute(new Statements(Collections.singleton(statementBlock)), context);
+        }
+        throw new ExecuteException("nest statement is empty");
     }
 }
