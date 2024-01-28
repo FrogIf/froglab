@@ -1,4 +1,4 @@
-package sch.frog.kit.core.test;
+package sch.frog.lab.lang.test;
 
 import sch.frog.lab.lang.LangRunner;
 import sch.frog.lab.lang.exception.ExecuteException;

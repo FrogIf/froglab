@@ -10,7 +10,6 @@
         <version>${revision}</version>
     </parent>
 
-    <groupId>sch.frog.kit.core</groupId>
     <artifactId>froglab-lang</artifactId>
 
     <properties>

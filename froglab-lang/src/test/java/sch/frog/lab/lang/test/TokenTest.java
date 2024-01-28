@@ -1,4 +1,4 @@
-package sch.frog.kit.core.test;
+package sch.frog.lab.lang.test;
 
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;

@@ -10,7 +10,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>sch.frog.kit.ext</groupId>
     <artifactId>froglab-ext</artifactId>
 
     <properties>

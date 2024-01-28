@@ -31,7 +31,7 @@ public class ExternalFunctionLoadUtil {
     public static List<FunPackage> load(String jarPath) throws Exception {
         HashMap<String, List<IFunction>> funMap = new HashMap<>();
         ExternalFunctionClassLoader classLoader = new ExternalFunctionClassLoader(new File(jarPath).toURI().toURL(), ExternalFunctionLoadUtil.class.getClassLoader());
-        List<String> classList = findFileFromClasspath(classLoader, "sch/frog/kit/ext", ".*\\.class");
+        List<String> classList = findFileFromClasspath(classLoader, "sch/frog/lab/ext", ".*\\.class");
         for (String classPath : classList) {
             String classRef = pathToPackage(classPath);
             classRef = classRef.substring(0, classRef.length() - ".class".length());
