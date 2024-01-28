@@ -3,48 +3,41 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>sch.frog.lab</groupId>
+        <artifactId>froglab</artifactId>
+        <relativePath>../pom.xml</relativePath>
+        <version>${revision}</version>
+    </parent>
 
-    <groupId>sch.frog.lab</groupId>
-    <artifactId>froglab</artifactId>
-    <version>${revision}</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>froglab-lang</module>
-        <module>froglab-win</module>
-        <module>froglab-ext</module>
-    </modules>
+    <groupId>sch.frog.kit.core</groupId>
+    <artifactId>froglab-lang</artifactId>
 
     <properties>
-        <revision>2.0</revision>
-        <project.version>1.0</project.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.frogif</groupId>
+            <artifactId>calculator-number</artifactId>
+            <version>2.0</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.0</version>
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>
                     </descriptors>
-                    <archive>
-                        <manifest>
-                            <mainClass>sch.frog.lab.win.FroglabBootstrap</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
                 <executions>
                     <execution>
