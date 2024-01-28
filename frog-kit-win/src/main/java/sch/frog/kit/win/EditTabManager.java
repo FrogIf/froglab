@@ -3,7 +3,7 @@ package sch.frog.kit.win;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import sch.frog.kit.lang.FrogLangApp;
+import sch.frog.kit.lang.LangRunner;
 import sch.frog.kit.win.editor.ConsoleWorkspace;
 import sch.frog.kit.win.editor.IWorkspace;
 import sch.frog.kit.win.editor.ScriptWorkspace;
@@ -21,11 +21,11 @@ class EditTabManager {
         return type + " " + (tabIndex++);
     }
 
-    public static void addTab(TabPane tabPane, String type, FrogLangApp frogLangApp){
-        addTab(tabPane, null, type, frogLangApp);
+    public static void addTab(TabPane tabPane, String type, LangRunner langRunner){
+        addTab(tabPane, null, type, langRunner);
     }
 
-    public static TabElement addOrSelectForScript(TabPane tabPane, String title, FrogLangApp frogLangApp, String filePath){
+    public static TabElement addOrSelectForScript(TabPane tabPane, String title, LangRunner langRunner, String filePath){
         TabElement tabElement = null;
         for (TabElement te : tabList) {
             if(filePath.equals(te.getWorkspace().getPath())){
@@ -36,13 +36,13 @@ class EditTabManager {
         if(tabElement != null){
             tabPane.getSelectionModel().select(tabElement.tab);
         }else{
-            tabElement = addTab(tabPane, title, Constants.EDITOR_TYPE_SCRIPT, frogLangApp);
+            tabElement = addTab(tabPane, title, Constants.EDITOR_TYPE_SCRIPT, langRunner);
             tabElement.workspace.setPath(filePath);
         }
         return tabElement;
     }
 
-    public static TabElement addTab(TabPane tabPane, String title, String type, FrogLangApp frogLangApp){
+    public static TabElement addTab(TabPane tabPane, String title, String type, LangRunner langRunner){
         if(tabPane.getTabs().isEmpty()){
             tabIndex = 0;
         }
@@ -52,9 +52,9 @@ class EditTabManager {
         Tab newTab = new Tab(title);
         IWorkspace pane;
         if(Constants.EDITOR_TYPE_CONSOLE.equals(type)){
-            pane = new ConsoleWorkspace(frogLangApp);
+            pane = new ConsoleWorkspace(langRunner);
         }else{
-            pane = new ScriptWorkspace(frogLangApp, newTab);
+            pane = new ScriptWorkspace(langRunner, newTab);
         }
         newTab.setContent((Node) pane);
         tabPane.getTabs().add(newTab);

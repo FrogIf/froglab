@@ -25,14 +25,16 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.reactfx.collection.LiveList;
-import sch.frog.kit.lang.FrogLangApp;
+import sch.frog.kit.lang.LangRunner;
 import sch.frog.kit.lang.exception.ExecuteException;
-import sch.frog.kit.lang.parse.grammar.GrammarException;
-import sch.frog.kit.lang.exception.IncorrectExpressionException;
-import sch.frog.kit.lang.execute.ISession;
-import sch.frog.kit.lang.parse.lexical.Token;
+import sch.frog.kit.lang.exception.GrammarException;
+import sch.frog.kit.lang.io.StringScriptStream;
+import sch.frog.kit.lang.lexical.GeneralTokenStream;
+import sch.frog.kit.lang.lexical.LexicalAnalyzer;
+import sch.frog.kit.lang.lexical.Token;
+import sch.frog.kit.lang.semantic.IExecuteContext;
+import sch.frog.kit.lang.semantic.Result;
 import sch.frog.kit.lang.util.ExpressionFormatUtil;
-import sch.frog.kit.lang.value.Value;
 import sch.frog.kit.win.ClipboardUtil;
 import sch.frog.kit.win.MessageUtil;
 
@@ -41,6 +43,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -54,15 +57,15 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
 
     private SearchBox textSearchBox;
 
-    private final FrogLangApp frogLangApp;
+    private final LangRunner langRunner;
 
     private final TextArea logTextArea = new TextArea();
     private final LogWriter writer;
 
     private final Tab selfTab;
 
-    public ScriptWorkspace(FrogLangApp frogLangApp, Tab selfTab) {
-        this.frogLangApp = frogLangApp;
+    public ScriptWorkspace(LangRunner langRunner, Tab selfTab) {
+        this.langRunner = langRunner;
         writer = new LogWriter(logTextArea);
         initView();
         this.selfTab = selfTab;
@@ -256,11 +259,10 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
             MessageUtil.info("no script to execute");
             return;
         }
-        ISession session = frogLangApp.generateSession();
-        session.setOutput(writer::write);
+        IExecuteContext context = langRunner.newExecuteContext();
         try{
-            Value result = frogLangApp.execute(text, session);
-            writer.write("▶ script execute result : " + result + "\n");
+            Result result = langRunner.run(text, context);
+            writer.write("▶ script execute result : " + result.value() + "\n");
         }catch (ExecuteException | GrammarException e){
             writer.write(e.getMessage() + "\n");
         }catch (Exception e){
@@ -391,33 +393,35 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
         historyDirectory = hisDir;
     }
 
+
+    private List<Token> tokenize(String text){
+        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
+        GeneralTokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text));
+        ArrayList<Token> tokens = new ArrayList<>();
+        do{
+            tokens.add(tokenStream.current());
+            tokenStream.next();
+        }while (tokenStream.current() != Token.EOF);
+        return tokens;
+    }
+
     public void prettyCode(){
         String text = codeArea.getText();
         if(!text.isBlank()){
-            try {
-                List<Token> tokens = frogLangApp.tokens(text);
-                text = ExpressionFormatUtil.pretty(tokens);
-                codeArea.clear();
-                codeArea.appendText(text);
-            } catch (IncorrectExpressionException e) {
-                // TODO 标记
-                MessageUtil.error(e.getMessage());
-            }
+            List<Token> tokens = tokenize(text);
+            text = ExpressionFormatUtil.pretty(tokens);
+            codeArea.clear();
+            codeArea.appendText(text);
         }
     }
 
     public void compressCode(){
         String text = codeArea.getText();
         if(!text.isBlank()){
-            try {
-                List<Token> tokens = frogLangApp.tokens(text);
-                text = ExpressionFormatUtil.compress(tokens);
-                codeArea.clear();
-                codeArea.appendText(text);
-            } catch (IncorrectExpressionException e) {
-                // TODO 标记
-                MessageUtil.error(e.getMessage());
-            }
+            List<Token> tokens = tokenize(text);
+            text = ExpressionFormatUtil.compress(tokens);
+            codeArea.clear();
+            codeArea.appendText(text);
         }
     }
 }

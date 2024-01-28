@@ -3,7 +3,6 @@ package sch.frog.kit.lang.value;
 import io.github.frogif.calculator.number.impl.IntegerNumber;
 import io.github.frogif.calculator.number.impl.NumberRoundingMode;
 import io.github.frogif.calculator.number.impl.RationalNumber;
-import sch.frog.kit.lang.exception.ValueCastException;
 import sch.frog.kit.lang.fun.IFunction;
 
 import java.math.BigDecimal;
@@ -119,15 +118,10 @@ public class Value {
             if(val.type != ValueType.LIST){ throw new ValueCastException(val.type, VList.class); }
             return val.val;
         });
-        valueToJavaTypeConvertor.put(Locator.class, val -> {
-            if(val.type != ValueType.SYMBOL){ throw new ValueCastException(val.type, Locator.class); }
-            return val.val;
-        });
         valueToJavaTypeConvertor.put(IFunction.class, val -> {
             if(val.type != ValueType.FUNCTION){ throw new ValueCastException(val.type, IFunction.class); }
             return val.val;
         });
-//        map.put(Object.class, val -> val.val);
 
 
         javaTypeToValueConvertor.put(Value.class, obj -> (Value) obj);
@@ -144,7 +138,7 @@ public class Value {
         javaTypeToValueConvertor.put(IntegerNumber.class, obj -> new Value(new RationalNumber((IntegerNumber)obj)));
         javaTypeToValueConvertor.put(VList.class, obj -> new Value((VList)obj));
         javaTypeToValueConvertor.put(VMap.class, obj -> new Value((VMap)obj));
-        javaTypeToValueConvertor.put(Iterable.class, obj -> new Value(VList.load((Iterable<?>) obj)));
+        javaTypeToValueConvertor.put(Iterable.class, obj -> new Value(VListImpl.load((Iterable<?>) obj)));
         javaTypeToValueConvertor.put(IFunction.class, obj -> new Value((IFunction) obj));
     }
 
@@ -181,11 +175,6 @@ public class Value {
     public Value(IFunction function){
         this.type = function == null ? ValueType.NULL : ValueType.FUNCTION;
         this.val = function;
-    }
-
-    public Value(Locator locator){
-        this.type = locator == null ? ValueType.NULL : ValueType.SYMBOL;
-        this.val = locator;
     }
 
     private Value(ValueType valueType){
@@ -226,7 +215,11 @@ public class Value {
             }
         }
 
-        return new Value(VMap.load(obj));
+        return new Value(VMapImpl.load(obj));
+    }
+
+    public Object getValueObject(){
+        return this.val;
     }
 
     @Override

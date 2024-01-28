@@ -1,13 +1,24 @@
 package sch.frog.kit.lang.fun;
 
-import sch.frog.kit.lang.parse.exception.ExecuteException;
-import sch.frog.kit.lang.parse.semantic.IExecuteContext;
-import sch.frog.kit.lang.value.Value;
-
 public abstract class AbstractFunction implements IFunction{
 
+    private final String name;
+
+    public AbstractFunction(String name) {
+        this.name = name;
+    }
+
+    public AbstractFunction(){
+        this.name = "#anonymous";
+    }
+
     @Override
-    public Value execute(Value[] args, IExecuteContext context) throws ExecuteException {
-        return null;
+    public String name() {
+        return this.name;
+    }
+
+    @Override
+    public String description() {
+        return "";
     }
 }

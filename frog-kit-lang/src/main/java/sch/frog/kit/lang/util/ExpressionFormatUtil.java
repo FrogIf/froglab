@@ -1,7 +1,7 @@
 package sch.frog.kit.lang.util;
 
-import sch.frog.kit.lang.parse.lexical.Token;
-import sch.frog.kit.lang.parse.lexical.TokenType;
+import sch.frog.kit.lang.lexical.Token;
+import sch.frog.kit.lang.lexical.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;

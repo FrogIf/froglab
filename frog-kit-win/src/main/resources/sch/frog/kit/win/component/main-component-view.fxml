@@ -7,8 +7,9 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import sch.frog.kit.win.component.ColorComponent?>
 <?import sch.frog.kit.win.component.Base64ImageComponent?>
+<?import sch.frog.kit.win.component.ColorComponent?>
+<?import sch.frog.kit.win.component.Md5Component?>
 <VBox xmlns="http://javafx.com/javafx/11"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="sch.frog.kit.win.component.MainComponentView"
@@ -21,6 +22,9 @@
                 </Tab>
                 <Tab text="base64 image" closable="false">
                     <Base64ImageComponent />
+                </Tab>
+                <Tab text="md5" closable="false">
+                    <Md5Component />
                 </Tab>
             </TabPane>
             <HBox minHeight="40">

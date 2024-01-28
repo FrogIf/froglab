@@ -7,9 +7,14 @@ import javafx.scene.layout.BorderPane;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import sch.frog.kit.lang.FrogLangApp;
-import sch.frog.kit.lang.execute.ISession;
+import sch.frog.kit.lang.LangRunner;
+import sch.frog.kit.lang.constant.VariableConstant;
+import sch.frog.kit.lang.exception.ExecuteException;
+import sch.frog.kit.lang.handle.SystemOutputHandle;
+import sch.frog.kit.lang.semantic.IExecuteContext;
+import sch.frog.kit.lang.value.Value;
 import sch.frog.kit.win.ClipboardUtil;
+import sch.frog.kit.win.io.ConsolePrintStream;
 
 public class ConsoleWorkspace extends BorderPane implements IWorkspace{
 
@@ -17,19 +22,23 @@ public class ConsoleWorkspace extends BorderPane implements IWorkspace{
 
     private final SearchBox textSearchBox;
 
-    private final ISession session;
+    private final IExecuteContext context;
 
-    public ConsoleWorkspace(FrogLangApp frogLangApp) {
-        session = frogLangApp.generateSession();
+    public ConsoleWorkspace(LangRunner langRunner) {
+        this.context = langRunner.newExecuteContext();
         codeArea = new ConsoleCodeArea(">>>", line -> {
             try {
-                return frogLangApp.execute(line, session).toString();
+                return langRunner.run(line, context).value().toString();
             } catch (Exception e) {
                 e.printStackTrace();
                 return e.getMessage();
             }
         }, 5);
-        session.setOutput(codeArea::output);
+        try {
+            context.setVariable(VariableConstant.OUTPUT_STREAM_VAR_NAME, Value.of(new SystemOutputHandle(new ConsolePrintStream(codeArea)))); // 控制台输出重定向
+        } catch (ExecuteException e) {
+            throw new RuntimeException(e);
+        }
         initCodeArea();
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         super.setCenter(scrollPane);
@@ -41,7 +50,7 @@ public class ConsoleWorkspace extends BorderPane implements IWorkspace{
         codeArea.prefHeightProperty().bind(this.heightProperty());
         codeArea.prefWidthProperty().bind(this.widthProperty());
         codeArea.setContextMenu(initContextMenu());
-        CodeAreaAssist highlight = CodeAreaAssist.getInstance();
+//        CodeAreaAssist highlight = CodeAreaAssist.getInstance();
 //        highlight.enableAssist(codeArea);
     }
 

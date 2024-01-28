@@ -8,11 +8,11 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.richtext.model.StyledDocument;
-import sch.frog.kit.lang.exception.IncorrectExpressionException;
-import sch.frog.kit.lang.parse.io.StringScriptStream;
-import sch.frog.kit.lang.parse.lexical.LexicalAnalyzer;
-import sch.frog.kit.lang.parse.lexical.Token;
-import sch.frog.kit.lang.parse.lexical.TokenType;
+import sch.frog.kit.lang.io.StringScriptStream;
+import sch.frog.kit.lang.lexical.GeneralTokenStream;
+import sch.frog.kit.lang.lexical.LexicalAnalyzer;
+import sch.frog.kit.lang.lexical.Token;
+import sch.frog.kit.lang.lexical.TokenType;
 import sch.frog.kit.win.GlobalApplicationLifecycleUtil;
 import sch.frog.kit.win.util.StringUtils;
 
@@ -382,11 +382,13 @@ public class CodeAreaAssist {
             if(tokens == null){
                 String text = codeArea.getText();
                 if(StringUtils.isNotBlank(text)){
-                    try {
-                        tokens = lexicalAnalyzer.parse(new StringScriptStream(text));
-                    } catch (IncorrectExpressionException e) {
-                        throw new RuntimeException(e);
-                    }
+                    GeneralTokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text));
+                    ArrayList<Token> tokens = new ArrayList<>();
+                    do{
+                        tokens.add(tokenStream.current());
+                        tokenStream.next();
+                    }while (tokenStream.current() != Token.EOF);
+                    return tokens;
                 }
             }
             return tokens;

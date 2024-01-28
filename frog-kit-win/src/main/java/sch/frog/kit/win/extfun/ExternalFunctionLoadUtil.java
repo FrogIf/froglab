@@ -1,10 +1,8 @@
 package sch.frog.kit.win.extfun;
 
-import sch.frog.kit.lang.ext.fun.FunctionController;
 import sch.frog.kit.lang.ext.fun.FunctionDefine;
-import sch.frog.kit.lang.fun.AbstractGeneralFunction;
-import sch.frog.kit.lang.fun.FunctionInfo;
-import sch.frog.kit.lang.fun.GeneralFunctionWrapper;
+import sch.frog.kit.lang.ext.fun.FunctionPackage;
+import sch.frog.kit.lang.fun.GeneralFunction;
 import sch.frog.kit.lang.fun.IFunction;
 
 import java.io.File;
@@ -15,7 +13,12 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -25,7 +28,7 @@ public class ExternalFunctionLoadUtil {
 
     public static final String PATH_SPLITTER = "/";
 
-    public static List<FunctionPackage> load(String jarPath) throws Exception {
+    public static List<FunPackage> load(String jarPath) throws Exception {
         HashMap<String, List<IFunction>> funMap = new HashMap<>();
         ExternalFunctionClassLoader classLoader = new ExternalFunctionClassLoader(new File(jarPath).toURI().toURL(), ExternalFunctionLoadUtil.class.getClassLoader());
         List<String> classList = findFileFromClasspath(classLoader, "sch/frog/kit/ext", ".*\\.class");
@@ -33,34 +36,33 @@ public class ExternalFunctionLoadUtil {
             String classRef = pathToPackage(classPath);
             classRef = classRef.substring(0, classRef.length() - ".class".length());
             Class<?> clazz = classLoader.loadClass(classRef);
-            FunctionController anno = clazz.getAnnotation(FunctionController.class);
+            FunctionPackage anno = clazz.getAnnotation(FunctionPackage.class);
             if(anno != null){
                 String name = anno.packageName();
                 List<IFunction> list = funMap.computeIfAbsent(name, k -> new ArrayList<>());
-                List<AbstractGeneralFunction> funList = load(clazz.getConstructor().newInstance());
+                List<GeneralFunction> funList = load(clazz.getConstructor().newInstance());
                 list.addAll(funList);
             }
         }
 
-        ArrayList<FunctionPackage> functionPackageList = new ArrayList<>(funMap.size());
+        ArrayList<FunPackage> funPackageList = new ArrayList<>(funMap.size());
         for (Map.Entry<String, List<IFunction>> entry : funMap.entrySet()) {
-            FunctionPackage pak = new FunctionPackage();
+            FunPackage pak = new FunPackage();
             pak.setName(entry.getKey());
             pak.setFunctions(entry.getValue());
-            functionPackageList.add(pak);
+            funPackageList.add(pak);
         }
-        return functionPackageList;
+        return funPackageList;
     }
 
-    public static List<AbstractGeneralFunction> load(Object instance){
-        ArrayList<AbstractGeneralFunction> list = new ArrayList<>();
+    public static List<GeneralFunction> load(Object instance){
+        ArrayList<GeneralFunction> list = new ArrayList<>();
         Class<?> clazz = instance.getClass();
         Method[] methods = clazz.getMethods();
         for (Method m : methods) {
             FunctionDefine funDefine = m.getAnnotation(FunctionDefine.class);
             if(funDefine != null){
-                FunctionInfo functionInfo = new FunctionInfo(funDefine.name(), funDefine.description());
-                list.add(new GeneralFunctionWrapper(functionInfo, instance, m));
+                list.add(new GeneralFunction(funDefine.name(), funDefine.description(), instance, m));
             }
         }
         return list;

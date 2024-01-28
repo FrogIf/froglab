@@ -41,6 +41,10 @@ public enum ValueType {
     /**
      * 未定义
      */
-    UNDEFINE;
+    UNDEFINE,
+    /**
+     * 句柄
+     */
+    HANDLE;
 
 }
