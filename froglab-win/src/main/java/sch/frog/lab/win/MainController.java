@@ -33,6 +33,7 @@ import sch.frog.lab.win.extfun.code.UrlEncodeFunction;
 import sch.frog.lab.win.extfun.time.DateFunction;
 import sch.frog.lab.win.extfun.time.NowFunction;
 import sch.frog.lab.win.extfun.time.TimeFunction;
+import sch.frog.lab.win.extfun.win.FunListFunction;
 import sch.frog.lab.win.extfun.win.WinFunction;
 
 import java.io.BufferedReader;
@@ -97,8 +98,6 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ArrayList<IFunction> funs = new ArrayList<>(Arrays.asList(INNER_FUN_ARRAY));
-
         File externalDir = new File("external");
         File[] fileList = externalDir.listFiles();
         HashMap<String, Value> valueMap = new HashMap<>();
@@ -122,9 +121,12 @@ public class MainController implements Initializable {
             }
         }
 
+        ArrayList<IFunction> funs = new ArrayList<>(Arrays.asList(INNER_FUN_ARRAY));
         for (IFunction fun : funs) {
             valueMap.put(fun.name(), Value.of(fun));
         }
+        FunListFunction funfun = new FunListFunction(funs);
+        valueMap.put(funfun.name(), Value.of(funfun));
 
         langRunner = new LangRunner(valueMap);
 

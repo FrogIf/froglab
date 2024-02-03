@@ -13,7 +13,7 @@ public class LangTest {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
 
-        LangRunner runner = new LangRunner();
+        LangRunner runner = new LangRunner(true);
         IExecuteContext context = runner.newExecuteContext();
         while(true){
             String expression = sc.nextLine();

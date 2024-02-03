@@ -51,7 +51,7 @@ public class ExpressionFormatUtil {
                     }
                     sb.append(c);
                 } else {
-                    sb.append(token.literal());
+                    sb.append(token.literal()).append(' ');
                 }
             }
             return sb.toString();

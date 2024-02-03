@@ -87,10 +87,9 @@ public class GrammarAnalyzer {
             if(statement == null){ break; }
 
             statements.add(statement);
-            if(!TokenConstant.SEMICOLON.equals(tokenStream.current().literal())){
-                break;
+            while (TokenConstant.SEMICOLON.equals(tokenStream.current().literal())){
+                tokenStream.next();
             }
-            tokenStream.next();
         }
         return new Statements(statements);
     }

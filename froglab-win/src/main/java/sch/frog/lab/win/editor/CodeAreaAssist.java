@@ -312,6 +312,7 @@ public class CodeAreaAssist {
 
             AssistObject assistObject = getAssistObject(codeArea);
             List<BracketPair> bracketPairs = assistObject.getBracketPairs();
+            if(bracketPairs == null){ return -1; }
             for (BracketPair bracketPair : bracketPairs) {
                 if(bracketPair.getStart().pos() == index){
                     return bracketPair.getEnd().pos();

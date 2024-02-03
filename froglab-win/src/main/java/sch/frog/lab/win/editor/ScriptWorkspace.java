@@ -26,15 +26,17 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.reactfx.collection.LiveList;
 import sch.frog.lab.lang.LangRunner;
+import sch.frog.lab.lang.constant.VariableConstant;
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.exception.GrammarException;
+import sch.frog.lab.lang.handle.SystemOutputHandle;
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;
 import sch.frog.lab.lang.lexical.LexicalAnalyzer;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.semantic.IExecuteContext;
-import sch.frog.lab.lang.semantic.Result;
 import sch.frog.lab.lang.util.ExpressionFormatUtil;
+import sch.frog.lab.lang.value.Value;
 import sch.frog.lab.win.ClipboardUtil;
 import sch.frog.lab.win.MessageUtil;
 
@@ -261,8 +263,9 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
         }
         IExecuteContext context = langRunner.newExecuteContext();
         try{
-            Result result = langRunner.run(text, context);
-            writer.write("▶ script execute result : " + result.value() + "\n");
+            context.setVariable(VariableConstant.OUTPUT_STREAM_VAR_NAME, Value.of(new SystemOutputHandle(new ScriptPrintStream())));
+            langRunner.run(text, context);
+//            writer.write("▶ script execute result : " + result.value() + "\n");
         }catch (ExecuteException | GrammarException e){
             writer.write(e.getMessage() + "\n");
         }catch (Exception e){
@@ -422,6 +425,20 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
             text = ExpressionFormatUtil.compress(tokens);
             codeArea.clear();
             codeArea.appendText(text);
+        }
+    }
+
+    private class ScriptPrintStream implements SystemOutputHandle.PrintStream{
+
+
+        @Override
+        public void print(String str) {
+            ScriptWorkspace.this.writer.write(str);
+        }
+
+        @Override
+        public void println(String str) {
+            ScriptWorkspace.this.writer.write(str + "\n");
         }
     }
 }

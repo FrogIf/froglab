@@ -4,6 +4,7 @@ import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.exception.GrammarException;
 import sch.frog.lab.lang.grammar.GrammarAnalyzer;
 import sch.frog.lab.lang.grammar.node.Statements;
+import sch.frog.lab.lang.grammar.util.AstUtil;
 import sch.frog.lab.lang.io.IScriptStream;
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;
@@ -25,7 +26,13 @@ public class LangRunner {
 
     private final Map<String, Value> extendVariableMap = new HashMap<>();
 
+    private boolean debug = false;
+
     public LangRunner() {
+    }
+
+    public LangRunner(boolean debug){
+        this.debug = debug;
     }
 
     public LangRunner(Map<String, Value> extendVariableMap){
@@ -44,7 +51,9 @@ public class LangRunner {
 
         // 语法分析
         Statements statement = grammarAnalyzer.parse(tokenStream);
-//        System.out.println(AstUtil.generateTree(statement)); // 输出抽象语法树
+        if(debug){
+            System.out.println(AstUtil.generateTree(statement)); // 输出抽象语法树
+        }
 
         // 求值
         Result result = executor.execute(statement, context);
