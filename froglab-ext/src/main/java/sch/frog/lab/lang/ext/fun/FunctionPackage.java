@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FunctionPackage {
 
-    String packageName();
+    String name();
 
     String description() default "";
 

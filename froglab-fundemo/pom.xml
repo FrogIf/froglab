@@ -2,20 +2,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>sch.frog.lab</groupId>
         <artifactId>froglab</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>${revision}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>froglab-ext</artifactId>
+    <groupId>sch.frog.lab.ext</groupId>
+    <artifactId>froglab-fundemo</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>sch.frog.lab</groupId>
+            <artifactId>froglab-ext</artifactId>
+            <version>${revision}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
 </project>

@@ -30,29 +30,34 @@ public class ExternalFunctionLoadUtil {
 
     public static List<FunPackage> load(String jarPath) throws Exception {
         HashMap<String, List<IFunction>> funMap = new HashMap<>();
-        ExternalFunctionClassLoader classLoader = new ExternalFunctionClassLoader(new File(jarPath).toURI().toURL(), ExternalFunctionLoadUtil.class.getClassLoader());
-        List<String> classList = findFileFromClasspath(classLoader, "sch/frog/lab/ext", ".*\\.class");
-        for (String classPath : classList) {
-            String classRef = pathToPackage(classPath);
-            classRef = classRef.substring(0, classRef.length() - ".class".length());
-            Class<?> clazz = classLoader.loadClass(classRef);
-            FunctionPackage anno = clazz.getAnnotation(FunctionPackage.class);
-            if(anno != null){
-                String name = anno.packageName();
-                List<IFunction> list = funMap.computeIfAbsent(name, k -> new ArrayList<>());
-                List<GeneralFunction> funList = load(clazz.getConstructor().newInstance());
-                list.addAll(funList);
+        File file = new File(jarPath);
+        try(
+                JarFile jarFile = new JarFile(file);
+                ExternalFunctionClassLoader classLoader = new ExternalFunctionClassLoader(file.toURI().toURL(), ExternalFunctionLoadUtil.class.getClassLoader())
+                ){
+            List<String> classList = retrieveJarFile(jarFile, Pattern.compile(".*\\.class"));
+            for (String classPath : classList) {
+                String classRef = pathToPackage(classPath);
+                classRef = classRef.substring(0, classRef.length() - ".class".length());
+                Class<?> clazz = classLoader.loadClass(classRef);
+                FunctionPackage anno = clazz.getAnnotation(FunctionPackage.class);
+                if(anno != null){
+                    String name = anno.name();
+                    List<IFunction> list = funMap.computeIfAbsent(name, k -> new ArrayList<>());
+                    List<GeneralFunction> funList = load(clazz.getConstructor().newInstance());
+                    list.addAll(funList);
+                }
             }
-        }
 
-        ArrayList<FunPackage> funPackageList = new ArrayList<>(funMap.size());
-        for (Map.Entry<String, List<IFunction>> entry : funMap.entrySet()) {
-            FunPackage pak = new FunPackage();
-            pak.setName(entry.getKey());
-            pak.setFunctions(entry.getValue());
-            funPackageList.add(pak);
+            ArrayList<FunPackage> funPackageList = new ArrayList<>(funMap.size());
+            for (Map.Entry<String, List<IFunction>> entry : funMap.entrySet()) {
+                FunPackage pak = new FunPackage();
+                pak.setName(entry.getKey());
+                pak.setFunctions(entry.getValue());
+                funPackageList.add(pak);
+            }
+            return funPackageList;
         }
-        return funPackageList;
     }
 
     public static List<GeneralFunction> load(Object instance){
@@ -79,6 +84,27 @@ public class ExternalFunctionLoadUtil {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 遍历jarFile
+     * @param jarFile jar
+     * @param pattern 搜索匹配
+     * @return 匹配结果
+     */
+    private static List<String> retrieveJarFile(JarFile jarFile, Pattern pattern){
+        ArrayList<String> result = new ArrayList<>();
+        Enumeration<JarEntry> entries = jarFile.entries();
+
+        while(entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            if(entry.isDirectory()){ continue; }
+            String entryPath = entry.getName();
+            if(!pattern.matcher(entryPath).matches()){ continue; }
+            result.add(entryPath);
+        }
+
+        return result;
     }
 
     /**

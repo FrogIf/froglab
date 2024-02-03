@@ -12,6 +12,7 @@
         <module>froglab-lang</module>
         <module>froglab-win</module>
         <module>froglab-ext</module>
+        <module>froglab-fundemo</module>
     </modules>
 
     <properties>

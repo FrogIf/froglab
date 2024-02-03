@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -101,6 +100,7 @@ public class MainController implements Initializable {
         File externalDir = new File("external");
         File[] fileList = externalDir.listFiles();
         HashMap<String, Value> valueMap = new HashMap<>();
+        ArrayList<FunListFunction.FunWrapper> funList = new ArrayList<>();
         if(fileList != null){
             for (File f : fileList) {
                 if(f.getName().endsWith(".jar")){
@@ -108,11 +108,13 @@ public class MainController implements Initializable {
                         List<FunPackage> packages = ExternalFunctionLoadUtil.load(f.getPath());
                         for (FunPackage pak : packages) {
                             VMap funMap = new VMapImpl();
-                            List<IFunction> funList = pak.getFunctions();
-                            for (IFunction fun : funList) {
+                            List<IFunction> fList = pak.getFunctions();
+                            String pakName = pak.getName();
+                            for (IFunction fun : fList) {
                                 funMap.put(fun.name(), new Value(fun));
+                                funList.add(new FunListFunction.FunWrapper(fun, pakName));
                             }
-                            valueMap.put(pak.getName(), new Value(funMap));
+                            valueMap.put(pakName, new Value(funMap));
                         }
                     }catch (Exception e){
                         throw new Error(e);
@@ -121,12 +123,12 @@ public class MainController implements Initializable {
             }
         }
 
-        ArrayList<IFunction> funs = new ArrayList<>(Arrays.asList(INNER_FUN_ARRAY));
-        for (IFunction fun : funs) {
+        for (IFunction fun : INNER_FUN_ARRAY) {
             valueMap.put(fun.name(), Value.of(fun));
+            funList.add(new FunListFunction.FunWrapper(fun, null));
         }
-        FunListFunction funfun = new FunListFunction(funs);
-        valueMap.put(funfun.name(), Value.of(funfun));
+        FunListFunction ff = new FunListFunction(funList);
+        valueMap.put(ff.name(), Value.of(ff));
 
         langRunner = new LangRunner(valueMap);
 
