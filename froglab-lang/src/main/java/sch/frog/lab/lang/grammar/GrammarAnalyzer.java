@@ -431,9 +431,10 @@ public class GrammarAnalyzer {
         String literal = token.literal();
         switch (literal) {
             case TokenConstant.MINUS:
-            case TokenConstant.REFERENCE:
             case TokenConstant.PLUS:
             case TokenConstant.BANG:
+            case TokenConstant.DOUBLE_MINUS:
+            case TokenConstant.DOUBLE_PLUS:
                 tokenStream.next();
                 IExpression exp = plainExpression(tokenStream);
                 if(exp == null){ throw buildException(tokenStream.current(), "prefix expression not succeed"); }

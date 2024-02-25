@@ -45,7 +45,7 @@ public class IfStatement implements IStatement {
 
     public Result execute(IExecuteContext context) throws ExecuteException {
         IExpression condition = ifEntry.getCondition();
-        Value val = condition.evaluate(context);
+        Value val = condition.evaluate(context).value();
         if(val.cast(boolean.class)){
             NestStatement nestStatement = ifEntry.getNestStatement();
             return nestStatement.execute(context);
@@ -53,7 +53,7 @@ public class IfStatement implements IStatement {
         if(!elseIfList.isEmpty()){
             for (ElseIfEntry entry : elseIfList) {
                 condition = entry.getCondition();
-                if(condition.evaluate(context).cast(boolean.class)){
+                if(condition.evaluate(context).value().cast(boolean.class)){
                     return entry.getIfNest().execute(context);
                 }
             }

@@ -40,10 +40,10 @@ public class WhileStatement implements IterationStatement{
     }
 
     public Result execute(IExecuteContext context) throws ExecuteException {
-        while (condition.evaluate(context).cast(boolean.class)){
+        while (condition.evaluate(context).value().cast(boolean.class)){
             Result result = nestStatement.execute(context);
             if(result.type() == ResultType.BREAK){
-                return new Result(result.value(), ResultType.NORMAL);
+                return new Result(result.reference(), ResultType.NORMAL);
             }else if(result.type() == ResultType.RETURN){
                 return result;
             }

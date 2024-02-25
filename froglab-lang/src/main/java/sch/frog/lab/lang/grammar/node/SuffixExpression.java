@@ -6,7 +6,7 @@ import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.semantic.IExecuteContext;
 import sch.frog.lab.lang.semantic.Operator;
-import sch.frog.lab.lang.value.Value;
+import sch.frog.lab.lang.semantic.Reference;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public class SuffixExpression implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
-        return Operator.suffixEvaluate(left, suffix.literal(), context);
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
+        return new Reference(Operator.suffixEvaluate(left, suffix.literal(), context));
     }
 }

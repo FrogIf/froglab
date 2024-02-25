@@ -5,15 +5,16 @@ import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.List;
 
-public abstract class ValueNode implements IExpression {
+public abstract class ConstantNode implements IExpression {
 
     protected final Token token;
 
-    public ValueNode(Token token) {
+    public ConstantNode(Token token) {
         this.token = token;
     }
 
@@ -30,7 +31,7 @@ public abstract class ValueNode implements IExpression {
     public abstract Value evaluate();
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
-        return evaluate();
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
+        return new Reference(evaluate());
     }
 }

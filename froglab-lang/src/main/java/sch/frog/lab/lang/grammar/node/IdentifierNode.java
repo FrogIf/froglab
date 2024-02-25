@@ -6,6 +6,7 @@ import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.lexical.TokenType;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.List;
@@ -36,7 +37,8 @@ public class IdentifierNode implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
-        return context.getVariableValue(this.identifier);
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
+        Value val = context.getVariableValue(this.identifier);
+        return new Reference(val, v -> context.setVariable(this.identifier, v));
     }
 }

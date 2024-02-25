@@ -4,7 +4,6 @@ import io.github.frogif.calculator.number.impl.RationalNumber;
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.fun.IFunction;
 import sch.frog.lab.lang.grammar.IExpression;
-import sch.frog.lab.lang.grammar.node.IdentifierNode;
 import sch.frog.lab.lang.lexical.TokenConstant;
 import sch.frog.lab.lang.value.VList;
 import sch.frog.lab.lang.value.VMap;
@@ -17,61 +16,86 @@ public class Operator {
         Value val = null;
         switch (prefix){
             case TokenConstant.MINUS:
-                val = right.evaluate(context);
+                val = right.evaluate(context).value();
                 RationalNumber num = val.cast(RationalNumber.class);
                 return Value.of(num.not());
             case TokenConstant.PLUS:
-                val = right.evaluate(context);
+                val = right.evaluate(context).value();
                 if(val.getType() != ValueType.NUMBER){
                     throw new ExecuteException("prefix '+' only use for number, but : " + val.getType());
                 }
                 return val;
             case TokenConstant.BANG:
-                val = right.evaluate(context);
+                val = right.evaluate(context).value();
                 boolean b = val.cast(boolean.class);
                 return Value.of(!b);
-            case TokenConstant.REFERENCE:
-                // TODO reference
+            case TokenConstant.DOUBLE_MINUS:
+                Reference rm = right.evaluate(context);
+                if(!rm.assignable()){
+                    throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "double minus left can't assign");
+                }
+                val = rm.value();
+                RationalNumber snum = val.cast(RationalNumber.class);
+                Value result = Value.of(snum.sub(RationalNumber.ONE));
+                rm.assigner().assign(result);
+                return result;
+            case TokenConstant.DOUBLE_PLUS:
+                Reference rp = right.evaluate(context);
+                if(!rp.assignable()){
+                    throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "double plus left can't assign");
+                }
+                val = rp.value();
+                RationalNumber anum = val.cast(RationalNumber.class);
+                Value res = Value.of(anum.add(RationalNumber.ONE));
+                rp.assigner().assign(res);
+                return res;
         }
         throw new ExecuteException("unsupported prefix : " + prefix);
     }
 
     public static Value suffixEvaluate(IExpression left, String suffix, IExecuteContext context) throws ExecuteException {
         Value val = null;
+        Reference ref = null;
         switch (suffix){
             case TokenConstant.DOUBLE_MINUS:
-                val = left.evaluate(context);
-                RationalNumber snum = val.cast(RationalNumber.class);
-                Value result = Value.of(snum.sub(RationalNumber.ONE));
-                return result;
+                ref = left.evaluate(context);
+                if(!ref.assignable()){
+                    throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "double minus left can't assign");
+                }
+                val = ref.value();
+                ref.assigner().assign(Value.of(val.cast(RationalNumber.class).sub(RationalNumber.ONE)));
+                return val;
             case TokenConstant.DOUBLE_PLUS:
-                val = left.evaluate(context);
-                RationalNumber anum = val.cast(RationalNumber.class);
-                Value res = Value.of(anum.add(RationalNumber.ONE));
-                return res;
+                ref = left.evaluate(context);
+                if(!ref.assignable()){
+                    throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "double plus left can't assign");
+                }
+                val = ref.value();
+                ref.assigner().assign(Value.of(val.cast(RationalNumber.class).add(RationalNumber.ONE)));
+                return val;
         }
         throw new ExecuteException("unsupported suffix : " + suffix);
     }
 
     public static Value infixEvaluate(IExpression left, String infix, IExpression right, IExecuteContext context) throws ExecuteException {
         if(TokenConstant.ASSIGN.equals(infix)){
-            if(!(left instanceof IdentifierNode)){
-                throw new ExecuteException("assign left must identifier");
+            Reference lref = left.evaluate(context);
+            if(!lref.assignable()){
+                throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "assign can't support");
             }
-            // TODO 引用类型(map, array) 赋值
-            Value val = right.evaluate(context);
-            context.setVariable(((IdentifierNode) left).identifier(), val);
+            Value val = right.evaluate(context).value();
+            lref.assigner().assign(val);
             return val;
         }else{
             switch (infix){
                 case TokenConstant.OR:
-                    return Value.of(left.evaluate(context).cast(boolean.class) | right.evaluate(context).cast(boolean.class));
+                    return Value.of(left.evaluate(context).value().cast(boolean.class) | right.evaluate(context).value().cast(boolean.class));
                 case TokenConstant.AND:
-                    return Value.of(left.evaluate(context).cast(boolean.class) & right.evaluate(context).cast(boolean.class));
+                    return Value.of(left.evaluate(context).value().cast(boolean.class) & right.evaluate(context).value().cast(boolean.class));
                 case TokenConstant.SHORT_CIRCLE_AND:
-                    return Value.of(left.evaluate(context).cast(boolean.class) && right.evaluate(context).cast(boolean.class));
+                    return Value.of(left.evaluate(context).value().cast(boolean.class) && right.evaluate(context).value().cast(boolean.class));
                 case TokenConstant.SHORT_CIRCLE_OR:
-                    return Value.of(left.evaluate(context).cast(boolean.class) || right.evaluate(context).cast(boolean.class));
+                    return Value.of(left.evaluate(context).value().cast(boolean.class) || right.evaluate(context).value().cast(boolean.class));
                 case TokenConstant.EQ:
                     return Value.of(equals(left, right, context));
                 case TokenConstant.NOT_EQ:
@@ -98,8 +122,8 @@ public class Operator {
     }
 
     private static Value baseOperation(IExpression left, IExpression right, IExecuteContext context, Operation operation) throws ExecuteException {
-        Value leftV = left.evaluate(context);
-        Value rightV = right.evaluate(context);
+        Value leftV = left.evaluate(context).value();
+        Value rightV = right.evaluate(context).value();
         if (leftV.getType() != ValueType.NUMBER || rightV.getType() != ValueType.NUMBER){
             throw new ExecuteException("unsupported compare for " + leftV.getType() + " and " + rightV.getType());
         }
@@ -107,8 +131,8 @@ public class Operator {
     }
 
     private static int compare(IExpression left, IExpression right, IExecuteContext context) throws ExecuteException {
-        Value leftV = left.evaluate(context);
-        Value rightV = right.evaluate(context);
+        Value leftV = left.evaluate(context).value();
+        Value rightV = right.evaluate(context).value();
         if (leftV.getType() != ValueType.NUMBER || rightV.getType() != ValueType.NUMBER){
             throw new ExecuteException("unsupported compare for " + leftV.getType() + " and " + rightV.getType());
         }
@@ -116,8 +140,8 @@ public class Operator {
     }
 
     private static boolean equals(IExpression left, IExpression right, IExecuteContext context) throws ExecuteException {
-        Value leftV = left.evaluate(context);
-        Value rightV = right.evaluate(context);
+        Value leftV = left.evaluate(context).value();
+        Value rightV = right.evaluate(context).value();
         if(leftV.getType() != rightV.getType()){ return false; }
         ValueType type = leftV.getType();
         switch (type){

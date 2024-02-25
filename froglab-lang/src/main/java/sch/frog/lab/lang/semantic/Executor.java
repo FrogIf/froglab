@@ -45,11 +45,11 @@ public class Executor {
         }else if(statement instanceof ReturnStatement){
             ReturnStatement returnStatement = (ReturnStatement) statement;
             IExpression exp = returnStatement.getExp();
-            return new Result(exp == null ? Value.VOID : exp.evaluate(context), ResultType.RETURN);
+            return new Result(exp == null ? new Reference(Value.VOID) : exp.evaluate(context), ResultType.RETURN);
         }else if(statement instanceof BreakStatement){
-            return new Result(Value.VOID, ResultType.BREAK);
+            return new Result(new Reference(Value.VOID), ResultType.BREAK);
         }else if(statement instanceof ContinueStatement){
-            return new Result(Value.VOID, ResultType.CONTINUE);
+            return new Result(new Reference(Value.VOID), ResultType.CONTINUE);
         }else if(statement instanceof IfStatement){
             return ((IfStatement) statement).execute(context);
         }else if(statement instanceof WhileStatement){
@@ -67,7 +67,7 @@ public class Executor {
         for (VariableBody varBody : bodyList) {
             String name = varBody.name();
             IExpression body = varBody.expressionBody();
-            Value value = body == null ? Value.UNDEFINE : body.evaluate(context);
+            Value value = body == null ? Value.UNDEFINE : body.evaluate(context).value();
             if(variableStatement.isGlobalVar()){
                 context.defGlobalVariable(name, value);
             }else{

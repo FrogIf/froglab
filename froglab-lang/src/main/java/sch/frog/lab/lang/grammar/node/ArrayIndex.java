@@ -32,6 +32,6 @@ public class ArrayIndex implements IAstNode {
     }
 
     public Value evaluate(IExecuteContext context) throws ExecuteException {
-        return index.evaluate(context);
+        return index.evaluate(context).value();
     }
 }

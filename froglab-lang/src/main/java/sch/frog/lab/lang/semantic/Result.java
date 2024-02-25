@@ -4,24 +4,28 @@ import sch.frog.lab.lang.value.Value;
 
 public class Result {
 
-    public static final Result VOID = new Result(Value.VOID);
+    public static final Result VOID = new Result(new Reference(Value.VOID));
 
-    private final Value value;
+    private final Reference reference;
 
     private final ResultType type;
 
-    public Result(Value value, ResultType type) {
-        this.value = value;
+    public Result(Reference reference, ResultType type) {
+        this.reference = reference;
         this.type = type;
     }
 
-    public Result(Value value){
-        this.value = value;
+    public Result(Reference reference){
+        this.reference = reference;
         this.type = ResultType.NORMAL;
     }
 
     public Value value() {
-        return value;
+        return reference.value();
+    }
+
+    public Reference reference(){
+        return reference;
     }
 
     public ResultType type() {

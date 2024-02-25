@@ -4,6 +4,7 @@ import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.VMap;
 import sch.frog.lab.lang.value.VMapImpl;
 import sch.frog.lab.lang.value.Value;
@@ -33,14 +34,14 @@ public class ObjectNode implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         VMap map = new VMapImpl();
         for (ObjectEntry entry : entries) {
             String key = entry.getKey().key();
-            Value value = entry.getValue().evaluate(context);
+            Value value = entry.getValue().evaluate(context).value();
             map.put(key, value);
         }
-        return Value.of(map);
+        return new Reference(Value.of(map));
     }
 
     public static class ObjectEntry implements Map.Entry<EntryKey, IExpression>, IAstNode{

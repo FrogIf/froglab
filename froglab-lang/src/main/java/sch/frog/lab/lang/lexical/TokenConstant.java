@@ -44,8 +44,6 @@ public final class TokenConstant {
 
     public static final String SHORT_CIRCLE_OR = "||";
 
-    public static final String REFERENCE = "@";
-
     public static final String LPAREN = "(";
 
     public static final String RPAREN = ")";

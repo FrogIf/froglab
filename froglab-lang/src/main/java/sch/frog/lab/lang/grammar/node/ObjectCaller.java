@@ -2,6 +2,7 @@ package sch.frog.lab.lang.grammar.node;
 
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.VMap;
 import sch.frog.lab.lang.value.Value;
 
@@ -17,14 +18,15 @@ public class ObjectCaller extends AbstractCaller{
     }
 
     @Override
-    public Value evaluate(Value upValue, IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(Value upValue, IExecuteContext context) throws ExecuteException {
         if(upValue == null){
             throw new ExecuteException(ExecuteException.CODE_NULL_POINTER, "value is null");
         }
         VMap vMap = upValue.cast(VMap.class);
-        Value val = vMap.get(((IdentifierNode)this.cursor).identifier());
+        String key = ((IdentifierNode) this.cursor).identifier();
+        Value val = vMap.get(key);
         if(val == null){ val = Value.NULL; }
-        if(this.next == null){ return val; }
+        if(this.next == null){ return new Reference(val, v -> vMap.put(key, v)); }
 
         return this.next.evaluate(val, context);
     }

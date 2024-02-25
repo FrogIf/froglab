@@ -30,7 +30,7 @@ public class ExpressionList implements IAstNode {
     public Value[] evaluate(IExecuteContext context) throws ExecuteException {
         Value[] values = new Value[expressions.size()];
         for(int i = 0; i < values.length; i++){
-            values[i] = expressions.get(i).evaluate(context);
+            values[i] = expressions.get(i).evaluate(context).value();
         }
         return values;
     }

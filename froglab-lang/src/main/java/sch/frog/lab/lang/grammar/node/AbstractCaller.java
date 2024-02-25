@@ -3,6 +3,7 @@ package sch.frog.lab.lang.grammar.node;
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Arrays;
@@ -33,5 +34,5 @@ public abstract class AbstractCaller implements IAstNode {
         }
     }
 
-    public abstract Value evaluate(Value upValue, IExecuteContext context) throws ExecuteException;
+    public abstract Reference evaluate(Value upValue, IExecuteContext context) throws ExecuteException;
 }

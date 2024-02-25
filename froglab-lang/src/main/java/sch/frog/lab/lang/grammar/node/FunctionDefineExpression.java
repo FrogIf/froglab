@@ -5,6 +5,7 @@ import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.semantic.FunctionDefine;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Arrays;
@@ -40,7 +41,7 @@ public class FunctionDefineExpression implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         List<IdentifierNode> args = formalArguments.getFormalArguments();
         String[] argNameArr = new String[args.size()];
         int i = 0;
@@ -49,6 +50,6 @@ public class FunctionDefineExpression implements IExpression {
             i++;
         }
         FunctionDefine functionDefine = new FunctionDefine(argNameArr, statementBlock);
-        return Value.of(functionDefine);
+        return new Reference(Value.of(functionDefine));
     }
 }

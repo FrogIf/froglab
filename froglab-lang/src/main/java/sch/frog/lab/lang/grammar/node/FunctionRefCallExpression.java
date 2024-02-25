@@ -4,6 +4,7 @@ import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class FunctionRefCallExpression implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         Value funVal = context.getVariableValue(funVar.identifier());
         return caller.evaluate(funVal, context);
     }

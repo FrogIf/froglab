@@ -4,6 +4,7 @@ import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Collections;
@@ -28,10 +29,10 @@ public class ExpressionGroup implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         if(expression != null){
             return expression.evaluate(context);
         }
-        return Value.VOID;
+        return new Reference(Value.VOID);
     }
 }

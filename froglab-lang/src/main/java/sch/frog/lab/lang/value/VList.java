@@ -6,4 +6,6 @@ public interface VList {
     int size();
 
     Value get(int index);
+
+    Value set(int i, Value val);
 }

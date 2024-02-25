@@ -3,7 +3,9 @@ package sch.frog.lab.lang.grammar.node;
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
+import sch.frog.lab.lang.semantic.IAssigner;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Arrays;
@@ -53,15 +55,18 @@ public class ObjectExpression implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         Value val = null;
+        IAssigner assigner = null;
         if(objIdentifier != null){
-            val = objIdentifier.evaluate(context);
+            Reference ref = objIdentifier.evaluate(context);
+            val = ref.value();
+            assigner = ref.assigner();
         }else{
-            val = objectNode.evaluate(context);
+            val = objectNode.evaluate(context).value();
         }
 
-        if(objectCaller == null){ return val; }
+        if(objectCaller == null){ return new Reference(val, assigner); }
 
         return objectCaller.evaluate(val, context);
     }

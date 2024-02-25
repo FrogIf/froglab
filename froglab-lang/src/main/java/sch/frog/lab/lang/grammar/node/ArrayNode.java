@@ -4,6 +4,7 @@ import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.semantic.IExecuteContext;
+import sch.frog.lab.lang.semantic.Reference;
 import sch.frog.lab.lang.value.VList;
 import sch.frog.lab.lang.value.VListImpl;
 import sch.frog.lab.lang.value.Value;
@@ -30,11 +31,11 @@ public class ArrayNode implements IExpression {
     }
 
     @Override
-    public Value evaluate(IExecuteContext context) throws ExecuteException {
+    public Reference evaluate(IExecuteContext context) throws ExecuteException {
         VList list = new VListImpl();
         for (IExpression exp : arr) {
-            list.add(exp.evaluate(context));
+            list.add(exp.evaluate(context).value());
         }
-        return Value.of(list);
+        return new Reference(Value.of(list));
     }
 }

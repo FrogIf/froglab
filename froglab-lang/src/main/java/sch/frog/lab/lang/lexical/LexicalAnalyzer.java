@@ -46,7 +46,6 @@ public class LexicalAnalyzer {
         specialWord.put(TokenConstant.BANG, TokenType.OPERATOR);
         specialWord.put(TokenConstant.SHORT_CIRCLE_AND, TokenType.OPERATOR);
         specialWord.put(TokenConstant.SHORT_CIRCLE_OR, TokenType.OPERATOR);
-        specialWord.put(TokenConstant.REFERENCE, TokenType.OPERATOR);
         specialWord.put(TokenConstant.DOUBLE_PLUS, TokenType.OPERATOR);
         specialWord.put(TokenConstant.DOUBLE_MINUS, TokenType.OPERATOR);
 

@@ -7,7 +7,6 @@ import sch.frog.lab.lang.grammar.node.Statements;
 import sch.frog.lab.lang.grammar.util.AstUtil;
 import sch.frog.lab.lang.io.IScriptStream;
 import sch.frog.lab.lang.io.StringScriptStream;
-import sch.frog.lab.lang.lexical.GeneralTokenStream;
 import sch.frog.lab.lang.lexical.ITokenStream;
 import sch.frog.lab.lang.lexical.LexicalAnalyzer;
 import sch.frog.lab.lang.semantic.Executor;
@@ -57,9 +56,7 @@ public class LangRunner {
         }
 
         // 求值
-        Result result = executor.execute(statement, context);
-
-        return result;
+        return executor.execute(statement, context);
     }
 
     public Result run(String expression, IExecuteContext context) throws GrammarException, ExecuteException {

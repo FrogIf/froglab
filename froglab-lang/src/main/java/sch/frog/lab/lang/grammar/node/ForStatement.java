@@ -79,15 +79,15 @@ public class ForStatement implements IterationStatement{
                 if(expressionBody == null){
                     throw new ExecuteException("variable not assign");
                 }
-                Value value = expressionBody.evaluate(context);
+                Value value = expressionBody.evaluate(context).value();
                 context.setVariable(variableName, value);
             }
         }
 
-        while(condition.evaluate(innerContext).cast(boolean.class)){
+        while(condition.evaluate(innerContext).value().cast(boolean.class)){
             Result result = nestStatement.execute(innerContext);
             if(result.type() == ResultType.BREAK){
-                return new Result(result.value(), ResultType.NORMAL);
+                return new Result(result.reference(), ResultType.NORMAL);
             }else if(result.type() == ResultType.RETURN){
                 return result;
             }

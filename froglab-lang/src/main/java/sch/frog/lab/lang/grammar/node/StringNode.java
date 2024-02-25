@@ -4,7 +4,7 @@ import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.lexical.TokenType;
 import sch.frog.lab.lang.value.Value;
 
-public class StringNode extends ValueNode {
+public class StringNode extends ConstantNode {
 
     private final String stringVal;
 

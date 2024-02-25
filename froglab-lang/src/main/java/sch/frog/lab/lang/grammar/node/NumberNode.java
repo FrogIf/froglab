@@ -5,7 +5,7 @@ import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.lexical.TokenType;
 import sch.frog.lab.lang.value.Value;
 
-public class NumberNode extends ValueNode {
+public class NumberNode extends ConstantNode {
 
     public NumberNode(Token token){
         super(token);
