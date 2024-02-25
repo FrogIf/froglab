@@ -14,9 +14,12 @@ public class FunctionDefine implements IFunction {
 
     private final Statements funBody;
 
-    public FunctionDefine(String[] fArgs, StatementBlock statementBlock) {
+    private final IExecuteContext defineContext;
+
+    public FunctionDefine(String[] fArgs, StatementBlock statementBlock, IExecuteContext defineContext) {
         this.fArgs = fArgs;
         this.funBody = new Statements(Collections.singleton(statementBlock));
+        this.defineContext = defineContext;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class FunctionDefine implements IFunction {
 
     @Override
     public Value execute(Value[] args, IExecuteContext context) throws ExecuteException {
-        InnerExecuteContext nestContext = new InnerExecuteContext(context);
+        InnerExecuteContext nestContext = new InnerExecuteContext(defineContext);
         if(args.length != fArgs.length){ throw new ExecuteException("input argument incorrect, except size : " + fArgs.length + ", but : " + args.length); }
         for(int i = 0; i < args.length; i++){
             nestContext.defLocalVariable(fArgs[i], args[i]);

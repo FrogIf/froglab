@@ -23,6 +23,6 @@ public class IsUndefineFunction implements IFunction {
             throw new ExecuteException("isUndefine function expect 1 arguments, but " + args.length);
         }
         Value val = args[0];
-        return Value.of(val.getType() == ValueType.UNDEFINE);
+        return Value.of(val.getType() == ValueType.UNDEFINE || val.getType() == ValueType.VOID);
     }
 }

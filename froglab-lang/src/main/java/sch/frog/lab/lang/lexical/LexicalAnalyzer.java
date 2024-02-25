@@ -30,6 +30,7 @@ public class LexicalAnalyzer {
         specialWord.put(TokenConstant.WHILE, TokenType.KEYWORD);
         specialWord.put(TokenConstant.DO, TokenType.KEYWORD);
         specialWord.put(TokenConstant.FOR, TokenType.KEYWORD);
+        specialWord.put(TokenConstant.FUNCTION, TokenType.KEYWORD);
 
         specialWord.put(TokenConstant.PLUS, TokenType.OPERATOR);
         specialWord.put(TokenConstant.MINUS, TokenType.OPERATOR);

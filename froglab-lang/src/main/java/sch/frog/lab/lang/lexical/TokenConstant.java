@@ -98,6 +98,8 @@ public final class TokenConstant {
 
     public static final String STAR_ASSIGN = "*=";
 
+    public static final String FUNCTION = "function";
+
 
 
 }

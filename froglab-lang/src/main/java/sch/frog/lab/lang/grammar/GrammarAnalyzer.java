@@ -21,7 +21,9 @@ import sch.frog.lab.lang.grammar.node.FunctionCaller;
 import sch.frog.lab.lang.grammar.node.FunctionDefineExpression;
 import sch.frog.lab.lang.grammar.node.FunctionExpression;
 import sch.frog.lab.lang.grammar.node.FunctionFormalArgumentExpression;
+import sch.frog.lab.lang.grammar.node.FunctionNormalDeclareExpression;
 import sch.frog.lab.lang.grammar.node.FunctionRefCallExpression;
+import sch.frog.lab.lang.grammar.node.FunctionStatement;
 import sch.frog.lab.lang.grammar.node.IdentifierNode;
 import sch.frog.lab.lang.grammar.node.IfEntry;
 import sch.frog.lab.lang.grammar.node.IfStatement;
@@ -123,9 +125,47 @@ public class GrammarAnalyzer {
             case TokenConstant.DO:
             case TokenConstant.FOR:
                 return parseIterationStatement(tokenStream);
+            case TokenConstant.FUNCTION:
+                return parseFunctionStatement(tokenStream);
             default:
                 return parseExpression(tokenStream, Integer.MIN_VALUE);
         }
+    }
+
+    private FunctionStatement parseFunctionStatement(ITokenStream tokenStream) throws GrammarException{
+        Token funName = tokenStream.next();
+        Token current = tokenStream.next();
+
+        if(!TokenConstant.LPAREN.equals(current.literal())){
+            throw buildException(current, "function formal arguments define format incorrect");
+        }
+        current = tokenStream.next();
+        List<IExpression> expressions = Collections.emptyList();
+        if(!TokenConstant.RPAREN.equals(current.literal())){
+            expressions = expressionList(tokenStream);
+        }
+        current = tokenStream.current();
+        if(!TokenConstant.RPAREN.equals(current.literal())){
+            throw buildException(current, "function formal arguments define format incorrect");
+        }
+        current = tokenStream.next();
+
+        if(!TokenConstant.LBRACE.equals(current.literal())){
+            throw buildException(current, "function body define format incorrect");
+        }
+
+        ArrayList<IdentifierNode> formalArgumentList = new ArrayList<>(expressions.size());
+        for (IExpression exp : expressions) {
+            if(!(exp instanceof IdentifierNode)){
+                throw buildException(tokenStream.current(), "function define must formal argument");
+            }
+            formalArgumentList.add((IdentifierNode) exp);
+        }
+        FunctionFormalArgumentExpression args = new FunctionFormalArgumentExpression(formalArgumentList);
+
+        StatementBlock statementBlock = parseStatementBlock(tokenStream);
+
+        return new FunctionStatement(funName, args, statementBlock);
     }
 
     private IterationStatement parseIterationStatement(ITokenStream tokenStream) throws GrammarException {
@@ -455,14 +495,51 @@ public class GrammarAnalyzer {
         TokenType t = current.type();
         if (TokenConstant.LBRACKET.equals(current.literal()) || (TokenConstant.LBRACKET.equals(peek.literal()))) {
             return arrayExpression(tokenStream);
-        } else if ("{".equals(current.literal()) || (TokenConstant.DOT.equals(peek.literal()))) {
+        } else if (TokenConstant.LBRACE.equals(current.literal()) || (TokenConstant.DOT.equals(peek.literal()))) {
             return objectExpression(tokenStream);
-        } else if ("(".equals(current.literal()) || (current.type() == TokenType.IDENTIFIER && TokenConstant.LPAREN.equals(peek.literal()))) {
+        } else if (TokenConstant.LPAREN.equals(current.literal()) || (current.type() == TokenType.IDENTIFIER && TokenConstant.LPAREN.equals(peek.literal()))) {
             return parseFunctionOrGroupExpression(tokenStream);
-        } else if (t == TokenType.BOOL || t == TokenType.IDENTIFIER || t == TokenType.NUMBER || t == TokenType.STRING || t == TokenType.NULL) {
+        } else if(TokenConstant.FUNCTION.equals(current.literal())){
+            return parseNormalFunctionDeclare(tokenStream);
+        }else if (t == TokenType.BOOL || t == TokenType.IDENTIFIER || t == TokenType.NUMBER || t == TokenType.STRING || t == TokenType.NULL) {
             return constantExpression(tokenStream);
         }
         return null;
+    }
+
+    private IExpression parseNormalFunctionDeclare(ITokenStream tokenStream) throws GrammarException {
+        Token current = tokenStream.next();
+
+        if(!TokenConstant.LPAREN.equals(current.literal())){
+            throw buildException(current, "function formal arguments define format incorrect");
+        }
+        current = tokenStream.next();
+        List<IExpression> expressions = Collections.emptyList();
+        if(!TokenConstant.RPAREN.equals(current.literal())){
+            expressions = expressionList(tokenStream);
+        }
+        current = tokenStream.current();
+        if(!TokenConstant.RPAREN.equals(current.literal())){
+            throw buildException(current, "function formal arguments define format incorrect");
+        }
+        current = tokenStream.next();
+
+        if(!TokenConstant.LBRACE.equals(current.literal())){
+            throw buildException(current, "function body define format incorrect");
+        }
+
+        ArrayList<IdentifierNode> formalArgumentList = new ArrayList<>(expressions.size());
+        for (IExpression exp : expressions) {
+            if(!(exp instanceof IdentifierNode)){
+                throw buildException(tokenStream.current(), "function define must formal argument");
+            }
+            formalArgumentList.add((IdentifierNode) exp);
+        }
+        FunctionFormalArgumentExpression args = new FunctionFormalArgumentExpression(formalArgumentList);
+
+        StatementBlock statementBlock = parseStatementBlock(tokenStream);
+
+        return new FunctionNormalDeclareExpression(args, statementBlock);
     }
 
     private IExpression parseFunctionOrGroupExpression(ITokenStream tokenStream) throws GrammarException {

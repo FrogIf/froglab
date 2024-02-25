@@ -11,28 +11,20 @@ import sch.frog.lab.lang.value.Value;
 import java.util.Arrays;
 import java.util.List;
 
-public class FunctionDefineExpression implements IExpression {
+public class FunctionNormalDeclareExpression implements IExpression {
 
     private final FunctionFormalArgumentExpression formalArguments;
 
     private final StatementBlock statementBlock;
 
-    public FunctionDefineExpression(FunctionFormalArgumentExpression formalArguments, StatementBlock statementBlock) {
+    public FunctionNormalDeclareExpression(FunctionFormalArgumentExpression formalArguments, StatementBlock statementBlock) {
         this.formalArguments = formalArguments;
         this.statementBlock = statementBlock;
     }
 
-    public FunctionFormalArgumentExpression getFormalArguments() {
-        return formalArguments;
-    }
-
-    public StatementBlock getStatementBlock() {
-        return statementBlock;
-    }
-
     @Override
     public String literal() {
-        return "=>";
+        return "#function-declare";
     }
 
     @Override

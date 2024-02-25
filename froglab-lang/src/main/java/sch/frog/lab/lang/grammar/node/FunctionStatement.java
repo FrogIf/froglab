@@ -2,37 +2,33 @@ package sch.frog.lab.lang.grammar.node;
 
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.grammar.IAstNode;
-import sch.frog.lab.lang.grammar.IExpression;
+import sch.frog.lab.lang.grammar.IStatement;
+import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.semantic.FunctionDefine;
 import sch.frog.lab.lang.semantic.IExecuteContext;
-import sch.frog.lab.lang.semantic.Reference;
+import sch.frog.lab.lang.semantic.Result;
 import sch.frog.lab.lang.value.Value;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class FunctionDefineExpression implements IExpression {
+public class FunctionStatement implements IStatement {
+
+    private final Token name;
 
     private final FunctionFormalArgumentExpression formalArguments;
 
     private final StatementBlock statementBlock;
 
-    public FunctionDefineExpression(FunctionFormalArgumentExpression formalArguments, StatementBlock statementBlock) {
+    public FunctionStatement(Token name, FunctionFormalArgumentExpression formalArguments, StatementBlock statementBlock) {
+        this.name = name;
         this.formalArguments = formalArguments;
         this.statementBlock = statementBlock;
     }
 
-    public FunctionFormalArgumentExpression getFormalArguments() {
-        return formalArguments;
-    }
-
-    public StatementBlock getStatementBlock() {
-        return statementBlock;
-    }
-
     @Override
     public String literal() {
-        return "=>";
+        return "#function-define:" + name.literal();
     }
 
     @Override
@@ -40,8 +36,7 @@ public class FunctionDefineExpression implements IExpression {
         return Arrays.asList(formalArguments, statementBlock);
     }
 
-    @Override
-    public Reference evaluate(IExecuteContext context) throws ExecuteException {
+    public Result execute(IExecuteContext context) throws ExecuteException {
         List<IdentifierNode> args = formalArguments.getFormalArguments();
         String[] argNameArr = new String[args.size()];
         int i = 0;
@@ -50,6 +45,7 @@ public class FunctionDefineExpression implements IExpression {
             i++;
         }
         FunctionDefine functionDefine = new FunctionDefine(argNameArr, statementBlock, context);
-        return new Reference(Value.of(functionDefine));
+        context.defGlobalVariable(name.literal(), Value.of(functionDefine));
+        return Result.VOID;
     }
 }

@@ -7,6 +7,7 @@ import sch.frog.lab.lang.grammar.node.BreakStatement;
 import sch.frog.lab.lang.grammar.node.ContinueStatement;
 import sch.frog.lab.lang.grammar.node.DoWhileStatement;
 import sch.frog.lab.lang.grammar.node.ForStatement;
+import sch.frog.lab.lang.grammar.node.FunctionStatement;
 import sch.frog.lab.lang.grammar.node.IfStatement;
 import sch.frog.lab.lang.grammar.node.ReturnStatement;
 import sch.frog.lab.lang.grammar.node.StatementBlock;
@@ -58,6 +59,8 @@ public class Executor {
             return ((DoWhileStatement) statement).execute(context);
         }else if(statement instanceof ForStatement){
             return ((ForStatement) statement).execute(context);
+        }else if(statement instanceof FunctionStatement){
+            return ((FunctionStatement) statement).execute(context);
         }
         return Result.VOID;
     }

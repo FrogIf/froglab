@@ -31,11 +31,14 @@ statement_end = ";";
 caller = object_caller | array_index | function_caller;
 
 formal_parameter_list = indentifier, {"," , indentifier};
-function_declare = "(", {formal_parameter_list}, ")", "=>", statement_block;
+function_declare = "(", {formal_parameter_list}, ")", "=>", statement_block
+         | "(", {formal_parameter_list}, ")", "=>", statement;
 function_caller = "(", {expression_list}, ")", { caller };
 function_direct_call = function_declare, function_caller;
 function_indentifier_call = indentifier, function_caller;
 function_call = function_indentifier_call | function_direct_call;
+function_normal_declare = "function", "(", {formal_parameter_list}, ")", statement_block;
+function_statement = "function", indentifier, "(", {formal_parameter_list}, ")", statement_block;
 
 entry_key = indentifier | string;
 entry = entry_key , ":", expression;
@@ -60,6 +63,7 @@ statement = statement_block
           | expression
           | if_statement
           | iteration_statement
+          | function_statement
           ;
 
 statement_block = "{" , {statement}, "}";
@@ -94,7 +98,7 @@ do_while_statement = "do", nest_statement, "while", "(", expression, ")";
 
 
 expression_list = expression, {",", expression};
-array_expression = array_obj, { array_caller };
+array_expression = array_obj, { array_caller | object_caller };
 object_expression = object_obj, { object_caller };
 function_expression = function_declare, { function_caller };
 function_ref_call = identifier, function_caller;
@@ -105,6 +109,7 @@ plain_expression = array_expression
         | object_expression
         | function_expression_or_group_expression
         | constant_expression
+        | function_normal_declare
         ;
 prefix_expression = {prefix_operator}, plain_expression;
 fix_expression = prefix_expression , {suffix_operator};
