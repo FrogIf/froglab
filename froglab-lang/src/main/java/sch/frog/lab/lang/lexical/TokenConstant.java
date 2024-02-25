@@ -88,6 +88,10 @@ public final class TokenConstant {
 
     public static final String DO = "do";
 
+    public static final String DOUBLE_PLUS = "++";
+
+    public static final String DOUBLE_MINUS = "--";
+
 
 
 }

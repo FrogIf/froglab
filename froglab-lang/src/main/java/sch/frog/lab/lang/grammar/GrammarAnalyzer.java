@@ -12,6 +12,7 @@ import sch.frog.lab.lang.grammar.node.ContinueStatement;
 import sch.frog.lab.lang.grammar.node.DoWhileStatement;
 import sch.frog.lab.lang.grammar.node.ElseEntry;
 import sch.frog.lab.lang.grammar.node.ElseIfEntry;
+import sch.frog.lab.lang.grammar.node.EntryKey;
 import sch.frog.lab.lang.grammar.node.ExpressionGroup;
 import sch.frog.lab.lang.grammar.node.ExpressionList;
 import sch.frog.lab.lang.grammar.node.ForInitializer;
@@ -39,6 +40,7 @@ import sch.frog.lab.lang.grammar.node.ReturnStatement;
 import sch.frog.lab.lang.grammar.node.StatementBlock;
 import sch.frog.lab.lang.grammar.node.Statements;
 import sch.frog.lab.lang.grammar.node.StringNode;
+import sch.frog.lab.lang.grammar.node.SuffixExpression;
 import sch.frog.lab.lang.grammar.node.VariableBody;
 import sch.frog.lab.lang.grammar.node.VariableStatement;
 import sch.frog.lab.lang.grammar.node.WhileStatement;
@@ -388,7 +390,7 @@ public class GrammarAnalyzer {
     }
 
     private IExpression parseExpression(ITokenStream tokenStream, int precedence) throws GrammarException {
-        IExpression exp = parsePrefixExpression(tokenStream);
+        IExpression exp = parseFixExpression(tokenStream);
         if (exp == null) {
             return null;
         }
@@ -404,6 +406,22 @@ public class GrammarAnalyzer {
                 exp = new InfixExpression(exp, operatorToken, right);
                 operatorToken = tokenStream.current();
             }
+        }
+        return exp;
+    }
+
+    private IExpression parseFixExpression(ITokenStream tokenStream) throws GrammarException {
+        IExpression exp = parsePrefixExpression(tokenStream);
+        if (exp == null) {
+            return null;
+        }
+        Token current = tokenStream.current();
+        String literal = current.literal();
+        switch (literal){
+            case TokenConstant.DOUBLE_PLUS:
+            case TokenConstant.DOUBLE_MINUS:
+                tokenStream.next();
+                return new SuffixExpression(exp, current);
         }
         return exp;
     }
@@ -613,19 +631,23 @@ public class GrammarAnalyzer {
     private ObjectNode parseObject(ITokenStream tokenStream) throws GrammarException {
         Token current;
         List<ObjectNode.ObjectEntry> entries = new LinkedList<>();
-        do{
-            current = tokenStream.next();
-            if(current.type() != TokenType.IDENTIFIER){
-                throw buildException(current, "object key is not identifier");
-            }
-            Token key = current;
-            if(!TokenConstant.COLON.equals(tokenStream.next().literal())){
-                throw buildException(tokenStream.current(), "object format is incorrect");
-            }
+        if(!TokenConstant.RBRACE.equals(tokenStream.peek().literal())){
+            do{
+                current = tokenStream.next();
+                if(current.type() != TokenType.IDENTIFIER && current.type() != TokenType.STRING){
+                    throw buildException(current, "object key is incorrect : " + current.type());
+                }
+                Token key = current;
+                if(!TokenConstant.COLON.equals(tokenStream.next().literal())){
+                    throw buildException(tokenStream.current(), "object format is incorrect");
+                }
+                tokenStream.next();
+                IExpression value = parseExpression(tokenStream, Integer.MIN_VALUE);
+                entries.add(new ObjectNode.ObjectEntry(new EntryKey(key), value));
+            }while(TokenConstant.COMMA.equals(tokenStream.current().literal()));
+        }else{ // 空对象
             tokenStream.next();
-            IExpression value = parseExpression(tokenStream, Integer.MIN_VALUE);
-            entries.add(new ObjectNode.ObjectEntry(new IdentifierNode(key), value));
-        }while(TokenConstant.COMMA.equals(tokenStream.current().literal()));
+        }
 
         if(!TokenConstant.RBRACE.equals(tokenStream.current().literal())){
             throw buildException(tokenStream.current(), "object expect end with " + TokenConstant.RBRACE + " but " + tokenStream.current().literal());

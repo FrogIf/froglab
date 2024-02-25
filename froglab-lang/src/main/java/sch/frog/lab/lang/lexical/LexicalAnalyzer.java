@@ -47,6 +47,8 @@ public class LexicalAnalyzer {
         specialWord.put(TokenConstant.SHORT_CIRCLE_AND, TokenType.OPERATOR);
         specialWord.put(TokenConstant.SHORT_CIRCLE_OR, TokenType.OPERATOR);
         specialWord.put(TokenConstant.REFERENCE, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.DOUBLE_PLUS, TokenType.OPERATOR);
+        specialWord.put(TokenConstant.DOUBLE_MINUS, TokenType.OPERATOR);
 
         specialWord.put(TokenConstant.LPAREN, TokenType.STRUCT);
         specialWord.put(TokenConstant.RPAREN, TokenType.STRUCT);
@@ -61,8 +63,16 @@ public class LexicalAnalyzer {
         specialWord.put(TokenConstant.SEMICOLON, TokenType.STRUCT);
     }
 
-    public GeneralTokenStream parse(IScriptStream scriptStream){
-        return new GeneralTokenStream(scriptStream, this);
+    public ITokenStream parse(IScriptStream scriptStream){
+        return parse(scriptStream, false);
+    }
+
+    public ITokenStream parse(IScriptStream scriptStream, boolean full){
+        if(full){
+            return new FullTokenStream(scriptStream, this);
+        }else{
+            return new GeneralTokenStream(scriptStream, this);
+        }
     }
 
     /**

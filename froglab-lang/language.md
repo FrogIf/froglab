@@ -17,6 +17,7 @@ string = '"', {all_character - '"'}, '"';
 bool = "true" | "false";
 null = "null";
 prefix_operator = "-" | "+" | "@" | "!";
+suffix_operator = "++" | "--";
 operator = prefix_operator | "*" | "/" | "<" | ">" | "<=" | ">=" | "==" | "!=" | "&&" | "||" | "|" | "&" | "=";
 comment = "//" , {all_character - ?newline?} , ?newline?
         | "/*", {all_characher - "*/"} , "*/";
@@ -36,7 +37,8 @@ function_direct_call = function_declare, function_caller;
 function_indentifier_call = indentifier, function_caller;
 function_call = function_indentifier_call | function_direct_call;
 
-entry = indentifier , ":", expression;
+entry_key = indentifier | string;
+entry = entry_key , ":", expression;
 entry_list = entry, { ",", entry };
 object = "{" , {entry_list}, "}";
 object_caller = "." , indentifier, { caller };
@@ -105,7 +107,8 @@ plain_expression = array_expression
         | constant_expression
         ;
 prefix_expression = {prefix_operator}, plain_expression;
-expression = prefix_expression, { operator , expression };
+fix_expression = prefix_expression , {suffix_operator};
+expression = fix_expression, { operator , expression };
 ```
 
 > statement 不保证有返回值, 只能独立, 不能内嵌

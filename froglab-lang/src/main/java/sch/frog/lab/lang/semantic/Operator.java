@@ -1,8 +1,8 @@
 package sch.frog.lab.lang.semantic;
 
 import io.github.frogif.calculator.number.impl.RationalNumber;
-import sch.frog.lab.lang.fun.IFunction;
 import sch.frog.lab.lang.exception.ExecuteException;
+import sch.frog.lab.lang.fun.IFunction;
 import sch.frog.lab.lang.grammar.IExpression;
 import sch.frog.lab.lang.grammar.node.IdentifierNode;
 import sch.frog.lab.lang.lexical.TokenConstant;
@@ -36,11 +36,29 @@ public class Operator {
         throw new ExecuteException("unsupported prefix : " + prefix);
     }
 
+    public static Value suffixEvaluate(IExpression left, String suffix, IExecuteContext context) throws ExecuteException {
+        Value val = null;
+        switch (suffix){
+            case TokenConstant.DOUBLE_MINUS:
+                val = left.evaluate(context);
+                RationalNumber snum = val.cast(RationalNumber.class);
+                Value result = Value.of(snum.sub(RationalNumber.ONE));
+                return result;
+            case TokenConstant.DOUBLE_PLUS:
+                val = left.evaluate(context);
+                RationalNumber anum = val.cast(RationalNumber.class);
+                Value res = Value.of(anum.add(RationalNumber.ONE));
+                return res;
+        }
+        throw new ExecuteException("unsupported suffix : " + suffix);
+    }
+
     public static Value infixEvaluate(IExpression left, String infix, IExpression right, IExecuteContext context) throws ExecuteException {
         if(TokenConstant.ASSIGN.equals(infix)){
             if(!(left instanceof IdentifierNode)){
                 throw new ExecuteException("assign left must identifier");
             }
+            // TODO 引用类型(map, array) 赋值
             Value val = right.evaluate(context);
             context.setVariable(((IdentifierNode) left).identifier(), val);
             return val;

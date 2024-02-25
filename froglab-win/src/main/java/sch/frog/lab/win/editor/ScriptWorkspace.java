@@ -32,6 +32,7 @@ import sch.frog.lab.lang.exception.GrammarException;
 import sch.frog.lab.lang.handle.SystemOutputHandle;
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;
+import sch.frog.lab.lang.lexical.ITokenStream;
 import sch.frog.lab.lang.lexical.LexicalAnalyzer;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.semantic.IExecuteContext;
@@ -45,6 +46,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -97,12 +99,6 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
         buttonTooltip(prettyBtn, "pretty");
         prettyBtn.setOnMouseClicked(e -> prettyCode());
         controlCon.getChildren().add(prettyBtn);
-
-        Button compressBtn = new Button("♒");
-        buttonStyle(compressBtn);
-        buttonTooltip(compressBtn, "compress");
-        compressBtn.setOnMouseClicked(e -> compressCode());
-        controlCon.getChildren().add(compressBtn);
 
         Button saveBtn = new Button("✍");
         buttonTooltip(saveBtn, "Ctrl+S");
@@ -378,7 +374,7 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
             return;
         }
         try (
-                FileWriter fileWriter = new FileWriter(file)
+                FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8)
         ){
             fileWriter.write(codeArea.getText());
             selfTab.setText(file.getName());
@@ -399,7 +395,7 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
 
     private List<Token> tokenize(String text){
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
-        GeneralTokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text));
+        ITokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text), true);
         ArrayList<Token> tokens = new ArrayList<>();
         do{
             tokens.add(tokenStream.current());
@@ -413,16 +409,6 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
         if(!text.isBlank()){
             List<Token> tokens = tokenize(text);
             text = ExpressionFormatUtil.pretty(tokens);
-            codeArea.clear();
-            codeArea.appendText(text);
-        }
-    }
-
-    public void compressCode(){
-        String text = codeArea.getText();
-        if(!text.isBlank()){
-            List<Token> tokens = tokenize(text);
-            text = ExpressionFormatUtil.compress(tokens);
             codeArea.clear();
             codeArea.appendText(text);
         }

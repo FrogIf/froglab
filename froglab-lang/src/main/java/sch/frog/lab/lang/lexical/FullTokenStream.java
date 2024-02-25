@@ -3,9 +3,9 @@ package sch.frog.lab.lang.lexical;
 import sch.frog.lab.lang.io.IScriptStream;
 
 /**
- * 通用的, 注释会自动跳过
+ * 全量的token, 包括注释
  */
-public class GeneralTokenStream implements ITokenStream{
+public class FullTokenStream implements ITokenStream{
 
     private Token current;
 
@@ -15,7 +15,7 @@ public class GeneralTokenStream implements ITokenStream{
 
     private final LexicalAnalyzer lexicalAnalyzer;
 
-    public GeneralTokenStream(IScriptStream scriptStream, LexicalAnalyzer lexicalAnalyzer) {
+    public FullTokenStream(IScriptStream scriptStream, LexicalAnalyzer lexicalAnalyzer) {
         this.scriptStream = scriptStream;
         this.lexicalAnalyzer = lexicalAnalyzer;
         /*
@@ -43,9 +43,6 @@ public class GeneralTokenStream implements ITokenStream{
         if(current == null){ current = Token.EOF; }
 
         peek = lexicalAnalyzer.read(scriptStream);
-        while(peek != null && peek.type() == TokenType.COMMENT){ // 跳过注释
-            peek = lexicalAnalyzer.read(scriptStream);
-        }
         if(peek == null){ peek = Token.EOF; }
 
         return current;

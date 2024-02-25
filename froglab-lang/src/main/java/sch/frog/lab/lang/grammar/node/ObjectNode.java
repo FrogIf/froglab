@@ -36,25 +36,25 @@ public class ObjectNode implements IExpression {
     public Value evaluate(IExecuteContext context) throws ExecuteException {
         VMap map = new VMapImpl();
         for (ObjectEntry entry : entries) {
-            String key = entry.getKey().identifier();
+            String key = entry.getKey().key();
             Value value = entry.getValue().evaluate(context);
             map.put(key, value);
         }
         return Value.of(map);
     }
 
-    public static class ObjectEntry implements Map.Entry<IdentifierNode, IExpression>, IAstNode{
+    public static class ObjectEntry implements Map.Entry<EntryKey, IExpression>, IAstNode{
 
-        private final IdentifierNode key;
+        private final EntryKey key;
         private final IExpression value;
 
-        public ObjectEntry(IdentifierNode key, IExpression value) {
+        public ObjectEntry(EntryKey key, IExpression value) {
             this.key = key;
             this.value = value;
         }
 
         @Override
-        public IdentifierNode getKey() {
+        public EntryKey getKey() {
             return key;
         }
 

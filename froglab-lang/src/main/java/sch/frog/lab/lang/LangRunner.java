@@ -8,6 +8,7 @@ import sch.frog.lab.lang.grammar.util.AstUtil;
 import sch.frog.lab.lang.io.IScriptStream;
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;
+import sch.frog.lab.lang.lexical.ITokenStream;
 import sch.frog.lab.lang.lexical.LexicalAnalyzer;
 import sch.frog.lab.lang.semantic.Executor;
 import sch.frog.lab.lang.semantic.GeneralExecuteContext;
@@ -26,7 +27,7 @@ public class LangRunner {
 
     private final Map<String, Value> extendVariableMap = new HashMap<>();
 
-    private boolean debug = false;
+    private boolean debug = true;
 
     public LangRunner() {
     }
@@ -47,7 +48,7 @@ public class LangRunner {
 
     public Result run(IScriptStream scriptStream, IExecuteContext context) throws GrammarException, ExecuteException {
         // 词法分析
-        GeneralTokenStream tokenStream = lexicalAnalyzer.parse(scriptStream);
+        ITokenStream tokenStream = lexicalAnalyzer.parse(scriptStream);
 
         // 语法分析
         Statements statement = grammarAnalyzer.parse(tokenStream);

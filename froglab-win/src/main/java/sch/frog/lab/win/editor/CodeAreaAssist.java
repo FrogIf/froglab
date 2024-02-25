@@ -10,6 +10,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.richtext.model.StyledDocument;
 import sch.frog.lab.lang.io.StringScriptStream;
 import sch.frog.lab.lang.lexical.GeneralTokenStream;
+import sch.frog.lab.lang.lexical.ITokenStream;
 import sch.frog.lab.lang.lexical.LexicalAnalyzer;
 import sch.frog.lab.lang.lexical.Token;
 import sch.frog.lab.lang.lexical.TokenType;
@@ -163,6 +164,12 @@ public class CodeAreaAssist {
                         break;
                     case IDENTIFIER:
                         styles.add("identifier");
+                        break;
+                    case KEYWORD:
+                        styles.add("keyword");
+                        break;
+                    case ILLEGAL:
+                        styles.add("illegal");
                         break;
                     default:
                         styles.add("unknown");
@@ -383,13 +390,13 @@ public class CodeAreaAssist {
             if(tokens == null){
                 String text = codeArea.getText();
                 if(StringUtils.isNotBlank(text)){
-                    GeneralTokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text));
+                    ITokenStream tokenStream = lexicalAnalyzer.parse(new StringScriptStream(text), true);
                     ArrayList<Token> tokens = new ArrayList<>();
                     do{
                         tokens.add(tokenStream.current());
                         tokenStream.next();
                     }while (tokenStream.current() != Token.EOF);
-                    return tokens;
+                    this.tokens = tokens;
                 }
             }
             return tokens;

@@ -85,7 +85,7 @@ public class ForStatement implements IterationStatement{
         }
 
         while(condition.evaluate(innerContext).cast(boolean.class)){
-            Result result = nestStatement.execute(context);
+            Result result = nestStatement.execute(innerContext);
             if(result.type() == ResultType.BREAK){
                 return new Result(result.value(), ResultType.NORMAL);
             }else if(result.type() == ResultType.RETURN){

@@ -1,7 +1,6 @@
 package sch.frog.lab.lang.util;
 
 import sch.frog.lab.lang.lexical.Token;
-import sch.frog.lab.lang.lexical.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,35 +25,6 @@ public class ExpressionFormatUtil {
             PrettyWriter writer = new PrettyWriter();
             writer.write(block);
             return writer.getString();
-        }
-        return "";
-    }
-
-    public static String compress(List<Token> tokens) {
-        if (tokens != null && !tokens.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Token token : tokens) {
-                if (token.type() == TokenType.COMMENT) {
-                    String comment = token.literal();
-                    StringBuilder c = new StringBuilder();
-                    if (comment.startsWith("//")) {
-                        c.append("/*").append(comment.substring(2)).append("*/");
-                    } else if (comment.startsWith("/*")) {
-                        for (int i = 0, len = comment.length(); i < len; i++) {
-                            char ch = comment.charAt(i);
-                            if (ch == '\n') {
-                                c.append("\\n");
-                            } else {
-                                c.append(ch);
-                            }
-                        }
-                    }
-                    sb.append(c);
-                } else {
-                    sb.append(token.literal()).append(' ');
-                }
-            }
-            return sb.toString();
         }
         return "";
     }
