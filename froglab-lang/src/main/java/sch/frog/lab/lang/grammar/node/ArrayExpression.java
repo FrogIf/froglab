@@ -18,9 +18,9 @@ public class ArrayExpression implements IExpression {
 
     private final IdentifierNode arrayIdentifier;
 
-    private final ArrayCaller arrayCaller;
+    private final AbstractCaller arrayCaller;
 
-    public ArrayExpression(ArrayNode arrayObj, IdentifierNode arrayIdentifier, ArrayCaller arrayCaller) {
+    public ArrayExpression(ArrayNode arrayObj, IdentifierNode arrayIdentifier, AbstractCaller arrayCaller) {
         this.arrayObj = arrayObj;
         this.arrayIdentifier = arrayIdentifier;
         this.arrayCaller = arrayCaller;
@@ -34,10 +34,6 @@ public class ArrayExpression implements IExpression {
 
     public IExpression getArrayObj() {
         return arrayObj;
-    }
-
-    public ArrayCaller getArrayCaller() {
-        return arrayCaller;
     }
 
     @Override
@@ -69,6 +65,7 @@ public class ArrayExpression implements IExpression {
         if(this.arrayIdentifier != null){
             Reference ref = this.arrayIdentifier.evaluate(context);
             assigner = ref.assigner();
+            val = ref.value();
         }else{
             val = arrayObj.evaluate(context).value();
         }

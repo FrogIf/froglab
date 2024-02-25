@@ -70,6 +70,11 @@ public class SystemOutputHandle extends Handle {
         return Value.of(funMap.get(key));
     }
 
+    @Override
+    public boolean existKey(String key) {
+        return funMap.containsKey(key);
+    }
+
     public interface PrintStream{
         void print(String str);
 

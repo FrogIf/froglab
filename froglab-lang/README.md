@@ -63,7 +63,7 @@ comment = "//" , {all_character - ?newline?} , ?newline?
 expression_list = expression, {",", expression};
 function_caller = "(", {expression_list}, ")";
 function_call = indentifier, function_caller , { object_caller | array_index | function_caller };
-object_caller = "." , indentifier;
+object_caller = "." , indentifier, { function_caller };
 array_indentifier_call = indentifier, array_index, { object_caller | array_index | function_caller };
 array_direct_call = array, array_index, { object_caller | array_index | function_caller };
 array_call =  array_indentifier_call | array_direct_call;
@@ -75,10 +75,14 @@ plain_value_expression = number | string | bool | indentifier_call | array_direc
 simple_value_expression = plain_value_expression | operate_expression;
 formal_parameter_list = indentifier, {"," , indentifier};
 function_declare = "(", formal_parameter_list, ")", "=>", expression;
-expression = array , { object_caller | array_index | function_caller }
-        | object, { object_caller | array_index | function_caller }
+expression_group = "(", expression, ")";
+array_expression = array , { object_caller | array_index };
+object_expression = object, { object_caller } 
+expression = array_expression
+        | object_expression
         | simple_value_expression 
-        | function_declare
+        | expression_group
+        | function_declare, { function_caller }
         ;
 array = "[", {expression_list}, "]";
 entry = indentifier , ":", expression;

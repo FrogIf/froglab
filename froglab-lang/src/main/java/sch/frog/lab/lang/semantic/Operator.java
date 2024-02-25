@@ -116,9 +116,32 @@ public class Operator {
                     return baseOperation(left, right, context, RationalNumber::mult);
                 case TokenConstant.SLASH:
                     return baseOperation(left, right, context, RationalNumber::div);
+                case TokenConstant.PLUS_ASSIGN:
+                    return baseOperationAndAssign(left, right, context, RationalNumber::add);
+                case TokenConstant.MINUS_ASSIGN:
+                    return baseOperationAndAssign(left, right, context, RationalNumber::sub);
+                case TokenConstant.STAR_ASSIGN:
+                    return baseOperationAndAssign(left, right, context, RationalNumber::mult);
+                case TokenConstant.SLASH_ASSIGN:
+                    return baseOperationAndAssign(left, right, context, RationalNumber::div);
             }
         }
         throw new ExecuteException("unsupported infix for : " + infix);
+    }
+
+    private static Value baseOperationAndAssign(IExpression left, IExpression right, IExecuteContext context, Operation operation) throws ExecuteException {
+        Reference ref = left.evaluate(context);
+        if(!ref.assignable()){
+            throw new ExecuteException(ExecuteException.CODE_UNASSIGNABLE, "assign can't support");
+        }
+        Value leftV = ref.value();
+        Value rightV = right.evaluate(context).value();
+        if (leftV.getType() != ValueType.NUMBER || rightV.getType() != ValueType.NUMBER){
+            throw new ExecuteException("unsupported compare for " + leftV.getType() + " and " + rightV.getType());
+        }
+        Value result = Value.of(operation.operate(leftV.cast(RationalNumber.class), rightV.cast(RationalNumber.class)));
+        ref.assigner().assign(result);
+        return result;
     }
 
     private static Value baseOperation(IExpression left, IExpression right, IExecuteContext context, Operation operation) throws ExecuteException {

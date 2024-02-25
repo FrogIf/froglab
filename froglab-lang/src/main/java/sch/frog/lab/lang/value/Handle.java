@@ -12,4 +12,14 @@ public abstract class Handle implements VMap {
 
     public abstract String[] keys();
 
+    @Override
+    public Value keyList() {
+        String[] keys = keys();
+        VList list = new VListImpl();
+        for (String key : keys) {
+            list.add(Value.of(key));
+        }
+        return Value.of(list);
+    }
+
 }

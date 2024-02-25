@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -26,27 +27,40 @@ public class UniversalHandle extends Handle {
 
     private final HashMap<String, List<Method>> methodMap = new HashMap<>();
 
+    private final HashSet<String> keySet = new HashSet<>();
+
     public UniversalHandle(Object instance) {
         this.instance = instance;
         this.clazz = instance.getClass();
 
-        Method[] methods = this.clazz.getMethods();
+        Method[] methods = this.clazz.getMethods(); //只获取公有方法, getDeclaredMethods会获取所有方法
         for (Method method : methods) {
             List<Method> list = methodMap.computeIfAbsent(method.getName(), n -> new ArrayList<>());
             list.add(method);
+            keySet.add(method.getName());
+        }
+
+        Field[] fields = this.clazz.getFields(); // 只获取公有属性
+        for (Field field : fields) {
+            keySet.add(field.getName());
         }
     }
 
     @Override
     public String[] keys() {
-        // TODO keys
-        return new String[0];
+        String[] arr = new String[keySet.size()];
+        int i = 0;
+        for (String s : keySet) {
+            arr[i] = s;
+            i++;
+        }
+        return arr;
     }
 
     @Override
     public Value get(String key) {
         List<Method> methods = methodMap.get(key);
-        if(methods == null){
+        if(methods == null){ // 属性
             try {
                 Field field = this.clazz.getField(key);
                 Object val = field.get(instance);
@@ -88,6 +102,11 @@ public class UniversalHandle extends Handle {
                 }
             });
         }
+    }
+
+    @Override
+    public boolean existKey(String key) {
+        return methodMap.containsKey(key);
     }
 
     public Object target(){

@@ -62,6 +62,10 @@ public class GrammarAnalyzer {
 
     static {
         precedenceMap.put(TokenConstant.ASSIGN, -1);
+        precedenceMap.put(TokenConstant.PLUS_ASSIGN, -1);
+        precedenceMap.put(TokenConstant.MINUS_ASSIGN, -1);
+        precedenceMap.put(TokenConstant.STAR_ASSIGN, -1);
+        precedenceMap.put(TokenConstant.SLASH_ASSIGN, -1);
         precedenceMap.put(TokenConstant.OR, 0);
         precedenceMap.put(TokenConstant.AND, 0);
         precedenceMap.put(TokenConstant.SHORT_CIRCLE_AND, 0);
@@ -670,10 +674,12 @@ public class GrammarAnalyzer {
             throw buildException(current, "array format is not right");
         }
 
-        ArrayCaller arrayCaller = null;
+        AbstractCaller arrayCaller = null;
         current = tokenStream.current();
         if(TokenConstant.LBRACKET.equals(current.literal())){
             arrayCaller = arrayCaller(tokenStream);
+        }else if(TokenConstant.DOT.equals(current.literal())){
+            arrayCaller = parseCaller(tokenStream);
         }
         return new ArrayExpression(arrayObj, arrayIdentifier, arrayCaller);
     }

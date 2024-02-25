@@ -31,4 +31,19 @@ public class VMapImpl extends HashMap<String, Value> implements VMap {
         return super.get(key);
     }
 
+    @Override
+    public Value keyList() {
+        Set<String> keys = this.keySet();
+        VList list = new VListImpl();
+        for (String key : keys) {
+            list.add(Value.of(key));
+        }
+        return Value.of(list);
+    }
+
+    @Override
+    public boolean existKey(String key) {
+        return super.containsKey(key);
+    }
+
 }

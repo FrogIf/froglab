@@ -4,6 +4,13 @@ import sch.frog.lab.lang.constant.VariableConstant;
 import sch.frog.lab.lang.exception.ExecuteError;
 import sch.frog.lab.lang.exception.ExecuteException;
 import sch.frog.lab.lang.fun.IFunction;
+import sch.frog.lab.lang.fun.general.IsBoolFunction;
+import sch.frog.lab.lang.fun.general.IsFunFunction;
+import sch.frog.lab.lang.fun.general.IsListFunction;
+import sch.frog.lab.lang.fun.general.IsNumberFunction;
+import sch.frog.lab.lang.fun.general.IsObjectFunction;
+import sch.frog.lab.lang.fun.general.IsStringFunction;
+import sch.frog.lab.lang.fun.general.IsUndefineFunction;
 import sch.frog.lab.lang.fun.general.LengthFunction;
 import sch.frog.lab.lang.fun.general.UUIDFunction;
 import sch.frog.lab.lang.fun.str.IndexOfFunction;
@@ -26,7 +33,14 @@ public class GeneralExecuteContext extends InnerExecuteContext{
             new IndexOfFunction(),
             new LowerFunction(),
             new ReplaceFunction(),
-            new UpperFunction()
+            new UpperFunction(),
+            new IsBoolFunction(),
+            new IsFunFunction(),
+            new IsListFunction(),
+            new IsNumberFunction(),
+            new IsObjectFunction(),
+            new IsStringFunction(),
+            new IsUndefineFunction()
     };
 
     private static final HashMap<String, Value> variableMap = new HashMap<>();

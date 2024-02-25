@@ -27,10 +27,6 @@ public enum ValueType {
      */
     LIST,
     /**
-     * 符号引用
-     */
-    SYMBOL,
-    /**
      * 函数
      */
     FUNCTION,
@@ -43,8 +39,12 @@ public enum ValueType {
      */
     UNDEFINE,
     /**
+     * 符号引用
+     */
+    SYMBOL, // TODO 符号类型
+    /**
      * 句柄
      */
-    HANDLE;
+    HANDLE; // TODO 句柄类型
 
 }

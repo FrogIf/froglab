@@ -264,6 +264,7 @@ public class ScriptWorkspace extends BorderPane implements IWorkspace{
 //            writer.write("▶ script execute result : " + result.value() + "\n");
         }catch (ExecuteException | GrammarException e){
             writer.write(e.getMessage() + "\n");
+            e.printStackTrace();
         }catch (Exception e){
             e.printStackTrace(new PrintWriter(writer));
         }

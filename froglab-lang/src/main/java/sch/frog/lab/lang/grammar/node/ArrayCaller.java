@@ -26,7 +26,7 @@ public class ArrayCaller extends AbstractCaller {
         VList vList = upValue.cast(VList.class);
         Value indexVal = ((ArrayIndex) cursor).evaluate(context);
         IntegerNumber index = indexVal.cast(IntegerNumber.class);
-        Value val = vList.get(Integer.parseInt(index.toPlainString()));
+        Value val = vList.get(index.intValue());
 
         if(val == null){ val = Value.NULL; }
         if(this.next == null){ return new Reference(val, v -> vList.set(index.intValue(), v)); }

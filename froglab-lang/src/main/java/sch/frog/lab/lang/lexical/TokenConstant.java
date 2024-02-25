@@ -90,6 +90,14 @@ public final class TokenConstant {
 
     public static final String DOUBLE_MINUS = "--";
 
+    public static final String PLUS_ASSIGN = "+=";
+
+    public static final String MINUS_ASSIGN = "-=";
+
+    public static final String SLASH_ASSIGN = "/=";
+
+    public static final String STAR_ASSIGN = "*=";
+
 
 
 }
