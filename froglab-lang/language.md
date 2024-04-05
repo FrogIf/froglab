@@ -78,6 +78,12 @@ import_statement = "import", indentifier, {".", indentifier};
 
 nest_statement = statement_block | statement;
 
+catch_argument = "(", identifier, ")";
+catch_part = "catch", [catch_argument], statement_block;
+finally_part = "finally", statement_block;
+try_catch_finally = "try", statement_block, [catch_part], [finally_part];
+throw_statement = "throw", expression;
+
 if_entry = "if", "(", expression, ")", nest_statement;
 else_if_entry = "else", if_entry;
 else_entry = "else", nest_statement;
