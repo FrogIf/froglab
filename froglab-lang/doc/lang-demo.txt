@@ -1,0 +1,41 @@
+// 单行注释
+var a = b = c = d = 12;
+let arr = [1, 2, 3, 4, 5];
+let obj = {
+   "name": "frog",
+   "age": 123,
+   comment: "中文"
+};
+/*
+ 多行注释
+ */
+for(let i = 0; i < arr.length; i++){
+    print(arr[i]);
+}
+
+let itr = obj.iterator();
+while(itr.hasNext()){
+    let entry = itr.next();
+    print(entry.getKey() + "-" + entry.getValue());
+}
+
+function aaa(a, b, c){
+    println(a);
+    println(b);
+    println(c);
+    return a;
+}
+
+let ccc = (x, y) => {
+    return sum(x, y);
+};
+
+let ddd = (x) => { return x + x * x; };
+
+print({
+   aaa : {
+      bbb: () => {
+          return "hhhh";
+      }
+   }
+}.aaa.bbb());
